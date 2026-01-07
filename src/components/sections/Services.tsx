@@ -1,5 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Settings, Wrench, BarChart3, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
 
 const services = [
   {
@@ -41,10 +44,19 @@ const services = [
 ];
 
 const Services = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   return (
     <section id="services" className="section-padding bg-secondary/50">
       <div className="container">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <motion.div 
+          ref={ref}
+          className="text-center max-w-2xl mx-auto mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+        >
           <p className="text-accent font-medium mb-3 text-sm uppercase tracking-wide">
             Services
           </p>
@@ -55,17 +67,24 @@ const Services = () => {
             Practical technical support tailored to your needs. 
             Each engagement focuses on delivering real, measurable improvements.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
           {services.map((service, index) => (
-            <div
+            <motion.div
               key={index}
-              className="bg-card rounded-xl p-6 lg:p-8 shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col"
+              className="bg-card rounded-xl p-6 lg:p-8 shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col group"
+              initial={{ opacity: 0, y: 40 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+              transition={{ duration: 0.5, delay: 0.1 * index }}
+              whileHover={{ y: -5 }}
             >
-              <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-5">
+              <motion.div 
+                className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-5 group-hover:bg-accent/20 transition-colors"
+                whileHover={{ rotate: 5 }}
+              >
                 <service.icon className="text-accent" size={24} />
-              </div>
+              </motion.div>
               
               <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
               <p className="text-muted-foreground text-sm mb-5 flex-grow">
@@ -81,13 +100,13 @@ const Services = () => {
                 ))}
               </ul>
               
-              <Button variant="outline" className="w-full group" asChild>
+              <Button variant="outline" className="w-full group/btn" asChild>
                 <a href="#contact">
                   Get Started
-                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={16} />
+                  <ArrowRight className="ml-2 group-hover/btn:translate-x-1 transition-transform" size={16} />
                 </a>
               </Button>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

@@ -1,5 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
+import heroBg from "@/assets/hero-bg.jpg";
+import FloatingShapes from "@/components/graphics/FloatingShapes";
 
 const valueBullets = [
   "Cut through technical complexity with clear, actionable advice",
@@ -10,28 +13,53 @@ const valueBullets = [
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center bg-primary overflow-hidden">
-      {/* Subtle gradient overlay */}
+    <section className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Background Image */}
       <div 
-        className="absolute inset-0 opacity-50"
+        className="absolute inset-0 z-0"
         style={{
-          background: "radial-gradient(ellipse at 70% 20%, hsl(174 60% 40% / 0.15) 0%, transparent 50%)",
+          backgroundImage: `url(${heroBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       />
       
+      {/* Overlay for text readability */}
+      <div className="absolute inset-0 bg-primary/60 z-[1]" />
+      
+      {/* Floating animated shapes */}
+      <div className="absolute inset-0 z-[2]">
+        <FloatingShapes />
+      </div>
+      
       <div className="container relative z-10 py-32 md:py-40">
         <div className="max-w-3xl">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-primary-foreground leading-tight mb-6 animate-fade-up">
+          <motion.h1 
+            className="text-4xl md:text-5xl lg:text-6xl font-semibold text-primary-foreground leading-tight mb-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             Technical Consulting That{" "}
             <span className="text-accent">Actually Works</span>
-          </h1>
+          </motion.h1>
           
-          <p className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-2xl animate-fade-up" style={{ animationDelay: "0.1s" }}>
+          <motion.p 
+            className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-2xl"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
             Practical guidance on hardware, software, and data. 
             No jargon. No fluff. Just clear solutions that solve real problems.
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-up" style={{ animationDelay: "0.2s" }}>
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-4 mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             <Button variant="hero" size="xl" asChild>
               <a href="#contact">
                 Book a Consultation
@@ -41,18 +69,32 @@ const Hero = () => {
             <Button variant="hero-outline" size="xl" asChild>
               <a href="#services">View Services</a>
             </Button>
-          </div>
+          </motion.div>
 
-          <div className="space-y-3 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+          <motion.div 
+            className="space-y-3"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
             {valueBullets.map((bullet, index) => (
-              <div key={index} className="flex items-start gap-3">
+              <motion.div 
+                key={index} 
+                className="flex items-start gap-3"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+              >
                 <CheckCircle2 className="text-accent mt-0.5 flex-shrink-0" size={20} />
                 <span className="text-primary-foreground/80 text-sm md:text-base">{bullet}</span>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
+
+      {/* Bottom gradient fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-[3]" />
     </section>
   );
 };
