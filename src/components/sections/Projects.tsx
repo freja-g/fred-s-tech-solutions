@@ -1,3 +1,7 @@
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
+
 const projects = [
   {
     problem: "A small retail business was losing sales due to an unreliable POS system that crashed during peak hours.",
@@ -26,10 +30,19 @@ const projects = [
 ];
 
 const Projects = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   return (
     <section id="projects" className="section-padding bg-background">
       <div className="container">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <motion.div 
+          ref={ref}
+          className="text-center max-w-2xl mx-auto mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6 }}
+        >
           <p className="text-accent font-medium mb-3 text-sm uppercase tracking-wide">
             Projects & Experience
           </p>
@@ -39,22 +52,27 @@ const Projects = () => {
           <p className="text-muted-foreground">
             A selection of engagements that demonstrate my practical, results-driven approach.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {projects.map((project, index) => (
-            <div
+            <motion.div
               key={index}
-              className="bg-card border border-border rounded-xl p-6 lg:p-8 hover:border-accent/30 transition-colors"
+              className="bg-card border border-border rounded-xl p-6 lg:p-8 hover:border-accent/30 transition-all duration-300 group"
+              initial={{ opacity: 0, y: 40 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+              transition={{ duration: 0.5, delay: 0.1 * index }}
+              whileHover={{ scale: 1.01 }}
             >
               <div className="flex flex-wrap gap-2 mb-4">
                 {project.tags.map((tag, tagIndex) => (
-                  <span
+                  <motion.span
                     key={tagIndex}
                     className="text-xs font-medium px-2.5 py-1 bg-accent/10 text-accent rounded-full"
+                    whileHover={{ scale: 1.05 }}
                   >
                     {tag}
-                  </span>
+                  </motion.span>
                 ))}
               </div>
               
@@ -80,7 +98,14 @@ const Projects = () => {
                   <p className="text-accent font-medium text-sm">{project.result}</p>
                 </div>
               </div>
-            </div>
+
+              {/* Decorative corner accent */}
+              <div className="absolute top-0 right-0 w-16 h-16 opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg viewBox="0 0 64 64" className="w-full h-full">
+                  <path d="M64 0 L64 64 L0 64" fill="none" stroke="hsl(var(--accent))" strokeWidth="2" opacity="0.3" />
+                </svg>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>
