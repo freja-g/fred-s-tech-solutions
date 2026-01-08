@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -41,6 +42,10 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
+  const plugin = useRef(
+    Autoplay({ delay: 4000, stopOnInteraction: true })
+  );
+
   return (
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -71,12 +76,7 @@ const Testimonials = () => {
               align: "center",
               loop: true,
             }}
-            plugins={[
-              Autoplay({
-                delay: 4000,
-                stopOnInteraction: true,
-              }),
-            ]}
+            plugins={[plugin.current]}
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
