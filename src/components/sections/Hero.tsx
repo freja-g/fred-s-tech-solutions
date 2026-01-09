@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 import FloatingShapes from "@/components/graphics/FloatingShapes";
 
@@ -61,13 +62,13 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <Button variant="hero" size="xl" asChild>
-              <a href="#contact">
+              <Link to="/contact">
                 Book a Consultation
                 <ArrowRight className="ml-2" size={18} />
-              </a>
+              </Link>
             </Button>
             <Button variant="hero-outline" size="xl" asChild>
-              <a href="#services">View Services</a>
+              <Link to="/services">View Services</Link>
             </Button>
           </motion.div>
 

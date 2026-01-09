@@ -1,0 +1,118 @@
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { motion } from "framer-motion";
+
+const projects = [
+  {
+    problem: "A small retail business was losing sales due to an unreliable POS system that crashed during peak hours.",
+    action: "Diagnosed hardware bottlenecks, recommended cost-effective upgrades, and configured a more stable software setup.",
+    result: "System uptime improved to 99.9%, and transaction processing time dropped by 40%.",
+    tags: ["Hardware", "System Optimization"],
+  },
+  {
+    problem: "A startup's development team was spending too much time on manual data entry and repetitive tasks.",
+    action: "Analyzed their workflow, identified automation opportunities, and set up basic scripts to handle routine data processing.",
+    result: "The team reclaimed 15+ hours per week, allowing them to focus on core product development.",
+    tags: ["Data", "Automation"],
+  },
+  {
+    problem: "An individual consultant struggled with slow computer performance and frequent software crashes.",
+    action: "Performed comprehensive diagnostics, cleaned up system resources, and optimized software configurations.",
+    result: "Boot time reduced by 70%, and the consultant reported zero crashes over the following three months.",
+    tags: ["IT Support", "Performance"],
+  },
+  {
+    problem: "A growing business needed to choose between three different software platforms but lacked technical expertise to evaluate them.",
+    action: "Conducted a thorough comparison based on their specific needs, budget, and growth plans, then presented findings in plain language.",
+    result: "Client made a confident decision, avoided a $20K mistake, and implemented a solution that scaled with their growth.",
+    tags: ["Consulting", "Software"],
+  },
+];
+
+const ProjectsPage = () => {
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main className="pt-20">
+        <section className="section-padding bg-background">
+          <div className="container">
+            <motion.div 
+              className="text-center max-w-2xl mx-auto mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <p className="text-accent font-medium mb-3 text-sm uppercase tracking-wide">
+                Projects & Experience
+              </p>
+              <h1 className="text-3xl md:text-4xl font-semibold mb-4">
+                Real problems. Real solutions.
+              </h1>
+              <p className="text-muted-foreground">
+                A selection of engagements that demonstrate my practical, results-driven approach.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+              {projects.map((project, index) => (
+                <motion.div
+                  key={index}
+                  className="bg-card border border-border rounded-xl p-6 lg:p-8 hover:border-accent/30 transition-all duration-300 group relative overflow-hidden"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 * index }}
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.tags.map((tag, tagIndex) => (
+                      <motion.span
+                        key={tagIndex}
+                        className="text-xs font-medium px-2.5 py-1 bg-accent/10 text-accent rounded-full"
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        {tag}
+                      </motion.span>
+                    ))}
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                        Problem
+                      </p>
+                      <p className="text-foreground text-sm">{project.problem}</p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                        Action
+                      </p>
+                      <p className="text-foreground text-sm">{project.action}</p>
+                    </div>
+                    
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                        Result
+                      </p>
+                      <p className="text-accent font-medium text-sm">{project.result}</p>
+                    </div>
+                  </div>
+
+                  {/* Decorative corner accent */}
+                  <div className="absolute top-0 right-0 w-16 h-16 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg viewBox="0 0 64 64" className="w-full h-full">
+                      <path d="M64 0 L64 64 L0 64" fill="none" stroke="hsl(var(--accent))" strokeWidth="2" opacity="0.3" />
+                    </svg>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default ProjectsPage;
