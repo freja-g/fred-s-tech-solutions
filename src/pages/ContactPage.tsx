@@ -18,18 +18,31 @@ const ContactPage = () => {
     message: "",
   });
 
+  const WHATSAPP_NUMBER = "254742123999"; // no '+' for wa.me
+  const RECIPIENT_EMAIL = "wigatechnologies@gmail.com";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
+
+    const { name, email, message } = formData;
+    const composed = `New enquiry from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+
+    // 1. Open default mail client to send to our inbox
+    const mailtoUrl = `mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(
+      `Website enquiry from ${name}`
+    )}&body=${encodeURIComponent(composed)}`;
+    window.location.href = mailtoUrl;
+
+    // 2. Open WhatsApp chat with prefilled message in a new tab
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(composed)}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
+
     toast({
-      title: "Message sent!",
-      description: "Thanks for reaching out. I'll get back to you soon.",
+      title: "Message ready to send",
+      description: "We've opened WhatsApp and your email app — just hit send in each.",
     });
-    
+
     setFormData({ name: "", email: "", message: "" });
     setIsSubmitting(false);
   };
@@ -60,7 +73,7 @@ const ContactPage = () => {
             >
               <div className="text-center mb-12">
                 <p className="text-accent font-medium mb-3 text-sm uppercase tracking-wide">
-                  Contact
+                  Contact Us
                 </p>
                 <h1 className="text-3xl md:text-4xl font-semibold mb-4">
                   Let's solve your problem
