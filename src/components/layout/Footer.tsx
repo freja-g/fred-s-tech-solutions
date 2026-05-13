@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-6">
             <a href="#" className="text-lg font-semibold">
-              Fred<span className="text-accent">.</span>
+              Wiga Tech Solutions
             </a>
             <nav className="flex items-center gap-6 text-sm text-primary-foreground/70">
               <a href="#about" className="hover:text-primary-foreground transition-colors">
