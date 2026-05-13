@@ -39,7 +39,7 @@ const Header = () => {
     >
       <div className="container flex items-center justify-between h-16 md:h-20">
         <Link to="/" className="text-xl font-semibold text-foreground">
-          Fred<span className="text-accent">.</span>
+          Wiga Tech Solutions
         </Link>
 
         {/* Desktop Navigation */}
