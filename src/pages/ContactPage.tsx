@@ -164,11 +164,11 @@ const ContactPage = () => {
                   Prefer email directly?
                 </p>
                 <a
-                  href="mailto:hello@wigatechsolutions.com"
+                  href={`mailto:${RECIPIENT_EMAIL}`}
                   className="inline-flex items-center gap-2 text-accent hover:underline font-medium group"
                 >
                   <Mail size={16} className="group-hover:scale-110 transition-transform" />
-                  hello@wigatechsolutions.com
+                  {RECIPIENT_EMAIL}
                 </a>
               </motion.div>
             </motion.div>
