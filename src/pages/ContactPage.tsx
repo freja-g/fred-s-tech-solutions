@@ -5,13 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, Send } from "lucide-react";
+import { Mail, Send, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
 const ContactPage = () => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,30 +20,30 @@ const ContactPage = () => {
   const WHATSAPP_NUMBER = "254742123999"; // no '+' for wa.me
   const RECIPIENT_EMAIL = "wigatechnologies@gmail.com";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const { name, email, message } = formData;
+  const isComplete = name.trim() && email.trim() && message.trim();
 
-    const { name, email, message } = formData;
-    const composed = `New enquiry from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+  const composed = `New enquiry from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
 
-    // 1. Open default mail client to send to our inbox
-    const mailtoUrl = `mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(
-      `Website enquiry from ${name}`
-    )}&body=${encodeURIComponent(composed)}`;
-    window.location.href = mailtoUrl;
+  const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(composed)}`;
+  const mailtoHref = `mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(
+    `Website enquiry from ${name || "website visitor"}`
+  )}&body=${encodeURIComponent(composed)}`;
 
-    // 2. Open WhatsApp chat with prefilled message in a new tab
-    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(composed)}`;
-    window.open(waUrl, "_blank", "noopener,noreferrer");
-
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!isComplete) {
+      e.preventDefault();
+      toast({
+        title: "Please fill in all fields",
+        description: "We need your name, email, and message before sending.",
+        variant: "destructive",
+      });
+      return;
+    }
     toast({
-      title: "Message ready to send",
-      description: "We've opened WhatsApp and your email app — just hit send in each.",
+      title: "Opening...",
+      description: "Just hit send to deliver your message.",
     });
-
-    setFormData({ name: "", email: "", message: "" });
-    setIsSubmitting(false);
   };
 
   return (
