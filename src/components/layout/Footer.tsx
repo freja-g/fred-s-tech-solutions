@@ -17,7 +17,7 @@ const Footer = () => {
                 Services
               </a>
               <a href="#contact" className="hover:text-primary-foreground transition-colors">
-                Contact
+                Contact Us
               </a>
             </nav>
           </div>
