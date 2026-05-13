@@ -24,20 +24,20 @@ const AboutPage = () => {
               
               <div className="space-y-6 text-muted-foreground leading-relaxed">
                 <p>
-                  I'm Fred, a Technical Consultant and IT Specialist with a background spanning 
-                  hardware diagnostics, software development, and data analysis. My approach is 
+                  At Wiga Tech Solutions, we provide technical consulting with a background spanning 
+                  hardware diagnostics, software development, and data analysis. Our approach is 
                   simple: understand the problem, find the clearest solution, and make it work.
                 </p>
                 
                 <p>
-                  I've worked with small businesses struggling with outdated systems, startups 
+                  We've worked with small businesses struggling with outdated systems, startups 
                   needing technical direction, and individuals overwhelmed by tech decisions. 
                   In every case, the goal is the same—deliver outcomes that matter, not 
                   recommendations that gather dust.
                 </p>
                 
                 <p>
-                  What sets me apart is a commitment to clarity. I explain things in plain 
+                  What sets us apart is a commitment to clarity. We explain things in plain 
                   language, focus on what's actionable, and stay engaged until the problem 
                   is actually solved. No buzzwords. No upselling. Just technical help that 
                   makes a difference.
