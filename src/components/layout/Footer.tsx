@@ -23,7 +23,7 @@ const Footer = () => {
           </div>
           
           <p className="text-sm text-primary-foreground/60">
-            © {currentYear} Fred. All rights reserved.
+            © {currentYear} Wiga Tech Solutions. All rights reserved.
           </p>
         </div>
       </div>

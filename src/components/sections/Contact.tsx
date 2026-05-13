@@ -152,11 +152,11 @@ const Contact = () => {
               Prefer email directly?
             </p>
             <a
-              href="mailto:hello@fredconsulting.com"
+              href="mailto:hello@wigatechsolutions.com"
               className="inline-flex items-center gap-2 text-accent hover:underline font-medium group"
             >
               <Mail size={16} className="group-hover:scale-110 transition-transform" />
-              hello@fredconsulting.com
+              hello@wigatechsolutions.com
             </a>
           </motion.div>
         </motion.div>

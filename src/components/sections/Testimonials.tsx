@@ -15,28 +15,28 @@ const testimonials = [
     name: "Sarah Mitchell",
     role: "CEO, TechStart Inc.",
     content:
-      "Fred transformed our chaotic IT infrastructure into a streamlined system. His practical approach saved us countless hours and significantly reduced our downtime.",
+      "Wiga Tech Solutions transformed our chaotic IT infrastructure into a streamlined system. Their practical approach saved us countless hours and significantly reduced our downtime.",
     rating: 5,
   },
   {
     name: "James Rodriguez",
     role: "Operations Manager, Swift Logistics",
     content:
-      "When our systems crashed before a major deadline, Fred diagnosed and fixed the issue within hours. His calm, methodical approach was exactly what we needed.",
+      "When our systems crashed before a major deadline, Wiga Tech Solutions diagnosed and fixed the issue within hours. Their calm, methodical approach was exactly what we needed.",
     rating: 5,
   },
   {
     name: "Emily Chen",
     role: "Founder, DataDriven Solutions",
     content:
-      "Fred helped us make sense of our data chaos. His analysis tools and recommendations were practical, actionable, and delivered real results.",
+      "Wiga Tech Solutions helped us make sense of our data chaos. Their analysis tools and recommendations were practical, actionable, and delivered real results.",
     rating: 5,
   },
   {
     name: "Michael Thompson",
     role: "CTO, GrowthPath Startup",
     content:
-      "As a non-technical founder, I appreciated Fred's ability to explain complex issues in simple terms. He's now my go-to advisor for all tech decisions.",
+      "As a non-technical founder, I appreciated Wiga Tech Solutions' ability to explain complex issues in simple terms. They're now my go-to advisor for all tech decisions.",
     rating: 5,
   },
 ];
