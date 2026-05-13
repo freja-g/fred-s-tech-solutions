@@ -89,7 +89,7 @@ const ContactPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Name</Label>
@@ -131,25 +131,30 @@ const ContactPage = () => {
                       className="transition-all duration-200 focus:ring-accent focus:border-accent"
                     />
                   </div>
-                  
-                  <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                    <Button 
-                      type="submit" 
-                      variant="accent" 
-                      size="lg" 
-                      className="w-full"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        "Sending..."
-                      ) : (
-                        <>
-                          Send Message
-                          <Send className="ml-2" size={18} />
-                        </>
-                      )}
+
+                  <p className="text-xs text-muted-foreground text-center">
+                    Choose how to send your message:
+                  </p>
+
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <Button asChild variant="accent" size="lg" className="w-full">
+                      <a
+                        href={whatsappHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={handleLinkClick}
+                      >
+                        <MessageCircle className="mr-2" size={18} />
+                        Send via WhatsApp
+                      </a>
                     </Button>
-                  </motion.div>
+                    <Button asChild variant="outline" size="lg" className="w-full">
+                      <a href={mailtoHref} onClick={handleLinkClick}>
+                        <Mail className="mr-2" size={18} />
+                        Send via Email
+                      </a>
+                    </Button>
+                  </div>
                 </form>
               </motion.div>
 
