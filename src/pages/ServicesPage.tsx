@@ -1,6 +1,7 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Settings, Wrench, BarChart3, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -100,12 +101,13 @@ const ServicesPage = () => {
                     ))}
                   </ul>
                   
-                  <Button variant="outline" className="w-full group/btn" asChild>
-                    <Link to="/contact">
-                      Get Started
-                      <ArrowRight className="ml-2 group-hover/btn:translate-x-1 transition-transform" size={16} />
-                    </Link>
-                  </Button>
+                  <Link
+                    to="/contact"
+                    className={cn(buttonVariants({ variant: "outline" }), "w-full group/btn text-center")}
+                  >
+                    Get Started
+                    <ArrowRight className="ml-2 group-hover/btn:translate-x-1 transition-transform" size={16} />
+                  </Link>
                 </motion.div>
               ))}
             </div>

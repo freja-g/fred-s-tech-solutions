@@ -1,11 +1,12 @@
 import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, Send, MessageCircle } from "lucide-react";
+import { Mail, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
@@ -137,23 +138,24 @@ const ContactPage = () => {
                   </p>
 
                   <div className="grid sm:grid-cols-2 gap-3">
-                    <Button asChild variant="accent" size="lg" className="w-full">
-                      <a
-                        href={whatsappHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={handleLinkClick}
-                      >
-                        <MessageCircle className="mr-2" size={18} />
-                        Send via WhatsApp
-                      </a>
-                    </Button>
-                    <Button asChild variant="outline" size="lg" className="w-full">
-                      <a href={mailtoHref} onClick={handleLinkClick}>
-                        <Mail className="mr-2" size={18} />
-                        Send via Email
-                      </a>
-                    </Button>
+                  <a
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={handleLinkClick}
+                    className={cn(buttonVariants({ variant: "accent", size: "lg" }), "w-full")}
+                  >
+                    <MessageCircle className="mr-2" size={18} />
+                    Send via WhatsApp
+                  </a>
+                  <a
+                    href={mailtoHref}
+                    onClick={handleLinkClick}
+                    className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full")}
+                  >
+                    <Mail className="mr-2" size={18} />
+                    Send via Email
+                  </a>
                   </div>
                 </form>
               </motion.div>

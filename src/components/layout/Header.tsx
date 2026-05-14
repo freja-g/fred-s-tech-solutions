@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
@@ -57,9 +58,12 @@ const Header = () => {
               {link.label}
             </Link>
           ))}
-          <Button variant="accent" size="sm" asChild>
-            <Link to="/contact">Book a Consultation</Link>
-          </Button>
+          <Link
+            to="/contact"
+            className={cn(buttonVariants({ variant: "accent", size: "sm" }))}
+          >
+            Book a Consultation
+          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -89,9 +93,12 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
-            <Button variant="accent" asChild className="mt-2">
-              <Link to="/contact">Book a Consultation</Link>
-            </Button>
+            <Link
+              to="/contact"
+              className={cn(buttonVariants({ variant: "accent" }), "mt-2 w-full text-center")}
+            >
+              Book a Consultation
+            </Link>
           </nav>
         </div>
       )}
