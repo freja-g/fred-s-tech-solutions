@@ -1,7 +1,8 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import heroBg from "@/assets/hero-bg.jpg";
 import FloatingShapes from "@/components/graphics/FloatingShapes";
 
