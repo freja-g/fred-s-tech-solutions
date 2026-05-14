@@ -62,15 +62,19 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Button variant="hero" size="xl" asChild>
-              <Link to="/contact">
-                Book a Consultation
-                <ArrowRight className="ml-2" size={18} />
-              </Link>
-            </Button>
-            <Button variant="hero-outline" size="xl" asChild>
-              <Link to="/services">View Services</Link>
-            </Button>
+            <Link
+              to="/contact"
+              className={cn(buttonVariants({ variant: "hero", size: "xl" }))}
+            >
+              Book a Consultation
+              <ArrowRight className="ml-2" size={18} />
+            </Link>
+            <Link
+              to="/services"
+              className={cn(buttonVariants({ variant: "hero-outline", size: "xl" }))}
+            >
+              View Services
+            </Link>
           </motion.div>
 
           <motion.div 
