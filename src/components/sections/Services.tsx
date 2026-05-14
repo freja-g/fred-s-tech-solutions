@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Settings, Wrench, BarChart3, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
@@ -100,12 +101,13 @@ const Services = () => {
                 ))}
               </ul>
               
-              <Button variant="outline" className="w-full group/btn" asChild>
-                <a href="#contact">
-                  Get Started
-                  <ArrowRight className="ml-2 group-hover/btn:translate-x-1 transition-transform" size={16} />
-                </a>
-              </Button>
+              <a
+                href="#contact"
+                className={cn(buttonVariants({ variant: "outline" }), "w-full group/btn text-center")}
+              >
+                Get Started
+                <ArrowRight className="ml-2 group-hover/btn:translate-x-1 transition-transform" size={16} />
+              </a>
             </motion.div>
           ))}
         </div>
