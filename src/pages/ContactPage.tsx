@@ -1,51 +1,90 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, MessageCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Mail, MessageCircle, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
+const SERVICES = [
+  "Technical Consulting",
+  "IT Support & Troubleshooting",
+  "Data & Software Support",
+  "Network Setup & Security",
+  "Cloud Migration & Management",
+  "Business Process Automation",
+];
+
+const WHATSAPP_NUMBER = "254742123999";
+const RECIPIENT_EMAIL = "wigatechnologies@gmail.com";
+
 const ContactPage = () => {
   const { toast } = useToast();
+  const nav = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    message: "",
+    phone: "",
+    service: "",
   });
+  const [showInAppForm, setShowInAppForm] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<"whatsapp" | "email" | "in_app" | null>(null);
+  const isSubmitting = false;
 
-  const WHATSAPP_NUMBER = "254742123999"; // no '+' for wa.me
-  const RECIPIENT_EMAIL = "wigatechnologies@gmail.com";
+  const { name, email, phone, service } = formData;
+  const isComplete = name.trim() && email.trim() && phone.trim() && service.trim();
 
-  const { name, email, message } = formData;
-  const isComplete = name.trim() && email.trim() && message.trim();
-
-  const composed = `New enquiry from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
-
-  const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(composed)}`;
-  const mailtoHref = `mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(
-    `Website enquiry from ${name || "website visitor"}`
-  )}&body=${encodeURIComponent(composed)}`;
-
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleMethodSelect = (method: "whatsapp" | "email" | "in_app") => {
     if (!isComplete) {
-      e.preventDefault();
       toast({
         title: "Please fill in all fields",
-        description: "We need your name, email, and message before sending.",
+        description: "We need your name, email, phone, and service selection.",
         variant: "destructive",
       });
       return;
     }
+
+    if (method === "in_app") {
+      setShowInAppForm(true);
+      setSelectedMethod(method);
+    } else {
+      setSelectedMethod(method);
+      handleExternalSubmit(method);
+    }
+  };
+
+  const handleExternalSubmit = (method: "whatsapp" | "email") => {
+    const message = `New consultation request from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}`;
+
+    if (method === "whatsapp") {
+      const whatsappHref = `https://wa.me/254742123999?text=${encodeURIComponent(message)}`;
+      window.open(whatsappHref, "_blank");
+    } else if (method === "email") {
+      const mailtoHref = `mailto:wigatechnologies@gmail.com?subject=${encodeURIComponent(
+        `Consultation Request from ${name}`
+      )}&body=${encodeURIComponent(message)}`;
+      window.location.href = mailtoHref;
+    }
+
     toast({
-      title: "Opening...",
-      description: "Just hit send to deliver your message.",
+      title: "Redirecting...",
+      description: "Your consultation request is ready to send.",
     });
   };
+
+  const handleInAppSubmit = () => {
+    toast({
+      title: "Opening in-app messaging",
+      description: "Sign in to chat directly with our team.",
+    });
+    nav("/messages");
+  };
+
 
   return (
     <div className="min-h-screen">
@@ -65,7 +104,7 @@ const ContactPage = () => {
           </div>
 
           <div className="container relative z-10">
-            <motion.div 
+            <motion.div
               className="max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -73,109 +112,148 @@ const ContactPage = () => {
             >
               <div className="text-center mb-12">
                 <p className="text-accent font-medium mb-3 text-sm uppercase tracking-wide">
-                  Contact Us
+                  Get Started
                 </p>
                 <h1 className="text-3xl md:text-4xl font-semibold mb-4">
-                  Let's solve your problem
+                  Book a Consultation
                 </h1>
                 <p className="text-muted-foreground">
-                  Describe what you're dealing with. I'll review your message and get back to you 
-                  with next steps—usually within one business day.
+                  Share your details and let us know which service you need help with.
+                  We'll get back to you as quickly as possible.
                 </p>
               </div>
 
-              <motion.div 
+              <motion.div
                 className="bg-card border border-border rounded-xl p-6 md:p-8"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input
-                        id="name"
-                        placeholder="Your name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        required
-                        maxLength={100}
-                        className="transition-all duration-200 focus:ring-accent focus:border-accent"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="your@email.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required
-                        maxLength={255}
-                        className="transition-all duration-200 focus:ring-accent focus:border-accent"
-                      />
-                    </div>
-                  </div>
-                  
+                <div className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="message">What can I help with?</Label>
-                    <Textarea
-                      id="message"
-                      placeholder="Tell me about the technical challenge you're facing. The more detail, the better I can assess how to help."
-                      rows={6}
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      required
-                      maxLength={2000}
+                    <Label htmlFor="name">Your Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      maxLength={100}
                       className="transition-all duration-200 focus:ring-accent focus:border-accent"
                     />
                   </div>
 
-                  <p className="text-xs text-muted-foreground text-center">
-                    Choose how to send your message:
-                  </p>
-
-                  <div className="grid sm:grid-cols-2 gap-3">
-                  <a
-                    href={whatsappHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={handleLinkClick}
-                    className={cn(buttonVariants({ variant: "accent", size: "lg" }), "w-full")}
-                  >
-                    <MessageCircle className="mr-2" size={18} />
-                    Send via WhatsApp
-                  </a>
-                  <a
-                    href={mailtoHref}
-                    onClick={handleLinkClick}
-                    className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full")}
-                  >
-                    <Mail className="mr-2" size={18} />
-                    Send via Email
-                  </a>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="your@email.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      maxLength={255}
+                      className="transition-all duration-200 focus:ring-accent focus:border-accent"
+                    />
                   </div>
-                </form>
-              </motion.div>
 
-              <motion.div 
-                className="mt-8 text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                <p className="text-muted-foreground text-sm mb-2">
-                  Prefer email directly?
-                </p>
-                <a
-                  href={`mailto:${RECIPIENT_EMAIL}`}
-                  className="inline-flex items-center gap-2 text-accent hover:underline font-medium group"
-                >
-                  <Mail size={16} className="group-hover:scale-110 transition-transform" />
-                  {RECIPIENT_EMAIL}
-                </a>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+254 123 456 789"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      maxLength={20}
+                      className="transition-all duration-200 focus:ring-accent focus:border-accent"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="service">Service You Need</Label>
+                    <Select value={formData.service} onValueChange={(value) => setFormData({ ...formData, service: value })}>
+                      <SelectTrigger id="service" className="transition-all duration-200 focus:ring-accent focus:border-accent">
+                        <SelectValue placeholder="Select a service" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SERVICES.map((svc) => (
+                          <SelectItem key={svc} value={svc}>
+                            {svc}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {!showInAppForm && (
+                    <>
+                      <p className="text-xs text-muted-foreground text-center pt-4">
+                        Choose how you'd like to connect with us:
+                      </p>
+
+                      <div className="grid sm:grid-cols-3 gap-3">
+                        <button
+                          onClick={() => handleMethodSelect("whatsapp")}
+                          className={cn(
+                            buttonVariants({ variant: "outline", size: "lg" }),
+                            "w-full flex flex-col items-center"
+                          )}
+                        >
+                          <MessageCircle className="mb-2" size={20} />
+                          <span className="text-sm">WhatsApp</span>
+                        </button>
+                        <button
+                          onClick={() => handleMethodSelect("email")}
+                          className={cn(
+                            buttonVariants({ variant: "outline", size: "lg" }),
+                            "w-full flex flex-col items-center"
+                          )}
+                        >
+                          <Mail className="mb-2" size={20} />
+                          <span className="text-sm">Email</span>
+                        </button>
+                        <button
+                          onClick={() => handleMethodSelect("in_app")}
+                          className={cn(
+                            buttonVariants({ variant: "accent", size: "lg" }),
+                            "w-full flex flex-col items-center"
+                          )}
+                        >
+                          <Send className="mb-2" size={20} />
+                          <span className="text-sm">Chat Here</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+
+                  {showInAppForm && (
+                    <motion.div
+                      className="space-y-4 pt-4 border-t border-border"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <p className="text-sm text-muted-foreground">
+                        We'll respond to you via our in-app messaging system.
+                        Our technician will review your request and get back to you shortly.
+                      </p>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => setShowInAppForm(false)}
+                          className={cn(buttonVariants({ variant: "outline" }), "flex-1")}
+                        >
+                          Back
+                        </button>
+                        <button
+                          onClick={handleInAppSubmit}
+                          disabled={isSubmitting}
+                          className={cn(buttonVariants({ variant: "accent" }), "flex-1")}
+                        >
+                          {isSubmitting ? "Submitting..." : "Submit Request"}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
               </motion.div>
             </motion.div>
           </div>

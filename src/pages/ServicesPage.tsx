@@ -2,7 +2,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Settings, Wrench, BarChart3, ArrowRight } from "lucide-react";
+import { Settings, Wrench, ChartBar as BarChart3, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -41,6 +41,42 @@ const services = [
       "Software configuration and setup",
       "Workflow automation basics",
       "Integration troubleshooting",
+    ],
+  },
+  {
+    icon: Settings,
+    title: "Network Setup & Security",
+    description:
+      "Secure your infrastructure and ensure reliable connectivity. From network design to security hardening, I help protect your business from threats and downtime.",
+    features: [
+      "Network architecture design",
+      "Security audits and hardening",
+      "Firewall and access control configuration",
+      "Backup and disaster recovery planning",
+    ],
+  },
+  {
+    icon: Wrench,
+    title: "Cloud Migration & Management",
+    description:
+      "Move your systems to the cloud safely and efficiently. I guide you through the process and ensure smooth, secure operations in your cloud environment.",
+    features: [
+      "Cloud readiness assessment",
+      "Migration planning and execution",
+      "Cost optimization strategies",
+      "Cloud infrastructure management",
+    ],
+  },
+  {
+    icon: BarChart3,
+    title: "Business Process Automation",
+    description:
+      "Eliminate manual work and boost productivity. I automate repetitive tasks across your applications and systems, saving time and reducing errors.",
+    features: [
+      "Workflow automation design",
+      "Process optimization analysis",
+      "Integration of business tools",
+      "Custom automation solutions",
     ],
   },
 ];
@@ -105,7 +141,7 @@ const ServicesPage = () => {
                     to="/contact"
                     className={cn(buttonVariants({ variant: "outline" }), "w-full group/btn text-center")}
                   >
-                    Get Started
+                    Book Now
                     <ArrowRight className="ml-2 group-hover/btn:translate-x-1 transition-transform" size={16} />
                   </Link>
                 </motion.div>
