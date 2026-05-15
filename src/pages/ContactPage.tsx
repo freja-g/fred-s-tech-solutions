@@ -15,6 +15,9 @@ const SERVICES = [
   "Technical Consulting",
   "IT Support & Troubleshooting",
   "Data & Software Support",
+  "Network Setup & Security",
+  "Cloud Migration & Management",
+  "Business Process Automation",
 ];
 
 const WHATSAPP_NUMBER = "254742123999";

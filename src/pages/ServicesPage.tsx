@@ -43,6 +43,42 @@ const services = [
       "Integration troubleshooting",
     ],
   },
+  {
+    icon: Settings,
+    title: "Network Setup & Security",
+    description:
+      "Secure your infrastructure and ensure reliable connectivity. From network design to security hardening, I help protect your business from threats and downtime.",
+    features: [
+      "Network architecture design",
+      "Security audits and hardening",
+      "Firewall and access control configuration",
+      "Backup and disaster recovery planning",
+    ],
+  },
+  {
+    icon: Wrench,
+    title: "Cloud Migration & Management",
+    description:
+      "Move your systems to the cloud safely and efficiently. I guide you through the process and ensure smooth, secure operations in your cloud environment.",
+    features: [
+      "Cloud readiness assessment",
+      "Migration planning and execution",
+      "Cost optimization strategies",
+      "Cloud infrastructure management",
+    ],
+  },
+  {
+    icon: BarChart3,
+    title: "Business Process Automation",
+    description:
+      "Eliminate manual work and boost productivity. I automate repetitive tasks across your applications and systems, saving time and reducing errors.",
+    features: [
+      "Workflow automation design",
+      "Process optimization analysis",
+      "Integration of business tools",
+      "Custom automation solutions",
+    ],
+  },
 ];
 
 const ServicesPage = () => {
