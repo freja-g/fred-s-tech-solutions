@@ -2,7 +2,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Settings, Wrench, BarChart3, ArrowRight } from "lucide-react";
+import { Settings, Wrench, ChartBar as BarChart3, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
@@ -105,7 +105,7 @@ const ServicesPage = () => {
                     to="/contact"
                     className={cn(buttonVariants({ variant: "outline" }), "w-full group/btn text-center")}
                   >
-                    Get Started
+                    Book Now
                     <ArrowRight className="ml-2 group-hover/btn:translate-x-1 transition-transform" size={16} />
                   </Link>
                 </motion.div>
