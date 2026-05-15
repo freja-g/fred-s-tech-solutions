@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { buttonVariants } from "@/components/ui/button";
@@ -9,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Mail, MessageCircle, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 
 const SERVICES = [
   "Technical Consulting",
@@ -25,15 +25,16 @@ const RECIPIENT_EMAIL = "wigatechnologies@gmail.com";
 
 const ContactPage = () => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const nav = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     service: "",
   });
-  const [selectedMethod, setSelectedMethod] = useState<"whatsapp" | "email" | "in_app" | null>(null);
   const [showInAppForm, setShowInAppForm] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<"whatsapp" | "email" | "in_app" | null>(null);
+  const isSubmitting = false;
 
   const { name, email, phone, service } = formData;
   const isComplete = name.trim() && email.trim() && phone.trim() && service.trim();
@@ -61,10 +62,10 @@ const ContactPage = () => {
     const message = `New consultation request from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}`;
 
     if (method === "whatsapp") {
-      const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+      const whatsappHref = `https://wa.me/254742123999?text=${encodeURIComponent(message)}`;
       window.open(whatsappHref, "_blank");
     } else if (method === "email") {
-      const mailtoHref = `mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(
+      const mailtoHref = `mailto:wigatechnologies@gmail.com?subject=${encodeURIComponent(
         `Consultation Request from ${name}`
       )}&body=${encodeURIComponent(message)}`;
       window.location.href = mailtoHref;
@@ -76,51 +77,14 @@ const ContactPage = () => {
     });
   };
 
-  const handleInAppSubmit = async () => {
-    if (!isComplete) {
-      toast({
-        title: "Please fill in all fields",
-        description: "We need your name, email, phone, and service selection.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const { data, error } = await supabase
-        .from("consultation_bookings")
-        .insert({
-          name,
-          email,
-          phone,
-          service,
-          contact_method: "in_app",
-          status: "pending",
-        })
-        .select()
-        .maybeSingle();
-
-      if (error) throw error;
-
-      toast({
-        title: "Consultation request submitted!",
-        description: "Our technician will review and reply to you shortly.",
-      });
-
-      setFormData({ name: "", email: "", phone: "", service: "" });
-      setShowInAppForm(false);
-      setSelectedMethod(null);
-    } catch (error) {
-      toast({
-        title: "Error submitting request",
-        description: "Please try again or use another contact method.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleInAppSubmit = () => {
+    toast({
+      title: "Opening in-app messaging",
+      description: "Sign in to chat directly with our team.",
+    });
+    nav("/messages");
   };
+
 
   return (
     <div className="min-h-screen">
