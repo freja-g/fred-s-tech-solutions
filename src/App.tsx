@@ -15,6 +15,7 @@ import AdminMessagesPage from "./pages/AdminMessagesPage";
 import ReviewsPage from "./pages/ReviewsPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
 import NotFound from "./pages/NotFound";
+import BottomNav from "./components/layout/BottomNav";
 
 const queryClient = new QueryClient();
 
@@ -25,19 +26,22 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/messages" element={<MessagesPage />} />
-            <Route path="/reviews" element={<ReviewsPage />} />
-            <Route path="/admin/messages" element={<AdminMessagesPage />} />
-            <Route path="/admin/reviews" element={<AdminReviewsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="pb-20">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/reviews" element={<ReviewsPage />} />
+              <Route path="/admin/messages" element={<AdminMessagesPage />} />
+              <Route path="/admin/reviews" element={<AdminReviewsPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+          <BottomNav />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
