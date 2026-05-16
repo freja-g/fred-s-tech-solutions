@@ -82,11 +82,22 @@ const MessagesPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 pt-24 pb-12 container max-w-2xl">
-        <h1 className="text-2xl font-semibold mb-2">Message Wiga Tech Support</h1>
-        <p className="text-sm text-muted-foreground mb-6">
-          Send us a message — our team will respond here. You'll get a notification when we reply.
+      <main className="flex-1 md:pt-24 pt-4 pb-12 container max-w-2xl">
+        <h1 className="text-2xl font-semibold mb-2">Chat with Wiga Tech</h1>
+        <p className="text-sm text-muted-foreground mb-4">
+          Recent communications across all our channels. Reply here or reach us anywhere.
         </p>
+        <div className="flex flex-wrap gap-2 mb-4">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-accent/15 text-accent px-2.5 py-1 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent" /> In-App · Active
+          </span>
+          <a href="https://wa.me/254742123999" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full hover:bg-secondary/70">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> WhatsApp
+          </a>
+          <a href="mailto:wigatechnologies@gmail.com" className="inline-flex items-center gap-1.5 text-xs font-medium bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full hover:bg-secondary/70">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> Email
+          </a>
+        </div>
         <div className="bg-card border border-border rounded-xl flex flex-col h-[60vh]">
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 && (
