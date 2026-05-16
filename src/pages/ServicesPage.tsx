@@ -95,14 +95,15 @@ const ServicesPage = () => {
               transition={{ duration: 0.6 }}
             >
               <p className="text-accent font-medium mb-3 text-sm uppercase tracking-wide">
-                Services
+                What we love doing
               </p>
               <h1 className="text-3xl md:text-4xl font-semibold mb-4">
-                How I can help
+                Tech help that gets you excited again
               </h1>
               <p className="text-muted-foreground">
-                Practical technical support tailored to your needs. 
-                Each engagement focuses on delivering real, measurable improvements.
+                We don't just fix problems — we turn them into wins! Every service below is built to
+                save you time, cut frustration, and unlock what your business can really do.
+                Let's build something brilliant together.
               </p>
             </motion.div>
 
@@ -139,9 +140,9 @@ const ServicesPage = () => {
                   
                   <Link
                     to="/contact"
-                    className={cn(buttonVariants({ variant: "outline" }), "w-full group/btn text-center")}
+                    className={cn(buttonVariants({ variant: "accent" }), "w-full group/btn text-center")}
                   >
-                    Book Now
+                    Let's Get Started!
                     <ArrowRight className="ml-2 group-hover/btn:translate-x-1 transition-transform" size={16} />
                   </Link>
                 </motion.div>
