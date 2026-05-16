@@ -1,6 +1,8 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/sections/Hero";
+import TrendsCarousel from "@/components/sections/TrendsCarousel";
+import ReviewsCarousel from "@/components/sections/ReviewsCarousel";
 
 const HomePage = () => {
   return (
@@ -8,6 +10,8 @@ const HomePage = () => {
       <Header />
       <main>
         <Hero />
+        <TrendsCarousel />
+        <ReviewsCarousel />
       </main>
       <Footer />
     </div>
