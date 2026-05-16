@@ -14,6 +14,8 @@ import MessagesPage from "./pages/MessagesPage";
 import AdminMessagesPage from "./pages/AdminMessagesPage";
 import ReviewsPage from "./pages/ReviewsPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
+import GetSmartPage from "./pages/GetSmartPage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/layout/BottomNav";
 
@@ -38,6 +40,8 @@ const App = () => (
               <Route path="/reviews" element={<ReviewsPage />} />
               <Route path="/admin/messages" element={<AdminMessagesPage />} />
               <Route path="/admin/reviews" element={<AdminReviewsPage />} />
+              <Route path="/get-smart" element={<GetSmartPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
