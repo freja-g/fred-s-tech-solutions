@@ -15,6 +15,7 @@ import AdminMessagesPage from "./pages/AdminMessagesPage";
 import ReviewsPage from "./pages/ReviewsPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
 import NotFound from "./pages/NotFound";
+import BottomNav from "./components/layout/BottomNav";
 
 const queryClient = new QueryClient();
 
