@@ -12,6 +12,7 @@ const HomePage = () => {
       <main>
         <Hero />
         <TrendsCarousel />
+        <About />
         <ReviewsCarousel />
       </main>
       <Footer />
