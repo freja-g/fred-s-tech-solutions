@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mail, MessageCircle, Send } from "lucide-react";
@@ -31,19 +32,20 @@ const ContactPage = () => {
     email: "",
     phone: "",
     service: "",
+    details: "",
   });
   const [showInAppForm, setShowInAppForm] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<"whatsapp" | "email" | "in_app" | null>(null);
   const isSubmitting = false;
 
-  const { name, email, phone, service } = formData;
-  const isComplete = name.trim() && email.trim() && phone.trim() && service.trim();
+  const { name, email, phone, service, details } = formData;
+  const isComplete = name.trim() && email.trim() && phone.trim() && service.trim() && details.trim();
 
   const handleMethodSelect = (method: "whatsapp" | "email" | "in_app") => {
     if (!isComplete) {
       toast({
         title: "Please fill in all fields",
-        description: "We need your name, email, phone, and service selection.",
+        description: "We need your name, email, phone, service, and a short description of your needs.",
         variant: "destructive",
       });
       return;
@@ -59,7 +61,7 @@ const ContactPage = () => {
   };
 
   const handleExternalSubmit = (method: "whatsapp" | "email") => {
-    const message = `New consultation request from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}`;
+    const message = `New consultation request from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\n\nDetails:\n${details}`;
 
     if (method === "whatsapp") {
       const whatsappHref = `https://wa.me/254742123999?text=${encodeURIComponent(message)}`;
@@ -182,6 +184,19 @@ const ContactPage = () => {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="details">Tell us what you need</Label>
+                    <Textarea
+                      id="details"
+                      placeholder="Describe the issue, goal, or context. The more detail, the better we can help."
+                      value={formData.details}
+                      onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                      maxLength={2000}
+                      rows={5}
+                      className="transition-all duration-200 focus:ring-accent focus:border-accent resize-none"
+                    />
                   </div>
 
                   {!showInAppForm && (
