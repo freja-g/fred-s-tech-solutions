@@ -61,7 +61,7 @@ const ContactPage = () => {
   };
 
   const handleExternalSubmit = (method: "whatsapp" | "email") => {
-    const message = `New consultation request from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}`;
+    const message = `New consultation request from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\n\nDetails:\n${details}`;
 
     if (method === "whatsapp") {
       const whatsappHref = `https://wa.me/254742123999?text=${encodeURIComponent(message)}`;
