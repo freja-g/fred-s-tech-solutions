@@ -186,6 +186,19 @@ const ContactPage = () => {
                     </Select>
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="details">Tell us what you need</Label>
+                    <Textarea
+                      id="details"
+                      placeholder="Describe the issue, goal, or context. The more detail, the better we can help."
+                      value={formData.details}
+                      onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                      maxLength={2000}
+                      rows={5}
+                      className="transition-all duration-200 focus:ring-accent focus:border-accent resize-none"
+                    />
+                  </div>
+
                   {!showInAppForm && (
                     <>
                       <p className="text-xs text-muted-foreground text-center pt-4">
