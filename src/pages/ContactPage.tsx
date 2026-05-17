@@ -45,7 +45,7 @@ const ContactPage = () => {
     if (!isComplete) {
       toast({
         title: "Please fill in all fields",
-        description: "We need your name, email, phone, and service selection.",
+        description: "We need your name, email, phone, service, and a short description of your needs.",
         variant: "destructive",
       });
       return;
