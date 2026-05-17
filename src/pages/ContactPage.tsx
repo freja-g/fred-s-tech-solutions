@@ -32,13 +32,14 @@ const ContactPage = () => {
     email: "",
     phone: "",
     service: "",
+    details: "",
   });
   const [showInAppForm, setShowInAppForm] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<"whatsapp" | "email" | "in_app" | null>(null);
   const isSubmitting = false;
 
-  const { name, email, phone, service } = formData;
-  const isComplete = name.trim() && email.trim() && phone.trim() && service.trim();
+  const { name, email, phone, service, details } = formData;
+  const isComplete = name.trim() && email.trim() && phone.trim() && service.trim() && details.trim();
 
   const handleMethodSelect = (method: "whatsapp" | "email" | "in_app") => {
     if (!isComplete) {
