@@ -201,6 +201,7 @@ com.portfolio.app:style/Base.TextAppearance.AppCompat = 0x7f0e000f
 com.portfolio.app:style/Base.DialogWindowTitleBackground.AppCompat = 0x7f0e000e
 com.portfolio.app:style/Base.DialogWindowTitle.AppCompat = 0x7f0e000d
 com.portfolio.app:style/Base.Animation.AppCompat.Tooltip = 0x7f0e000c
+com.portfolio.app:xml/network_security_config = 0x7f100002
 com.portfolio.app:style/Base.Widget.AppCompat.DrawerArrowToggle = 0x7f0e0083
 com.portfolio.app:style/Base.Animation.AppCompat.Dialog = 0x7f0e000a
 com.portfolio.app:style/Base.AlertDialog.AppCompat = 0x7f0e0008

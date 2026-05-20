@@ -100,6 +100,10 @@
         "source": "com.portfolio.app-main-30:/drawable/splash.png"
     },
     {
+        "merged": "com.portfolio.app-debug-28:/xml_network_security_config.xml.flat",
+        "source": "com.portfolio.app-main-30:/xml/network_security_config.xml"
+    },
+    {
         "merged": "com.portfolio.app-debug-28:/xml_file_paths.xml.flat",
         "source": "com.portfolio.app-main-30:/xml/file_paths.xml"
     },
