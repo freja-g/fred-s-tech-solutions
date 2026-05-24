@@ -13,7 +13,7 @@ type Msg = {
   id: string;
   customer_id: string;
   sender_id: string;
-  sender_role: "admin" | "customer";
+  sender_role: "admin" | "customer" | "technician";
   body: string;
   created_at: string;
 };
@@ -27,7 +27,7 @@ type Conversation = {
 };
 
 const AdminMessagesPage = () => {
-  const { user, loading, isAdmin } = useAuth();
+  const { user, loading, isAdmin, isTechnician } = useAuth();
   const nav = useNavigate();
   const { toast } = useToast();
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -36,10 +36,12 @@ const AdminMessagesPage = () => {
   const [text, setText] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
 
+  const hasAccess = isAdmin || isTechnician;
+
   useEffect(() => {
     if (!loading && !user) nav("/auth");
-    if (!loading && user && !isAdmin) nav("/messages");
-  }, [user, loading, isAdmin, nav]);
+    if (!loading && user && !hasAccess) nav("/messages");
+  }, [user, loading, hasAccess, nav]);
 
   const loadConversations = async () => {
     const { data: msgs } = await supabase
@@ -72,7 +74,7 @@ const AdminMessagesPage = () => {
   };
 
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!hasAccess) return;
     loadConversations();
     const channel = supabase
       .channel("admin-msgs")
@@ -88,7 +90,7 @@ const AdminMessagesPage = () => {
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [isAdmin, activeId, toast]);
+  }, [hasAccess, activeId, toast]);
 
   useEffect(() => {
     if (!activeId) return;
@@ -107,18 +109,20 @@ const AdminMessagesPage = () => {
     const { error } = await supabase.from("messages").insert({
       customer_id: activeId,
       sender_id: user.id,
-      sender_role: "admin",
+      sender_role: isAdmin ? "admin" : "technician",
       body: text.trim(),
     });
     if (error) toast({ title: "Failed", description: error.message, variant: "destructive" });
     else setText("");
   };
 
+  if (loading) return null;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 pt-24 pb-12 container max-w-6xl">
-        <h1 className="text-2xl font-semibold mb-6">Admin Inbox</h1>
+        <h1 className="text-2xl font-semibold mb-6">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
         <div className="grid md:grid-cols-3 gap-4 h-[70vh]">
           <div className="bg-card border border-border rounded-xl overflow-y-auto">
             <p className="text-xs uppercase font-medium text-muted-foreground p-3 border-b border-border">
@@ -150,14 +154,17 @@ const AdminMessagesPage = () => {
               <>
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   {messages.map((m) => (
-                    <div key={m.id} className={`flex ${m.sender_role === "admin" ? "justify-end" : "justify-start"}`}>
+                    <div key={m.id} className={`flex ${m.sender_role !== "customer" ? "justify-end" : "justify-start"}`}>
                       <div className={`max-w-[75%] rounded-lg px-4 py-2 text-sm ${
-                        m.sender_role === "admin"
+                        m.sender_role !== "customer"
                           ? "bg-accent text-accent-foreground"
                           : "bg-secondary text-secondary-foreground"
                       }`}>
+                        <div className="flex justify-between items-center gap-4 mb-1">
+                          <span className="text-[10px] font-bold uppercase">{m.sender_role}</span>
+                          <span className="text-[10px] opacity-70">{new Date(m.created_at).toLocaleString()}</span>
+                        </div>
                         <p className="whitespace-pre-wrap">{m.body}</p>
-                        <p className="text-[10px] opacity-70 mt-1">{new Date(m.created_at).toLocaleString()}</p>
                       </div>
                     </div>
                   ))}

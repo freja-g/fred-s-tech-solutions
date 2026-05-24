@@ -9,34 +9,50 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const schema = z.object({
   email: z.string().trim().email().max(255),
   password: z.string().min(6).max(100),
   displayName: z.string().trim().min(1).max(80).optional(),
+  role: z.enum(["customer", "technician"]),
 });
 
 const AuthPage = () => {
-  const { user } = useAuth();
+  const { user, isAdmin, isTechnician, loading } = useAuth();
   const nav = useNavigate();
   const { toast } = useToast();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [role, setRole] = useState<"customer" | "technician">("customer");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (user) nav("/messages", { replace: true });
-  }, [user, nav]);
+    if (!loading && user) {
+      if (isAdmin || isTechnician) {
+        nav("/admin/messages", { replace: true });
+      } else {
+        nav("/messages", { replace: true });
+      }
+    }
+  }, [user, isAdmin, isTechnician, loading, nav]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = schema.safeParse({ email, password, displayName: mode === "signup" ? displayName : undefined });
+    const parsed = schema.safeParse({
+      email,
+      password,
+      displayName: mode === "signup" ? displayName : undefined,
+      role: mode === "signup" ? role : "customer"
+    });
+
     if (!parsed.success) {
       toast({ title: "Invalid input", description: parsed.error.issues[0].message, variant: "destructive" });
       return;
     }
+
     setBusy(true);
     try {
       if (mode === "signup") {
@@ -45,16 +61,19 @@ const AuthPage = () => {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/messages`,
-            data: { display_name: displayName },
+            data: {
+              display_name: displayName,
+              role: role
+            },
           },
         });
         if (error) throw error;
-        toast({ title: "Welcome!", description: "Your account is ready." });
-        nav("/messages");
+        toast({ title: "Welcome!", description: "Your account is ready. Please check your email for a verification link if required." });
+        // Redirection will be handled by useEffect once session is established
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        nav("/messages");
+        // Redirection will be handled by useEffect once roles are loaded
       }
     } catch (err: any) {
       toast({ title: "Authentication error", description: err.message, variant: "destructive" });
@@ -62,6 +81,17 @@ const AuthPage = () => {
       setBusy(false);
     }
   };
+
+  if (loading && user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -73,15 +103,30 @@ const AuthPage = () => {
           </h1>
           <p className="text-sm text-muted-foreground mb-6">
             {mode === "signin"
-              ? "Sign in to message us and leave reviews."
-              : "Sign up to chat with us and submit reviews."}
+              ? "Sign in to access your dashboard."
+              : "Sign up to get started with our services."}
           </p>
           <form onSubmit={onSubmit} className="space-y-4">
             {mode === "signup" && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Your name</Label>
-                <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Your name</Label>
+                  <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required />
+                </div>
+                <div className="space-y-3">
+                  <Label>I am a:</Label>
+                  <RadioGroup value={role} onValueChange={(v: any) => setRole(v)} className="flex gap-4">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="customer" id="customer" />
+                      <Label htmlFor="customer" className="font-normal cursor-pointer">User / Customer</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="technician" id="technician" />
+                      <Label htmlFor="technician" className="font-normal cursor-pointer">Technician</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

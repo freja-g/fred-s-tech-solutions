@@ -20,29 +20,33 @@ type Review = {
 };
 
 const AdminReviewsPage = () => {
-  const { user, loading, isAdmin } = useAuth();
+  const { user, loading, isAdmin, isTechnician } = useAuth();
   const nav = useNavigate();
   const { toast } = useToast();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected">("pending");
 
+  const hasAccess = isAdmin || isTechnician;
+
   useEffect(() => {
     if (!loading && !user) nav("/auth");
-    if (!loading && user && !isAdmin) nav("/");
-  }, [user, loading, isAdmin, nav]);
+    if (!loading && user && !hasAccess) nav("/");
+  }, [user, loading, hasAccess, nav]);
 
   const load = () => {
     supabase.from("reviews").select("*").eq("status", filter).order("created_at", { ascending: false })
       .then(({ data }) => setReviews((data as Review[]) ?? []));
   };
 
-  useEffect(() => { if (isAdmin) load(); }, [isAdmin, filter]);
+  useEffect(() => { if (hasAccess) load(); }, [hasAccess, filter]);
 
   const setStatus = async (id: string, status: "approved" | "rejected") => {
     const { error } = await supabase.from("reviews").update({ status }).eq("id", id);
     if (error) toast({ title: "Failed", variant: "destructive" });
     else { toast({ title: `Review ${status}` }); load(); }
   };
+
+  if (loading) return null;
 
   return (
     <div className="min-h-screen">
