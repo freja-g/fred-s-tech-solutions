@@ -13,13 +13,13 @@ type Msg = {
   id: string;
   customer_id: string;
   sender_id: string;
-  sender_role: "admin" | "customer";
+  sender_role: "admin" | "customer" | "technician";
   body: string;
   created_at: string;
 };
 
 const MessagesPage = () => {
-  const { user, loading, isAdmin } = useAuth();
+  const { user, loading, isAdmin, isTechnician } = useAuth();
   const nav = useNavigate();
   const { toast } = useToast();
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -27,13 +27,15 @@ const MessagesPage = () => {
   const [sending, setSending] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!loading && !user) nav("/auth");
-    if (!loading && user && isAdmin) nav("/admin/messages");
-  }, [user, loading, isAdmin, nav]);
+  const isStaff = isAdmin || isTechnician;
 
   useEffect(() => {
-    if (!user || isAdmin) return;
+    if (!loading && !user) nav("/auth");
+    if (!loading && user && isStaff) nav("/admin/messages");
+  }, [user, loading, isStaff, nav]);
+
+  useEffect(() => {
+    if (!user || isStaff) return;
     supabase
       .from("messages")
       .select("*")
@@ -48,7 +50,7 @@ const MessagesPage = () => {
         { event: "INSERT", schema: "public", table: "messages", filter: `customer_id=eq.${user.id}` },
         (payload) => {
           setMessages((prev) => [...prev, payload.new as Msg]);
-          if ((payload.new as Msg).sender_role === "admin") {
+          if ((payload.new as Msg).sender_role !== "customer") {
             toast({ title: "New message from support" });
           }
         }
@@ -56,7 +58,7 @@ const MessagesPage = () => {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [user, isAdmin, toast]);
+  }, [user, isStaff, toast]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -78,6 +80,8 @@ const MessagesPage = () => {
       setText("");
     }
   };
+
+  if (loading) return null;
 
   return (
     <div className="min-h-screen flex flex-col">

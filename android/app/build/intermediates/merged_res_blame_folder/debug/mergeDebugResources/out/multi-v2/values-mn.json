@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.portfolio.app-mergeDebugResources-26:/values-mn/values-mn.xml",
+            "outputFile": "com.portfolio.app-mergeDebugResources-25:/values-mn/values-mn.xml",
             "map": [
                 {
                     "source": "C:\\Users\\ADMIN\\.gradle\\caches\\9.4.1\\transforms\\b2cc0eedad81e947ced14c409d6e74b4\\transformed\\appcompat-1.7.1\\res\\values-mn\\values-mn.xml",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\ADMIN\\.gradle\\caches\\9.4.1\\transforms\\82c023913065eeb7018ba67073edda67\\transformed\\core-1.17.0\\res\\values-mn\\values-mn.xml",
+                    "source": "C:\\Users\\ADMIN\\.gradle\\caches\\9.4.1\\transforms\\cb2fb04f9b8f14df5899f24eb9860142\\transformed\\core-1.15.0\\res\\values-mn\\values-mn.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

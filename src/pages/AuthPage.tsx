@@ -11,6 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
+// Determine if we are in Tech App mode via environment variable
+const APP_TYPE = import.meta.env.VITE_APP_TYPE || "user"; // "user" or "tech"
+
 const schema = z.object({
   email: z.string().trim().email().max(255),
   password: z.string().min(6).max(100),
@@ -26,7 +29,12 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [role, setRole] = useState<"customer" | "technician">("customer");
+
+  // Default role depends on the App Type
+  const [role, setRole] = useState<"customer" | "technician">(
+    APP_TYPE === "tech" ? "technician" : "customer"
+  );
+
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -41,11 +49,15 @@ const AuthPage = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // In Tech app, we force technician role. In User app, we allow selection (or default to customer)
+    const finalRole = APP_TYPE === "tech" ? "technician" : role;
+
     const parsed = schema.safeParse({
       email,
       password,
       displayName: mode === "signup" ? displayName : undefined,
-      role: mode === "signup" ? role : "customer"
+      role: mode === "signup" ? finalRole : "customer"
     });
 
     if (!parsed.success) {
@@ -63,17 +75,15 @@ const AuthPage = () => {
             emailRedirectTo: `${window.location.origin}/messages`,
             data: {
               display_name: displayName,
-              role: role
+              role: finalRole
             },
           },
         });
         if (error) throw error;
-        toast({ title: "Welcome!", description: "Your account is ready. Please check your email for a verification link if required." });
-        // Redirection will be handled by useEffect once session is established
+        toast({ title: "Welcome!", description: "Your account is ready." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        // Redirection will be handled by useEffect once roles are loaded
       }
     } catch (err: any) {
       toast({ title: "Authentication error", description: err.message, variant: "destructive" });
@@ -99,12 +109,14 @@ const AuthPage = () => {
       <main className="pt-24 pb-16 container max-w-md">
         <div className="bg-card border border-border rounded-xl p-8">
           <h1 className="text-2xl font-semibold mb-2">
-            {mode === "signin" ? "Sign in" : "Create your account"}
+            {APP_TYPE === "tech" ? "Staff Login" : mode === "signin" ? "Sign in" : "Create your account"}
           </h1>
           <p className="text-sm text-muted-foreground mb-6">
-            {mode === "signin"
-              ? "Sign in to access your dashboard."
-              : "Sign up to get started with our services."}
+            {APP_TYPE === "tech"
+              ? "Access the technician portal to manage conversations."
+              : mode === "signin"
+                ? "Sign in to access your dashboard."
+                : "Sign up to get started with our services."}
           </p>
           <form onSubmit={onSubmit} className="space-y-4">
             {mode === "signup" && (
@@ -113,19 +125,23 @@ const AuthPage = () => {
                   <Label htmlFor="name">Your name</Label>
                   <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required />
                 </div>
-                <div className="space-y-3">
-                  <Label>I am a:</Label>
-                  <RadioGroup value={role} onValueChange={(v: any) => setRole(v)} className="flex gap-4">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="customer" id="customer" />
-                      <Label htmlFor="customer" className="font-normal cursor-pointer">User / Customer</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="technician" id="technician" />
-                      <Label htmlFor="technician" className="font-normal cursor-pointer">Technician</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+
+                {/* Only show role selector if we are NOT in the dedicated tech app */}
+                {APP_TYPE !== "tech" && (
+                  <div className="space-y-3">
+                    <Label>I am a:</Label>
+                    <RadioGroup value={role} onValueChange={(v: any) => setRole(v)} className="flex gap-4">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="customer" id="customer" />
+                        <Label htmlFor="customer" className="font-normal cursor-pointer">User / Customer</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="technician" id="technician" />
+                        <Label htmlFor="technician" className="font-normal cursor-pointer">Technician</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                )}
               </>
             )}
             <div className="space-y-2">
