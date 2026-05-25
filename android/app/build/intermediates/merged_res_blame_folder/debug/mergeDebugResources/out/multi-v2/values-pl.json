@@ -4,7 +4,7 @@
             "outputFile": "com.portfolio.app-mergeDebugResources-25:/values-pl/values-pl.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\ADMIN\\.gradle\\caches\\9.4.1\\transforms\\b2cc0eedad81e947ced14c409d6e74b4\\transformed\\appcompat-1.7.1\\res\\values-pl\\values-pl.xml",
+                    "source": "C:\\Users\\ADMIN\\.gradle\\caches\\8.14.3\\transforms\\c3f09e8abd8bb01c9314454bd06bb337\\transformed\\appcompat-1.7.1\\res\\values-pl\\values-pl.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\ADMIN\\.gradle\\caches\\9.4.1\\transforms\\cb2fb04f9b8f14df5899f24eb9860142\\transformed\\core-1.15.0\\res\\values-pl\\values-pl.xml",
+                    "source": "C:\\Users\\ADMIN\\.gradle\\caches\\8.14.3\\transforms\\d7097b7d505fb74cc752fd47daa4b0a6\\transformed\\core-1.15.0\\res\\values-pl\\values-pl.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

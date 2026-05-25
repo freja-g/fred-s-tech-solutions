@@ -3,8 +3,6 @@ local
 color ic_launcher_background
 drawable ic_launcher_background
 drawable ic_launcher_foreground
-drawable ic_launcher_playstore
-drawable ic_logo
 drawable splash
 layout activity_main
 mipmap ic_launcher

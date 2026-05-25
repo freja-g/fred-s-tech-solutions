@@ -5,7 +5,8 @@ import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, LogOut, Mail, User as UserIcon, Calendar, Shield, Inbox, MessageCircle, Star } from "lucide-react";
+import { CheckCircle2, LogOut, Mail, User as UserIcon, Calendar, Shield, Inbox, MessageCircle, Star, Settings, FileText, Camera as CameraIcon } from "lucide-react";
+import { uploadImage } from "@/lib/storage";
 
 type Profile = { display_name: string | null; email: string | null; created_at: string };
 type MsgRow = { id: string; body: string; created_at: string; sender_role: string };
@@ -18,6 +19,23 @@ const ProfilePage = () => {
   const [totalMessages, setTotalMessages] = useState(0);
 
   const isStaff = isAdmin || isTechnician;
+
+  const handleAvatarUpload = async () => {
+    if (!user) return;
+    const url = await uploadImage("avatars", `profiles/${user.id}`);
+    if (url) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ avatar_url: url })
+        .eq("user_id", user.id);
+
+      if (error) toast({ title: "Update failed", description: error.message, variant: "destructive" });
+      else {
+        setProfile(prev => prev ? { ...prev, avatar_url: url } : null);
+        toast({ title: "Success", description: "Profile picture updated" });
+      }
+    }
+  };
 
   useEffect(() => {
     if (!loading && !user) nav("/auth");
@@ -60,8 +78,20 @@ const ProfilePage = () => {
           {/* Account card */}
           <section className="bg-card border border-border rounded-xl p-6 shadow-card">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 rounded-full bg-accent/15 text-accent flex items-center justify-center text-2xl font-semibold">
-                {(profile?.display_name || user.email || "U").charAt(0).toUpperCase()}
+              <div className="relative group">
+                <div className="w-16 h-16 rounded-full bg-accent/15 text-accent flex items-center justify-center text-2xl font-semibold overflow-hidden">
+                  {(profile as any)?.avatar_url ? (
+                    <img src={(profile as any).avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    (profile?.display_name || user.email || "U").charAt(0).toUpperCase()
+                  )}
+                </div>
+                <button
+                  onClick={handleAvatarUpload}
+                  className="absolute bottom-0 right-0 p-1 bg-accent text-accent-foreground rounded-full shadow-lg border-2 border-card"
+                >
+                  <CameraIcon size={12} />
+                </button>
               </div>
               <div className="flex-1 min-w-0">
                 <h1 className="text-xl font-semibold truncate">
@@ -178,6 +208,12 @@ const ProfilePage = () => {
                 </Button>
                 <Button variant="outline" onClick={() => nav("/admin/reviews")} className="justify-start">
                   <Star size={16} className="mr-2" /> Moderate Reviews
+                </Button>
+                <Button variant="outline" onClick={() => nav("/admin/content")} className="justify-start">
+                  <Settings size={16} className="mr-2" /> Manage Content
+                </Button>
+                <Button variant="outline" onClick={() => nav("/admin/consultations")} className="justify-start">
+                  <FileText size={16} className="mr-2" /> Consultations
                 </Button>
               </div>
             </section>
