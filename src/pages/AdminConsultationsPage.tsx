@@ -82,8 +82,14 @@ const AdminConsultationsPage = () => {
                 {c.attachment_urls && c.attachment_urls.length > 0 && (
                   <div className="flex gap-2">
                     {c.attachment_urls.map((url: string, i: number) => (
-                      <a key={i} href={url} target="_blank" rel="noreferrer" className="block w-16 h-16 rounded border overflow-hidden bg-secondary hover:opacity-80 transition-opacity">
-                        <img src={url} alt="Attachment" className="w-full h-full object-cover" />
+                      <a key={i} href={url} target="_blank" rel="noreferrer" className="block w-20 h-20 rounded border overflow-hidden bg-secondary hover:opacity-80 transition-opacity">
+                        {url.includes('.mp4') ? (
+                          <div className="w-full h-full flex items-center justify-center bg-black/10">
+                            <ImageIcon size={20} className="text-muted-foreground" />
+                          </div>
+                        ) : (
+                          <img src={url} alt="Attachment" className="w-full h-full object-cover" />
+                        )}
                       </a>
                     ))}
                   </div>
