@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
-import { initPush } from "@/lib/push";
+// import { initPush } from "@/lib/push";
 import { useEffect } from "react";
 import HomePage from "./pages/HomePage";
 import ServicesPage from "./pages/ServicesPage";
@@ -26,7 +26,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    initPush();
+    // initPush();
   }, []);
 
   return (
