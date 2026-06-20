@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as supabaseClient } from "@/integrations/supabase/client";
+const supabase = supabaseClient as any;
 import { useAuth } from "@/hooks/useAuth";
 
 const ICONS: Record<string, any> = { Settings, Wrench, BarChart3, Briefcase };
