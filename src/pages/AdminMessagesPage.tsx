@@ -5,7 +5,8 @@ import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as _sb } from "@/integrations/supabase/client";
+const supabase: any = _sb;
 import { useToast } from "@/hooks/use-toast";
 import { Send } from "lucide-react";
 
