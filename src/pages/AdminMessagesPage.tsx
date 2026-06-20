@@ -118,41 +118,59 @@ const AdminMessagesPage = () => {
 
   if (loading) return null;
 
+  const activeConversation = conversations.find((c) => c.customer_id === activeId);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 pt-24 pb-12 container max-w-6xl">
         <h1 className="text-2xl font-semibold mb-6">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
-        <div className="grid md:grid-cols-3 gap-4 h-[70vh]">
-          <div className="bg-card border border-border rounded-xl overflow-y-auto">
-            <p className="text-xs uppercase font-medium text-muted-foreground p-3 border-b border-border">
+        <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-12rem)] min-h-[500px]">
+          <div className={`bg-card border border-border rounded-xl overflow-y-auto flex flex-col ${activeId ? "hidden md:flex" : "flex"}`}>
+            <p className="text-xs uppercase font-medium text-muted-foreground p-3 border-b border-border sticky top-0 bg-card z-10">
               Conversations ({conversations.length})
             </p>
             {conversations.length === 0 && (
               <p className="text-sm text-muted-foreground p-4">No customer messages yet.</p>
             )}
-            {conversations.map((c) => (
-              <button
-                key={c.customer_id}
-                onClick={() => setActiveId(c.customer_id)}
-                className={`w-full text-left p-3 border-b border-border hover:bg-secondary/50 transition-colors ${
-                  activeId === c.customer_id ? "bg-secondary" : ""
-                }`}
-              >
-                <p className="font-medium text-sm">{c.display_name}</p>
-                <p className="text-xs text-muted-foreground truncate">{c.email}</p>
-                <p className="text-xs text-muted-foreground truncate mt-1">{c.last_message}</p>
-              </button>
-            ))}
+            <div className="flex-1">
+              {conversations.map((c) => (
+                <button
+                  key={c.customer_id}
+                  onClick={() => setActiveId(c.customer_id)}
+                  className={`w-full text-left p-3 border-b border-border hover:bg-secondary/50 transition-colors ${
+                    activeId === c.customer_id ? "bg-secondary" : ""
+                  }`}
+                >
+                  <p className="font-medium text-sm truncate">{c.display_name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{c.email}</p>
+                  <p className="text-xs text-muted-foreground truncate mt-1">{c.last_message}</p>
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="md:col-span-2 bg-card border border-border rounded-xl flex flex-col">
+          <div className={`md:col-span-2 bg-card border border-border rounded-xl flex-col min-h-0 ${activeId ? "flex" : "hidden md:flex"}`}>
             {!activeId ? (
               <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
                 Select a conversation
               </div>
             ) : (
               <>
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                <div className="border-b border-border p-3 flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="md:hidden"
+                    onClick={() => setActiveId(null)}
+                  >
+                    ← Back
+                  </Button>
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm truncate">{activeConversation?.display_name ?? "Customer"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{activeConversation?.email}</p>
+                  </div>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
                   {messages.map((m) => (
                     <div key={m.id} className={`flex ${m.sender_role !== "customer" ? "justify-end" : "justify-start"}`}>
                       <div className={`max-w-[75%] rounded-lg px-4 py-2 text-sm ${
@@ -161,7 +179,11 @@ const AdminMessagesPage = () => {
                           : "bg-secondary text-secondary-foreground"
                       }`}>
                         <div className="flex justify-between items-center gap-4 mb-1">
-                          <span className="text-[10px] font-bold uppercase">{m.sender_role}</span>
+                          <span className="text-[10px] font-bold uppercase">
+                            {m.sender_role === "customer"
+                              ? (activeConversation?.display_name ?? "Customer")
+                              : m.sender_role}
+                          </span>
                           <span className="text-[10px] opacity-70">{new Date(m.created_at).toLocaleString()}</span>
                         </div>
                         <p className="whitespace-pre-wrap">{m.body}</p>
