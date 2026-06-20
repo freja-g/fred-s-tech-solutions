@@ -62,7 +62,7 @@ const AdminMessagesPage = () => {
       .in("user_id", ids);
     const byId = new Map((profiles ?? []).map((p: any) => [p.user_id, p]));
     setConversations(ids.map((id) => {
-      const p = byId.get(id);
+      const p: any = byId.get(id);
       const last = seen.get(id)!;
       return {
         customer_id: id,
