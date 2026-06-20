@@ -35,8 +35,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .eq("user_id", userId);
 
       if (roles) {
-        setIsAdmin(roles.some(r => r.role === "admin"));
-        setIsTechnician(roles.some(r => r.role === "technician"));
+        setIsAdmin(roles.some(r => (r.role as string) === "admin"));
+        setIsTechnician(roles.some(r => (r.role as string) === "technician"));
       } else {
         setIsAdmin(false);
         setIsTechnician(false);
