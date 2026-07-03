@@ -9,7 +9,7 @@
     "build:tech": "vite build --mode tech --outDir dist-tech",
     "build:dev": "vite build --mode development",
     "sync:user": "npm run build && npx cap sync android",
-    "sync:tech": "npm run build:tech && npx cap sync android-tech",
+    "sync:tech": "node scripts/sync-tech.cjs",
     "generate:icons": "npx @capacitor/assets generate --android --assetPath assets/user --androidProject android && npx @capacitor/assets generate --android --assetPath assets/tech --androidProject android-tech",
     "lint": "eslint .",
     "preview": "vite preview"

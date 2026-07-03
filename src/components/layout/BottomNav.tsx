@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Briefcase, Lightbulb, MessageCircle, User } from "lucide-react";
+import { Home, Briefcase, Lightbulb, MessageCircle, User, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -14,7 +14,6 @@ const BottomNav = () => {
   const items = [
     { to: "/", label: "Home", icon: Home, match: (p: string) => p === "/", badge: 0 },
     { to: "/services", label: "Services", icon: Briefcase, match: (p: string) => p.startsWith("/services"), badge: 0 },
-    { to: "/get-smart", label: "Get Smart", icon: Lightbulb, match: (p: string) => p.startsWith("/get-smart"), badge: 0 },
     {
       to: isStaff ? "/admin/messages" : "/messages",
       label: "Chat",
@@ -22,7 +21,16 @@ const BottomNav = () => {
       match: (p: string) => p.startsWith("/messages") || p.startsWith("/admin/messages"),
       badge: unread,
     },
-    { to: "/profile", label: "Profile", icon: User, match: (p: string) => p.startsWith("/profile") || p.startsWith("/auth"), badge: 0 },
+    ...(isStaff ? [{
+      to: "/profile",
+      label: "Admin",
+      icon: Shield,
+      match: (p: string) => p.startsWith("/admin") && !p.startsWith("/admin/messages"),
+      badge: 0
+    }] : [
+      { to: "/get-smart", label: "Get Smart", icon: Lightbulb, match: (p: string) => p.startsWith("/get-smart"), badge: 0 }
+    ]),
+    { to: "/profile", label: "Profile", icon: User, match: (p: string) => (p.startsWith("/profile") || p.startsWith("/auth")) && !p.startsWith("/admin"), badge: 0 },
   ];
 
   return (

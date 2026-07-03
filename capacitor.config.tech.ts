@@ -8,6 +8,9 @@ const config: CapacitorConfig = {
     androidScheme: 'https',
     iosScheme: 'capacitor'
   },
+  android: {
+    path: 'android-tech'
+  },
   plugins: {
     CapacitorHttp: {
       enabled: true
