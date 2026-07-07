@@ -161,30 +161,11 @@ const AuthPage = () => {
                 : "Sign up to get started with our services."}
           </p>
           <form onSubmit={onSubmit} className="space-y-4">
-            {mode === "signup" && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="name">Your name</Label>
-                  <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required />
-                </div>
-
-                {/* Only show role selector if we are NOT in the dedicated tech app */}
-                {APP_TYPE !== "tech" && (
-                  <div className="space-y-3">
-                    <Label>I am a:</Label>
-                    <RadioGroup value={role} onValueChange={(v: any) => setRole(v)} className="flex gap-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="customer" id="customer" />
-                        <Label htmlFor="customer" className="font-normal cursor-pointer">User / Customer</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="technician" id="technician" />
-                        <Label htmlFor="technician" className="font-normal cursor-pointer">Technician</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                )}
-              </>
+            {mode === "signup" && APP_TYPE !== "tech" && (
+              <div className="space-y-2">
+                <Label htmlFor="name">Your name</Label>
+                <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required />
+              </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -198,12 +179,15 @@ const AuthPage = () => {
               {busy ? "Please wait..." : mode === "signin" ? "Sign in" : "Sign up"}
             </Button>
           </form>
-          <button
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-            className="mt-4 text-sm text-accent hover:underline w-full text-center"
-          >
-            {mode === "signin" ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-          </button>
+          {APP_TYPE !== "tech" && (
+            <button
+              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              className="mt-4 text-sm text-accent hover:underline w-full text-center"
+            >
+              {mode === "signin" ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+            </button>
+          )}
+
           <p className="text-xs text-muted-foreground text-center mt-4">
             <Link to="/" className="hover:text-accent">Back to home</Link>
           </p>
