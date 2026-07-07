@@ -50,14 +50,25 @@ const AuthPage = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // In Tech app, we force technician role. In User app, we allow selection (or default to customer)
-    const finalRole = APP_TYPE === "tech" ? "technician" : role;
+    // WIGA STAFF: staff accounts are provisioned by admins, self-signup is disabled.
+    if (APP_TYPE === "tech" && mode === "signup") {
+      toast({
+        title: "Sign-up disabled",
+        description: "Staff accounts are created by an administrator. Please sign in.",
+        variant: "destructive",
+      });
+      setMode("signin");
+      return;
+    }
+
+    // WIGA TECH always creates customer accounts; role selector removed from schema check.
+    const finalRole: "customer" | "technician" = "customer";
 
     const parsed = schema.safeParse({
       email,
       password,
       displayName: mode === "signup" ? displayName : undefined,
-      role: mode === "signup" ? finalRole : "customer"
+      role: finalRole,
     });
 
     if (!parsed.success) {
@@ -75,15 +86,45 @@ const AuthPage = () => {
             emailRedirectTo: `${window.location.origin}/messages`,
             data: {
               display_name: displayName,
-              role: finalRole
+              role: "customer",
             },
           },
         });
         if (error) throw error;
         toast({ title: "Welcome!", description: "Your account is ready." });
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+
+        // Enforce which app each role can sign into.
+        const uid = data.user?.id;
+        if (uid) {
+          const { data: roleRows } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", uid);
+          const roles = (roleRows ?? []).map((r: any) => r.role as string);
+          const isStaff = roles.includes("admin") || roles.includes("technician");
+
+          if (APP_TYPE === "tech" && !isStaff) {
+            await supabase.auth.signOut();
+            toast({
+              title: "Access denied",
+              description: "This account is not a staff account. Please use the WIGA TECH app.",
+              variant: "destructive",
+            });
+            return;
+          }
+          if (APP_TYPE !== "tech" && isStaff) {
+            await supabase.auth.signOut();
+            toast({
+              title: "Staff accounts only sign in on WIGA STAFF",
+              description: "Please open the WIGA STAFF app to access the admin portal.",
+              variant: "destructive",
+            });
+            return;
+          }
+        }
       }
     } catch (err: any) {
       toast({ title: "Authentication error", description: err.message, variant: "destructive" });
@@ -91,6 +132,7 @@ const AuthPage = () => {
       setBusy(false);
     }
   };
+
 
   if (loading && user) {
     return (
@@ -119,30 +161,11 @@ const AuthPage = () => {
                 : "Sign up to get started with our services."}
           </p>
           <form onSubmit={onSubmit} className="space-y-4">
-            {mode === "signup" && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="name">Your name</Label>
-                  <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required />
-                </div>
-
-                {/* Only show role selector if we are NOT in the dedicated tech app */}
-                {APP_TYPE !== "tech" && (
-                  <div className="space-y-3">
-                    <Label>I am a:</Label>
-                    <RadioGroup value={role} onValueChange={(v: any) => setRole(v)} className="flex gap-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="customer" id="customer" />
-                        <Label htmlFor="customer" className="font-normal cursor-pointer">User / Customer</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="technician" id="technician" />
-                        <Label htmlFor="technician" className="font-normal cursor-pointer">Technician</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                )}
-              </>
+            {mode === "signup" && APP_TYPE !== "tech" && (
+              <div className="space-y-2">
+                <Label htmlFor="name">Your name</Label>
+                <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={80} required />
+              </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -156,12 +179,15 @@ const AuthPage = () => {
               {busy ? "Please wait..." : mode === "signin" ? "Sign in" : "Sign up"}
             </Button>
           </form>
-          <button
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-            className="mt-4 text-sm text-accent hover:underline w-full text-center"
-          >
-            {mode === "signin" ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-          </button>
+          {APP_TYPE !== "tech" && (
+            <button
+              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              className="mt-4 text-sm text-accent hover:underline w-full text-center"
+            >
+              {mode === "signin" ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+            </button>
+          )}
+
           <p className="text-xs text-muted-foreground text-center mt-4">
             <Link to="/" className="hover:text-accent">Back to home</Link>
           </p>
