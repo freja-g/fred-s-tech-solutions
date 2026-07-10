@@ -32,7 +32,7 @@ const ProfilePage = () => {
 
   const handleMediaUpload = async () => {
     if (!user) return;
-    const url = await captureAndUploadImage("avatars", `profiles/${user.id}`);
+    const url = await uploadMedia("attachments", `avatars/${user.id}`, "image");
     if (url) {
       const { error } = await supabase
         .from("profiles")
