@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 
 const AdminConsultationsPage = () => {
   const { user, isAdmin, isTechnician } = useAuth();
+  const nav = useNavigate();
   const { toast } = useToast();
   const [consultations, setConsultations] = useState<any[]>([]);
 
