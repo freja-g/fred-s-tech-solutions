@@ -32,18 +32,27 @@ const AdminConsultationsPage = () => {
     if (isStaff) fetchConsultations();
   }, [isStaff]);
 
-  const handleAccept = async (id: string) => {
+  const handleUpdateStatus = async (id: string, status: string, extra: Record<string, any> = {}) => {
     const { error } = await supabase
       .from("consultations")
-      .update({ status: "accepted", technician_id: user?.id })
+      .update({ status, ...extra })
       .eq("id", id);
 
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
-      toast({ title: "Consultation Accepted", description: "You are now assigned to this request." });
+      const label =
+        status === "accepted" ? "Accepted — you are assigned to this request." :
+        status === "in_progress" ? "Marked as in progress." :
+        status === "resolved" ? "Marked as resolved. 🎉" :
+        status === "completed" ? "Marked as completed." :
+        "Updated.";
+      toast({ title: "Consultation updated", description: label });
       fetchConsultations();
     }
   };
+
+  const handleAccept = (id: string) =>
+    handleUpdateStatus(id, "accepted", { technician_id: user?.id });
 
   if (!isStaff) return null;
 
