@@ -4,57 +4,76 @@ import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
-export const uploadMedia = async (bucket: string, path: string, type: 'image' | 'video' | 'any' = 'image') => {
-  try {
-    // For large files and videos, using a standard input is often more reliable in hybrid apps
-    // than converting to base64, which can crash the UI thread for 50MB files.
+const sanitize = (name: string) =>
+  name.replace(/[^a-zA-Z0-9._-]/g, "_").replace(/_+/g, "_");
 
-    return new Promise<string | null>((resolve) => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = type === 'image' ? 'image/*' : type === 'video' ? 'video/*' : 'image/*,video/*';
+export const uploadMedia = (
+  bucket: string,
+  path: string,
+  type: 'image' | 'video' | 'any' = 'image'
+): Promise<string | null> => {
+  return new Promise<string | null>((resolve) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept =
+      type === 'image' ? 'image/*' : type === 'video' ? 'video/*' : 'image/*,video/*';
+    // Attach to DOM — some Android WebViews ignore .click() on detached inputs.
+    input.style.position = 'fixed';
+    input.style.left = '-9999px';
+    document.body.appendChild(input);
 
-      input.onchange = async (e: any) => {
-        const file = e.target.files[0];
-        if (!file) {
-          resolve(null);
-          return;
-        }
+    let done = false;
+    const finish = (url: string | null) => {
+      if (done) return;
+      done = true;
+      try { document.body.removeChild(input); } catch {}
+      resolve(url);
+    };
 
-        if (file.size > MAX_FILE_SIZE) {
-          alert("File is too large. Maximum size is 50MB.");
-          resolve(null);
-          return;
-        }
+    input.onchange = async (e: any) => {
+      const file: File | undefined = e.target.files?.[0];
+      if (!file) return finish(null);
 
-        const fileName = `${path}/${Date.now()}_${file.name}`;
+      if (file.size > MAX_FILE_SIZE) {
+        alert("File is too large. Maximum size is 50MB.");
+        return finish(null);
+      }
 
-        const { data, error } = await supabase.storage
-          .from(bucket)
-          .upload(fileName, file, {
-            contentType: file.type,
-            upsert: true
-          });
+      const ext = file.name.includes('.') ? file.name.split('.').pop() : '';
+      const base = sanitize(file.name.replace(/\.[^.]+$/, '')) || 'file';
+      const fileName = `${path}/${Date.now()}_${base}${ext ? '.' + ext : ''}`;
 
-        if (error) {
-          console.error("Supabase upload error:", error);
-          resolve(null);
-          return;
-        }
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, {
+          contentType: file.type || 'application/octet-stream',
+          upsert: true,
+        });
 
-        const { data: { publicUrl } } = supabase.storage
-          .from(bucket)
-          .getPublicUrl(data.path);
+      if (error) {
+        console.error("Storage upload error:", error);
+        alert(`Upload failed: ${error.message}`);
+        return finish(null);
+      }
 
-        resolve(publicUrl);
-      };
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(data.path);
+      finish(publicUrl);
+    };
 
-      input.click();
-    });
-  } catch (error) {
-    console.error("Upload process failed", error);
-    return null;
-  }
+    // Fallback: if the picker is cancelled we won't get a change event.
+    // Detect via focus returning to the window.
+    const onFocus = () => {
+      setTimeout(() => {
+        if (!input.files || input.files.length === 0) finish(null);
+        window.removeEventListener('focus', onFocus);
+      }, 500);
+    };
+    window.addEventListener('focus', onFocus);
+
+    input.click();
+  });
 };
 
 // Keep legacy support for simple avatar captures if needed
