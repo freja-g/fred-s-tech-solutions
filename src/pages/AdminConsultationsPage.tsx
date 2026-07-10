@@ -105,25 +105,36 @@ const AdminConsultationsPage = () => {
                   </div>
                 )}
 
-                {c.status === 'pending' && (
-                  <Button onClick={() => handleAccept(c.id)} className="w-full" variant="accent">
-                    Accept Consultation
-                  </Button>
-                )}
+                <div className="flex flex-wrap gap-2">
+                  {c.status === 'pending' && (
+                    <Button onClick={() => handleAccept(c.id)} variant="accent" className="flex-1 min-w-[180px]">
+                      Accept & Start Working
+                    </Button>
+                  )}
 
-                {c.status === 'accepted' && c.technician_id === user?.id && (
-                  <div className="flex gap-2">
-                    <Button variant="outline" className="flex-1" onClick={() => toast({ title: "Feature coming soon", description: "Full chat integration for accepted consultations is in progress." })}>
-                      Message Client
-                    </Button>
-                    <Button variant="ghost" className="flex-1" onClick={async () => {
-                      await supabase.from("consultations").update({ status: "completed" }).eq("id", c.id);
-                      fetchConsultations();
-                    }}>
-                      <CheckCircle className="mr-2" size={16} /> Mark Completed
-                    </Button>
-                  </div>
-                )}
+                  {(c.status === 'accepted' || c.status === 'in_progress') && (c.technician_id === user?.id || isAdmin) && (
+                    <>
+                      {c.status === 'accepted' && (
+                        <Button variant="outline" className="flex-1 min-w-[160px]" onClick={() => handleUpdateStatus(c.id, 'in_progress')}>
+                          Mark In Progress
+                        </Button>
+                      )}
+                      <Button variant="outline" className="flex-1 min-w-[160px]" onClick={() => nav(`/admin/messages?customer=${c.customer_id}`)}>
+                        Message Client
+                      </Button>
+                      <Button variant="accent" className="flex-1 min-w-[160px]" onClick={() => handleUpdateStatus(c.id, 'resolved', { resolved_at: new Date().toISOString() })}>
+                        <CheckCircle className="mr-2" size={16} /> Mark Resolved
+                      </Button>
+                    </>
+                  )}
+
+                  {c.status === 'resolved' && (
+                    <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground gap-2 py-2">
+                      <CheckCircle size={16} className="text-accent" /> Resolved
+                      {c.resolved_at && ` on ${new Date(c.resolved_at).toLocaleDateString()}`}
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           ))}
