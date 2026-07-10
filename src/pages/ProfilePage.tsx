@@ -11,7 +11,7 @@ import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, LogOut, Mail, User as UserIcon, Calendar, Shield, MessageCircle, Star, Settings, FileText, Camera as CameraIcon, Key, Save } from "lucide-react";
-import { captureAndUploadImage } from "@/lib/storage";
+import { uploadMedia } from "@/lib/storage";
 
 type Profile = { display_name: string | null; email: string | null; created_at: string; avatar_url: string | null };
 type MsgRow = { id: string; body: string; created_at: string; sender_role: string };
