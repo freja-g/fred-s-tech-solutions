@@ -124,7 +124,7 @@ const AdminMessagesPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 pt-24 pb-12 container max-w-6xl">
+      <main className="flex-1 md:pt-24 pt-4 pb-12 container max-w-6xl">
         <h1 className="text-2xl font-semibold mb-6">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
         <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-12rem)] min-h-[500px]">
           <div className={`bg-card border border-border rounded-xl overflow-y-auto flex flex-col ${activeId ? "hidden md:flex" : "flex"}`}>
