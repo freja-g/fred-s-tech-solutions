@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+
 import { motion } from "framer-motion";
 import { ChevronDown, Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -111,7 +111,6 @@ const GetSmartPage = () => {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };
