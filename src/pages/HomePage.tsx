@@ -16,7 +16,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-16">
+      <main className="md:pt-20 pt-0">
         {isStaff ? (
           <StaffDashboard />
         ) : (

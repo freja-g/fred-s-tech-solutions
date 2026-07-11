@@ -183,7 +183,7 @@ const ServicesPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-20">
+      <main className="md:pt-20 pt-4">
         <section className="section-padding bg-secondary/50">
           <div className="container">
             <motion.div
