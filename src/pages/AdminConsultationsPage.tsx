@@ -61,7 +61,7 @@ const AdminConsultationsPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-24 pb-16 container max-w-4xl">
+      <main className="md:pt-24 pt-4 pb-12 container max-w-4xl">
         <h1 className="text-3xl font-bold mb-8">Consultation Requests</h1>
 
         <div className="grid gap-6">

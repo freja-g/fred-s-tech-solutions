@@ -80,7 +80,7 @@ const AdminContentPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-24 pb-16 container max-w-5xl">
+      <main className="md:pt-24 pt-4 pb-12 container max-w-5xl">
         <h1 className="text-3xl font-bold mb-8">Content Management</h1>
 
         <Tabs defaultValue="services">

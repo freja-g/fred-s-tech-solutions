@@ -61,7 +61,7 @@ const BookingPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-24 pb-16 container max-w-2xl">
+      <main className="md:pt-24 pt-4 pb-12 container max-w-2xl">
         <h1 className="text-3xl font-bold mb-2">Book a Consultation</h1>
         <p className="text-muted-foreground mb-8">Tell us about your technical issue or project needs. Photos or videos (max 50MB) help us understand better.</p>
 
