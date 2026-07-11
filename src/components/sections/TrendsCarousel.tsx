@@ -20,21 +20,13 @@ const AUTO_SCROLL_INTERVAL = 4000;
 
 const TrendsCarousel = () => {
   const [api, setApi] = useState<CarouselApi>();
-
-  const startAutoScroll = useCallback(() => {
-    if (!api) return;
-    const interval = setInterval(() => {
-      api.scrollNext();
-    }, AUTO_SCROLL_INTERVAL);
-    return interval;
-  }, [api]);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    const interval = startAutoScroll();
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [startAutoScroll]);
+    if (!api || paused) return;
+    const interval = setInterval(() => api.scrollNext(), AUTO_SCROLL_INTERVAL);
+    return () => clearInterval(interval);
+  }, [api, paused]);
 
   return (
     <section className="section-padding bg-background">
@@ -43,16 +35,17 @@ const TrendsCarousel = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex items-end justify-between mb-8 gap-4"
+          className="flex items-end justify-between mb-6 md:mb-8 gap-4"
         >
           <div>
-            <p className="text-accent font-medium mb-2 text-sm uppercase tracking-wide flex items-center gap-2">
+            <p className="text-accent font-medium mb-2 text-xs md:text-sm uppercase tracking-wide flex items-center gap-2">
               <TrendingUp size={14} /> What's Next
             </p>
-            <h2 className="text-3xl md:text-4xl font-semibold">Upcoming Trends & Features</h2>
+            <h2 className="text-2xl md:text-4xl font-semibold">Upcoming Trends & Features</h2>
           </div>
         </motion.div>
 
+        <div onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
         <Carousel setApi={setApi} opts={{ align: "start", loop: true }} className="w-full">
           <CarouselContent className="-ml-4">
             {trends.map((t, i) => (
