@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useEffect, useState, useCallback } from "react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,8 +15,12 @@ const fallback: Review[] = [
   { id: "f3", author_name: "Linda W.", author_role: "Office Manager", rating: 5, title: "Reliable IT partner", body: "Whenever something breaks, one message and they're on it. Highly recommend for any small business.", created_at: "" },
 ];
 
+const AUTO_SCROLL_INTERVAL = 5000;
+
 const ReviewsCarousel = () => {
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<Review[]>(fallback);
+  const [api, setApi] = useState<CarouselApi>();
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     supabase
@@ -27,9 +31,14 @@ const ReviewsCarousel = () => {
       .limit(10)
       .then(({ data }) => {
         if (data && data.length > 0) setReviews(data as Review[]);
-        else setReviews(fallback);
       });
   }, []);
+
+  useEffect(() => {
+    if (!api || paused) return;
+    const interval = setInterval(() => api.scrollNext(), AUTO_SCROLL_INTERVAL);
+    return () => clearInterval(interval);
+  }, [api, paused]);
 
   return (
     <section className="section-padding bg-secondary/50">
@@ -38,41 +47,43 @@ const ReviewsCarousel = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center max-w-2xl mx-auto mb-10"
+          className="text-center max-w-2xl mx-auto mb-8 md:mb-10"
         >
-          <p className="text-accent font-medium mb-2 text-sm uppercase tracking-wide">Reviews</p>
-          <h2 className="text-3xl md:text-4xl font-semibold mb-3">What Our Customers Say</h2>
-          <p className="text-muted-foreground">Real stories from businesses we've helped grow and run smoother.</p>
+          <p className="text-accent font-medium mb-2 text-xs md:text-sm uppercase tracking-wide">Reviews</p>
+          <h2 className="text-2xl md:text-4xl font-semibold mb-3">What Our Customers Say</h2>
+          <p className="text-sm md:text-base text-muted-foreground">Real stories from businesses we've helped grow and run smoother.</p>
         </motion.div>
 
-        <Carousel opts={{ align: "start", loop: true }} className="w-full">
-          <CarouselContent className="-ml-4">
-            {reviews.map((r) => (
-              <CarouselItem key={r.id} className="pl-4 basis-[90%] sm:basis-1/2 lg:basis-1/3">
-                <div className="bg-card border border-border rounded-xl p-6 shadow-card h-full flex flex-col">
-                  <Quote className="text-accent/30 mb-3" size={28} />
-                  <div className="flex gap-0.5 mb-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        size={14}
-                        className={i < r.rating ? "fill-accent text-accent" : "text-muted-foreground/30"}
-                      />
-                    ))}
+        <div onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+          <Carousel setApi={setApi} opts={{ align: "start", loop: true }} className="w-full">
+            <CarouselContent className="-ml-4">
+              {reviews.map((r) => (
+                <CarouselItem key={r.id} className="pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                  <div className="bg-card border border-border rounded-xl p-5 md:p-6 shadow-card h-full flex flex-col">
+                    <Quote className="text-accent/30 mb-3" size={28} />
+                    <div className="flex gap-0.5 mb-3">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          size={14}
+                          className={i < r.rating ? "fill-accent text-accent" : "text-muted-foreground/30"}
+                        />
+                      ))}
+                    </div>
+                    {r.title && <h3 className="font-semibold mb-2 text-sm md:text-base">{r.title}</h3>}
+                    <p className="text-sm text-muted-foreground flex-1 mb-4">{r.body}</p>
+                    <div className="pt-4 border-t border-border">
+                      <p className="font-medium text-sm">{r.author_name}</p>
+                      {r.author_role && <p className="text-xs text-muted-foreground">{r.author_role}</p>}
+                    </div>
                   </div>
-                  {r.title && <h3 className="font-semibold mb-2">{r.title}</h3>}
-                  <p className="text-sm text-muted-foreground flex-1 mb-4">{r.body}</p>
-                  <div className="pt-4 border-t border-border">
-                    <p className="font-medium text-sm">{r.author_name}</p>
-                    {r.author_role && <p className="text-xs text-muted-foreground">{r.author_role}</p>}
-                  </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
-        </Carousel>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
+          </Carousel>
+        </div>
 
         <div className="text-center mt-8">
           <Link to="/reviews" className={cn(buttonVariants({ variant: "outline" }))}>
