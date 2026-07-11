@@ -66,6 +66,7 @@ const TrendsCarousel = () => {
           <CarouselPrevious className="hidden md:flex" />
           <CarouselNext className="hidden md:flex" />
         </Carousel>
+        </div>
       </div>
     </section>
   );
