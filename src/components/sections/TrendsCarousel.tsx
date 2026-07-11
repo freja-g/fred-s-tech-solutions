@@ -1,7 +1,7 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
 import { Sparkles, TrendingUp } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import projectCloud from "@/assets/project-cloud.jpg";
 import projectAutomation from "@/assets/project-automation.jpg";
 import projectNetwork from "@/assets/project-network.jpg";
