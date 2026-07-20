@@ -11,6 +11,7 @@ const supabase: any = _sb;
 import { useAuth } from "@/hooks/useAuth";
 import { CheckCircle, Clock, ExternalLink, Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const AdminConsultationsPage = () => {
   const { user, isAdmin, isTechnician } = useAuth();
