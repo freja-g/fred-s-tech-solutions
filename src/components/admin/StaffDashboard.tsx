@@ -1,10 +1,40 @@
-
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, MessageCircle, Star, Settings, FileText, User } from "lucide-react";
+import { supabase as _sb } from "@/integrations/supabase/client";
+const supabase: any = _sb;
 
 const StaffDashboard = () => {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({ messages: 0, reviews: 0, consultations: 0, users: 0 });
+
+  const loadStats = async () => {
+    const [msgs, revs, cons, profs] = await Promise.all([
+      supabase.from("messages").select("id", { count: "exact", head: true }).is("read_at", null).eq("sender_role", "customer"),
+      supabase.from("reviews").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("consultations").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("profiles").select("id", { count: "exact", head: true }),
+    ]);
+    setStats({
+      messages: msgs.count || 0,
+      reviews: revs.count || 0,
+      consultations: cons.count || 0,
+      users: profs.count || 0,
+    });
+  };
+
+  useEffect(() => {
+    loadStats();
+    const channel = supabase
+      .channel("staff-dashboard-stats")
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, loadStats)
+      .on("postgres_changes", { event: "*", schema: "public", table: "reviews" }, loadStats)
+      .on("postgres_changes", { event: "*", schema: "public", table: "consultations" }, loadStats)
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, loadStats)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const links = [
     { label: "Manage Messages", path: "/admin/messages", icon: MessageCircle },
@@ -12,6 +42,13 @@ const StaffDashboard = () => {
     { label: "Manage Content", path: "/admin/content", icon: Settings },
     { label: "Consultations", path: "/admin/consultations", icon: FileText },
     { label: "Edit My Profile", path: "/profile", icon: User },
+  ];
+
+  const statCards = [
+    { label: "Unread Messages", value: stats.messages },
+    { label: "Pending Reviews", value: stats.reviews },
+    { label: "Pending Consultations", value: stats.consultations },
+    { label: "Total Users", value: stats.users },
   ];
 
   return (
@@ -41,22 +78,12 @@ const StaffDashboard = () => {
       <div className="bg-card border border-border rounded-xl p-6">
         <h2 className="font-semibold mb-4">Quick Stats</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-4 bg-accent/5 rounded-lg border border-accent/10">
-                <p className="text-2xl font-bold text-accent">--</p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Pending Messages</p>
+          {statCards.map((s) => (
+            <div key={s.label} className="p-4 bg-accent/5 rounded-lg border border-accent/10">
+              <p className="text-2xl font-bold text-accent">{s.value}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">{s.label}</p>
             </div>
-            <div className="p-4 bg-accent/5 rounded-lg border border-accent/10">
-                <p className="text-2xl font-bold text-accent">--</p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">New Reviews</p>
-            </div>
-            <div className="p-4 bg-accent/5 rounded-lg border border-accent/10">
-                <p className="text-2xl font-bold text-accent">--</p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Consultations</p>
-            </div>
-            <div className="p-4 bg-accent/5 rounded-lg border border-accent/10">
-                <p className="text-2xl font-bold text-accent">--</p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Active Users</p>
-            </div>
+          ))}
         </div>
       </div>
     </div>

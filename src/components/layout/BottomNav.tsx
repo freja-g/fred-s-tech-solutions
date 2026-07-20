@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Briefcase, Lightbulb, MessageCircle, User, Shield } from "lucide-react";
+import { Home, Briefcase, Lightbulb, MessageCircle, User, ClipboardList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -22,10 +22,10 @@ const BottomNav = () => {
       badge: unread,
     },
     ...(isStaff ? [{
-      to: "/profile",
-      label: "Admin",
-      icon: Shield,
-      match: (p: string) => p.startsWith("/admin") && !p.startsWith("/admin/messages"),
+      to: "/admin/consultations",
+      label: "Consultations",
+      icon: ClipboardList,
+      match: (p: string) => p.startsWith("/admin/consultations"),
       badge: 0
     }] : [
       { to: "/get-smart", label: "Get Smart", icon: Lightbulb, match: (p: string) => p.startsWith("/get-smart"), badge: 0 }
