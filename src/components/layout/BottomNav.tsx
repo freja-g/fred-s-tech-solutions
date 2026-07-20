@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Briefcase, Lightbulb, MessageCircle, User, Shield } from "lucide-react";
+import { Home, Briefcase, Lightbulb, MessageCircle, User, ClipboardList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
