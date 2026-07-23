@@ -63,17 +63,11 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <Link
-              to="/contact"
+              to="/services"
               className={cn(buttonVariants({ variant: "hero", size: "xl" }))}
             >
-              Book a Consultation
-              <ArrowRight className="ml-2" size={18} />
-            </Link>
-            <Link
-              to="/services"
-              className={cn(buttonVariants({ variant: "hero-outline", size: "xl" }))}
-            >
               View Services
+              <ArrowRight className="ml-2" size={18} />
             </Link>
           </motion.div>
 

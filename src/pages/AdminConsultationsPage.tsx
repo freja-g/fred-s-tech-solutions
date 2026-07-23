@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const AdminConsultationsPage = () => {
-  const { user, isAdmin, isTechnician } = useAuth();
+  const { user, loading, isAdmin, isTechnician } = useAuth();
   const nav = useNavigate();
   const { toast } = useToast();
   const [consultations, setConsultations] = useState<any[]>([]);
@@ -22,18 +22,24 @@ const AdminConsultationsPage = () => {
   const isStaff = isAdmin || isTechnician;
 
   const fetchConsultations = async () => {
-    const { data, error } = await supabase
+    let query = supabase
       .from("consultations")
       .select("*, profiles:customer_id(display_name, email)")
       .order("created_at", { ascending: false });
+
+    if (!isStaff && user) {
+      query = query.eq("customer_id", user.id);
+    }
+
+    const { data, error } = await query;
 
     if (error) console.error(error);
     else setConsultations(data || []);
   };
 
   useEffect(() => {
-    if (isStaff) fetchConsultations();
-  }, [isStaff]);
+    if (user) fetchConsultations();
+  }, [user, isStaff]);
 
   const handleUpdateStatus = async (id: string, status: string, extra: Record<string, any> = {}) => {
     const { error } = await supabase
@@ -45,9 +51,8 @@ const AdminConsultationsPage = () => {
     else {
       const label =
         status === "accepted" ? "Accepted — you are assigned to this request." :
-        status === "in_progress" ? "Marked as in progress." :
+        status === "completed" ? "Marked as completed. 🎉" :
         status === "resolved" ? "Marked as resolved. 🎉" :
-        status === "completed" ? "Marked as completed." :
         "Updated.";
       toast({ title: "Consultation updated", description: label });
       fetchConsultations();
@@ -57,12 +62,12 @@ const AdminConsultationsPage = () => {
   const handleAccept = (id: string) =>
     handleUpdateStatus(id, "accepted", { technician_id: user?.id });
 
-  if (!isStaff) return null;
+  if (loading || !user) return null;
 
   const groups = {
     pending: consultations.filter(c => c.status === 'pending'),
     in_progress: consultations.filter(c => c.status === 'accepted' || c.status === 'in_progress'),
-    completed: consultations.filter(c => c.status === 'resolved' || c.status === 'completed'),
+    completed: consultations.filter(c => c.status === 'completed' || c.status === 'resolved'),
   };
 
   const renderCard = (c: any) => (
@@ -76,7 +81,11 @@ const AdminConsultationsPage = () => {
             </Badge>
           </div>
           <CardDescription>
-            From: {c.profiles?.display_name || "Unknown"} ({c.profiles?.email})
+            {isStaff ? (
+              <>From: {c.profiles?.display_name || "Unknown"} ({c.profiles?.email})</>
+            ) : (
+              <>Requested on {new Date(c.created_at).toLocaleDateString()}</>
+            )}
           </CardDescription>
         </div>
         <div className="text-right text-xs text-muted-foreground">
@@ -104,31 +113,26 @@ const AdminConsultationsPage = () => {
         )}
 
         <div className="flex flex-wrap gap-2">
-          {c.status === 'pending' && (
+          {c.status === 'pending' && isStaff && (
             <Button onClick={() => handleAccept(c.id)} variant="accent" className="flex-1 min-w-[180px]">
               Accept & Start Working
             </Button>
           )}
 
-          {(c.status === 'accepted' || c.status === 'in_progress') && (c.technician_id === user?.id || isAdmin) && (
+          {(c.status === 'accepted' || c.status === 'in_progress') && isStaff && (c.technician_id === user?.id || isAdmin) && (
             <>
-              {c.status === 'accepted' && (
-                <Button variant="outline" className="flex-1 min-w-[160px]" onClick={() => handleUpdateStatus(c.id, 'in_progress')}>
-                  Mark In Progress
-                </Button>
-              )}
               <Button variant="outline" className="flex-1 min-w-[160px]" onClick={() => nav(`/admin/messages?customer=${c.customer_id}`)}>
                 Message Client
               </Button>
-              <Button variant="accent" className="flex-1 min-w-[160px]" onClick={() => handleUpdateStatus(c.id, 'resolved', { resolved_at: new Date().toISOString() })}>
-                <CheckCircle className="mr-2" size={16} /> Mark Resolved
+              <Button variant="accent" className="flex-1 min-w-[160px]" onClick={() => handleUpdateStatus(c.id, 'completed', { resolved_at: new Date().toISOString() })}>
+                <CheckCircle className="mr-2" size={16} /> Mark Completed
               </Button>
             </>
           )}
 
-          {(c.status === 'resolved' || c.status === 'completed') && (
+          {(c.status === 'completed' || c.status === 'resolved') && (
             <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground gap-2 py-2">
-              <CheckCircle size={16} className="text-accent" /> Resolved
+              <CheckCircle size={16} className="text-accent" /> Completed
               {c.resolved_at && ` on ${new Date(c.resolved_at).toLocaleDateString()}`}
             </div>
           )}
@@ -149,7 +153,9 @@ const AdminConsultationsPage = () => {
     <div className="min-h-screen">
       <Header />
       <main className="md:pt-24 pt-4 pb-12 container max-w-4xl">
-        <h1 className="text-3xl font-bold mb-6">Consultation Requests</h1>
+        <h1 className="text-3xl font-bold mb-6">
+          {isStaff ? "Consultation Requests" : "My Consultations"}
+        </h1>
 
         <Tabs defaultValue="pending" className="w-full">
           <TabsList className="grid grid-cols-3 w-full mb-6">

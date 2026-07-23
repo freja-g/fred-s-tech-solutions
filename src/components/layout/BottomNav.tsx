@@ -21,15 +21,13 @@ const BottomNav = () => {
       match: (p: string) => p.startsWith("/messages") || p.startsWith("/admin/messages"),
       badge: unread,
     },
-    ...(isStaff ? [{
-      to: "/admin/consultations",
+    {
+      to: isStaff ? "/admin/consultations" : "/consultations",
       label: "Consultations",
       icon: ClipboardList,
-      match: (p: string) => p.startsWith("/admin/consultations"),
+      match: (p: string) => p.startsWith("/consultations") || p.startsWith("/admin/consultations"),
       badge: 0
-    }] : [
-      { to: "/get-smart", label: "Get Smart", icon: Lightbulb, match: (p: string) => p.startsWith("/get-smart"), badge: 0 }
-    ]),
+    },
     { to: "/profile", label: "Profile", icon: User, match: (p: string) => (p.startsWith("/profile") || p.startsWith("/auth")) && !p.startsWith("/admin"), badge: 0 },
   ];
 

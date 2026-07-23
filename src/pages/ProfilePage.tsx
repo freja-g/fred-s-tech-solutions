@@ -211,6 +211,21 @@ const ProfilePage = () => {
 
           {!isStaff && (
             <>
+              {/* Actions */}
+              <section className="bg-card border border-border rounded-xl p-6 shadow-card">
+                <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                  <Settings size={18} className="text-accent" /> Quick Actions
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Button variant="outline" onClick={() => nav("/consultations")} className="justify-start">
+                    <FileText size={16} className="mr-2" /> My Consultations
+                  </Button>
+                  <Button variant="outline" onClick={() => nav("/get-smart")} className="justify-start">
+                    <Lightbulb size={16} className="mr-2" /> Tech Tips (Get Smart)
+                  </Button>
+                </div>
+              </section>
+
               {/* Stats */}
               <section className="grid grid-cols-2 gap-4">
                 <div className="bg-card border border-border rounded-xl p-4 text-center">

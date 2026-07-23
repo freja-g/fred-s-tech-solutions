@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import Header from "@/components/layout/Header";
 
@@ -24,6 +24,7 @@ const schema = z.object({
 const AuthPage = () => {
   const { user, isAdmin, isTechnician, loading } = useAuth();
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -39,13 +40,19 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (!loading && user) {
+      const redirect = searchParams.get("redirect");
+      if (redirect) {
+        nav(redirect, { replace: true });
+        return;
+      }
+
       if (isAdmin || isTechnician) {
         nav("/admin/messages", { replace: true });
       } else {
         nav("/messages", { replace: true });
       }
     }
-  }, [user, isAdmin, isTechnician, loading, nav]);
+  }, [user, isAdmin, isTechnician, loading, nav, searchParams]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

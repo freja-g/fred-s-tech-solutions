@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
 
 import { Button } from "@/components/ui/button";
@@ -15,13 +15,27 @@ import { Camera, Image as ImageIcon, X, Video } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
 
 const BookingPage = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin, isTechnician } = useAuth();
   const { toast } = useToast();
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const isStaff = isAdmin || isTechnician;
+
   const [busy, setBusy] = useState(false);
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [media, setMedia] = useState<string[]>([]);
+  const [serviceId, setServiceId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const s = searchParams.get("service");
+    const id = searchParams.get("service_id");
+    const d = searchParams.get("details");
+    if (s) setSubject(s);
+    if (id) setServiceId(id);
+    if (d) setDescription(d);
+  }, [searchParams]);
 
   const handleUploadMedia = async (type: 'image' | 'video') => {
     if (!user) {
@@ -34,27 +48,35 @@ const BookingPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (!user) {
-      nav("/auth");
+      nav(`/auth?redirect=/book${window.location.search}`);
       return;
     }
     if (!subject || !description) return;
 
     setBusy(true);
-    const { error } = await supabase.from("consultations").insert({
+    const bookingData: any = {
       customer_id: user.id,
       subject,
       description,
       attachment_urls: media,
       status: "pending"
-    });
+    };
+
+    // Only include service_id if it's a valid UUID (not a "default-x" string)
+    if (serviceId && !serviceId.startsWith('default-')) {
+      bookingData.service_id = serviceId;
+    }
+
+    const { error } = await supabase.from("consultations").insert(bookingData);
 
     setBusy(false);
     if (error) {
       toast({ title: "Booking failed", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Success!", description: "Consultation booked. A technician will review it shortly." });
-      nav("/messages");
+      nav(isStaff ? "/admin/consultations" : "/consultations");
     }
   };
 

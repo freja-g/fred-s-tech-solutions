@@ -42,8 +42,8 @@ const Header = () => {
               Sign in
             </Link>
           )}
-          <Link to="/contact" className={cn(buttonVariants({ variant: "accent", size: "sm" }))}>
-            Book a Consultation
+          <Link to="/services" className={cn(buttonVariants({ variant: "accent", size: "sm" }))}>
+            View Services
           </Link>
         </nav>
       </div>

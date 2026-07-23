@@ -149,16 +149,23 @@ const ServicesPage = () => {
   }, []);
 
   useEffect(() => {
-    if (!isStaff) return;
+    if (!user) return;
     (async () => {
-      const { data: cs } = await supabase
+      let query = supabase
         .from("consultations")
         .select("id, customer_id, subject, description, status, created_at, service_id")
         .order("created_at", { ascending: false });
+
+      if (!isStaff) {
+        query = query.eq("customer_id", user.id);
+      }
+
+      const { data: cs } = await query;
       const list = (cs || []) as Consultation[];
       const ids = Array.from(new Set(list.map(c => c.customer_id)));
       let profileMap: Record<string, any> = {};
-      if (ids.length) {
+
+      if (isStaff && ids.length) {
         const { data: profs } = await supabase
           .from("profiles")
           .select("user_id, display_name, email")
@@ -172,12 +179,13 @@ const ServicesPage = () => {
   }, [isStaff, user?.id]);
 
   const consultationsFor = (s: ServiceItem) => {
-    if (s.isCustom) return consultations.filter(c => c.service_id === s.id);
-    // For default services, match by subject containing keyword from title
-    const key = s.title.split(/\s|&/)[0].toLowerCase();
-    return consultations.filter(
-      c => !c.service_id && (c.subject.toLowerCase().includes(key) || s.title.toLowerCase().includes(key))
-    );
+    if (s.id.startsWith('default-')) {
+       const key = s.title.split(/\s|&/)[0].toLowerCase();
+       return consultations.filter(
+         c => !c.service_id && (c.subject.toLowerCase().includes(key) || s.title.toLowerCase().includes(key))
+       );
+    }
+    return consultations.filter(c => c.service_id === s.id);
   };
 
   return (
@@ -221,7 +229,8 @@ const ServicesPage = () => {
               {services.map((service, index) => {
                 const Icon = ICONS[service.icon_name || "Briefcase"] || Briefcase;
                 const open = expanded === service.id;
-                const issues = isStaff ? consultationsFor(service) : [];
+                const issues = consultationsFor(service);
+                const hasBooked = !isStaff && issues.length > 0;
 
                 return (
                   <motion.div
@@ -235,9 +244,14 @@ const ServicesPage = () => {
                       <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors">
                         <Icon className="text-accent" size={22} />
                       </div>
-                      {service.isCustom && (
-                        <Badge variant="outline" className="text-[10px]">Custom</Badge>
-                      )}
+                      <div className="flex gap-2">
+                        {hasBooked && (
+                          <Badge variant="default" className="bg-green-500 text-[10px]">Active Booking</Badge>
+                        )}
+                        {service.isCustom && (
+                          <Badge variant="outline" className="text-[10px]">Custom</Badge>
+                        )}
+                      </div>
                     </div>
 
                     <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
@@ -318,9 +332,23 @@ const ServicesPage = () => {
                           )}
                         </AnimatePresence>
                       </>
+                    ) : hasBooked ? (
+                      <Link
+                        to="/consultations"
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "w-full group/btn border-green-500 text-green-600 hover:bg-green-50"
+                        )}
+                      >
+                        Go to Consultation
+                        <ArrowRight
+                          className="ml-2 group-hover/btn:translate-x-1 transition-transform"
+                          size={16}
+                        />
+                      </Link>
                     ) : (
                       <Link
-                        to={`/book?service=${encodeURIComponent(service.title)}`}
+                        to={`/book?service=${encodeURIComponent(service.title)}&service_id=${service.id}`}
                         className={cn(
                           buttonVariants({ variant: "accent" }),
                           "w-full group/btn"

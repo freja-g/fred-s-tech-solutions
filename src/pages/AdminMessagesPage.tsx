@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
 
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ type Conversation = {
 const AdminMessagesPage = () => {
   const { user, loading, isAdmin, isTechnician } = useAuth();
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -38,6 +39,11 @@ const AdminMessagesPage = () => {
   const endRef = useRef<HTMLDivElement>(null);
 
   const hasAccess = isAdmin || isTechnician;
+
+  useEffect(() => {
+    const customerId = searchParams.get("customer");
+    if (customerId) setActiveId(customerId);
+  }, [searchParams]);
 
   useEffect(() => {
     if (!loading && !user) nav("/auth");

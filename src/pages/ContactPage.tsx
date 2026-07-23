@@ -80,11 +80,15 @@ const ContactPage = () => {
   };
 
   const handleInAppSubmit = () => {
+    const params = new URLSearchParams();
+    params.set("service", service);
+    params.set("details", details);
+
     toast({
-      title: "Opening in-app messaging",
-      description: "Sign in to chat directly with our team.",
+      title: "Finishing request",
+      description: "Please confirm your details and add any photos if needed.",
     });
-    nav("/messages");
+    nav(`/book?${params.toString()}`);
   };
 
 
