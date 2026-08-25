@@ -17,6 +17,7 @@ import ReviewsPage from "./pages/ReviewsPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
 import AdminContentPage from "./pages/AdminContentPage";
 import AdminConsultationsPage from "./pages/AdminConsultationsPage";
+import AdminAnalyticsPage from "./pages/AdminAnalyticsPage";
 import GetSmartPage from "./pages/GetSmartPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
@@ -49,6 +50,7 @@ const App = () => {
               <Route path="/admin/reviews" element={<AdminReviewsPage />} />
               <Route path="/admin/content" element={<AdminContentPage />} />
               <Route path="/admin/consultations" element={<AdminConsultationsPage />} />
+              <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
               <Route path="/consultations" element={<AdminConsultationsPage />} />
               <Route path="/get-smart" element={<GetSmartPage />} />
               <Route path="/profile" element={<ProfilePage />} />

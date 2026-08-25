@@ -10,10 +10,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, LogOut, Mail, User as UserIcon, Calendar, Shield, MessageCircle, Star, Settings, FileText, Camera as CameraIcon, Key, Save } from "lucide-react";
+import { CheckCircle2, LogOut, Mail, User as UserIcon, Calendar, Shield, MessageCircle, Star, Settings, FileText, Camera as CameraIcon, Key, Save, MapPin, Activity, BarChart2 } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
+import { Switch } from "@/components/ui/switch";
 
-type Profile = { display_name: string | null; email: string | null; created_at: string; avatar_url: string | null };
+type Profile = { display_name: string | null; email: string | null; created_at: string; avatar_url: string | null; is_online?: boolean; coverage_zones?: string[] };
 type MsgRow = { id: string; body: string; created_at: string; sender_role: string };
 
 const ProfilePage = () => {
@@ -27,6 +28,9 @@ const ProfilePage = () => {
   const [newName, setNewName] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [updating, setUpdating] = useState(false);
+
+  const [isOnline, setIsOnline] = useState(false);
+  const [zones, setZones] = useState("");
 
   const isStaff = isAdmin || isTechnician;
 
@@ -79,6 +83,20 @@ const ProfilePage = () => {
     }
   };
 
+  const handleUpdateAvailability = async () => {
+    if (!user) return;
+    setUpdating(true);
+    const zoneList = zones.split(",").map(s => s.trim()).filter(s => s);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ is_online: isOnline, coverage_zones: zoneList })
+      .eq("user_id", user.id);
+    setUpdating(true);
+    if (error) toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    else toast({ title: "Success", description: "Availability updated" });
+    setUpdating(false);
+  };
+
   useEffect(() => {
     if (!loading && !user) nav("/auth");
   }, [user, loading, nav]);
@@ -87,12 +105,14 @@ const ProfilePage = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("display_name, email, created_at, avatar_url")
+      .select("display_name, email, created_at, avatar_url, is_online, coverage_zones")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
         setProfile(data as Profile | null);
         if (data?.display_name) setNewName(data.display_name);
+        if (data?.is_online !== undefined) setIsOnline(data.is_online);
+        if (data?.coverage_zones) setZones(data.coverage_zones.join(", "));
       });
 
     if (!isStaff) {
@@ -241,6 +261,33 @@ const ProfilePage = () => {
           )}
 
           {isStaff && (
+            <>
+            <section className="bg-card border border-border rounded-xl p-6 shadow-card">
+              <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                <Activity size={18} className="text-accent" /> Availability & Coverage
+              </h2>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between p-4 bg-accent/5 rounded-lg border border-accent/10">
+                  <div>
+                    <Label className="text-base">Online Status</Label>
+                    <p className="text-sm text-muted-foreground">Toggle to show if you are currently available for jobs.</p>
+                  </div>
+                  <Switch checked={isOnline} onCheckedChange={setIsOnline} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="zones">Coverage Zones (comma separated)</Label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <MapPin size={16} className="absolute left-3 top-3 text-muted-foreground" />
+                      <Input id="zones" value={zones} onChange={e => setZones(e.target.value)} className="pl-9" placeholder="e.g. Nairobi, Westlands, Kilimani" />
+                    </div>
+                    <Button onClick={handleUpdateAvailability} disabled={updating}><Save size={16} /></Button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             <section className="bg-card border border-border rounded-xl p-6 shadow-card">
               <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
                 <Shield size={18} className="text-accent" /> Staff Portal
@@ -258,8 +305,12 @@ const ProfilePage = () => {
                 <Button variant="outline" onClick={() => nav("/admin/consultations")} className="justify-start">
                   <FileText size={16} className="mr-2" /> Consultations
                 </Button>
+                <Button variant="accent" onClick={() => nav("/admin/analytics")} className="justify-start sm:col-span-2">
+                  <BarChart2 size={16} className="mr-2" /> View Analytics & Earnings
+                </Button>
               </div>
             </section>
+            </>
           )}
         </div>
       </main>

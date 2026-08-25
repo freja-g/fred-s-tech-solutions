@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield, MessageCircle, Star, Settings, FileText, User } from "lucide-react";
+import { Shield, MessageCircle, Star, Settings, FileText, User, BarChart2 } from "lucide-react";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 
@@ -41,6 +41,7 @@ const StaffDashboard = () => {
     { label: "Moderate Reviews", path: "/admin/reviews", icon: Star },
     { label: "Manage Content", path: "/admin/content", icon: Settings },
     { label: "Consultations", path: "/admin/consultations", icon: FileText },
+    { label: "View Analytics", path: "/admin/analytics", icon: BarChart2 },
     { label: "Edit My Profile", path: "/profile", icon: User },
   ];
 
