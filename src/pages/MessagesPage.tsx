@@ -36,12 +36,26 @@ const MessagesPage = () => {
 
   useEffect(() => {
     if (!user || isStaff) return;
+
+    const markRead = () => {
+      supabase
+        .from("messages")
+        .update({ read_at: new Date().toISOString() })
+        .eq("customer_id", user.id)
+        .neq("sender_role", "customer")
+        .is("read_at", null)
+        .then();
+    };
+
     supabase
       .from("messages")
       .select("*")
       .eq("customer_id", user.id)
       .order("created_at", { ascending: true })
-      .then(({ data }) => setMessages((data as Msg[]) ?? []));
+      .then(({ data }) => {
+        setMessages((data as Msg[]) ?? []);
+        markRead();
+      });
 
     const channel = supabase
       .channel(`messages-${user.id}`)
@@ -51,6 +65,7 @@ const MessagesPage = () => {
         (payload) => {
           setMessages((prev) => [...prev, payload.new as Msg]);
           if ((payload.new as Msg).sender_role !== "customer") {
+            markRead();
             toast({ title: "New message from support" });
           }
         }

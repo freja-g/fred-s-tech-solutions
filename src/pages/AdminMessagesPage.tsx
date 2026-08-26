@@ -80,6 +80,16 @@ const AdminMessagesPage = () => {
     }));
   };
 
+  const markThreadRead = (customerId: string) => {
+    supabase
+      .from("messages")
+      .update({ read_at: new Date().toISOString() })
+      .eq("customer_id", customerId)
+      .eq("sender_role", "customer")
+      .is("read_at", null)
+      .then();
+  };
+
   useEffect(() => {
     if (!hasAccess) return;
     loadConversations();
@@ -93,6 +103,7 @@ const AdminMessagesPage = () => {
         }
         if (activeId && m.customer_id === activeId) {
           setMessages((prev) => [...prev, m]);
+          if (m.sender_role === "customer") markThreadRead(activeId);
         }
       })
       .subscribe();
@@ -106,7 +117,10 @@ const AdminMessagesPage = () => {
       .select("*")
       .eq("customer_id", activeId)
       .order("created_at", { ascending: true })
-      .then(({ data }) => setMessages((data as Msg[]) ?? []));
+      .then(({ data }) => {
+        setMessages((data as Msg[]) ?? []);
+        markThreadRead(activeId);
+      });
   }, [activeId]);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
