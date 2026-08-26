@@ -133,7 +133,7 @@ const AdminMessagesPage = () => {
       <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-4 pb-20 md:pb-6 container max-w-6xl w-full">
         <h1 className="text-2xl font-semibold mb-4 shrink-0">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
         <div className="grid md:grid-cols-3 gap-4 flex-1 min-h-0">
-          <div className={`bg-card border border-border rounded-xl overflow-y-auto flex flex-col ${activeId ? "hidden md:flex" : "flex"}`}>
+          <div className={`bg-card border border-border rounded-xl overflow-y-auto flex flex-col min-h-0 ${activeId ? "hidden md:flex" : "flex"}`}>
             <p className="text-xs uppercase font-medium text-muted-foreground p-3 border-b border-border sticky top-0 bg-card z-10">
               Conversations ({conversations.length})
             </p>

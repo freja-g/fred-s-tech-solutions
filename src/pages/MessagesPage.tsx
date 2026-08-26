@@ -103,7 +103,7 @@ const MessagesPage = () => {
           </a>
         </div>
         <div className="bg-card border border-border rounded-xl flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 && (
               <p className="text-center text-sm text-muted-foreground py-8">
                 No messages yet. Start the conversation below.
