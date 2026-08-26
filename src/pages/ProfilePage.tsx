@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, LogOut, Mail, User as UserIcon, Calendar, Shield, MessageCircle, Star, Settings, FileText, Camera as CameraIcon, Key, Save, MapPin, Activity, BarChart2 } from "lucide-react";
+import { CheckCircle2, LogOut, Mail, User as UserIcon, Calendar, Shield, MessageCircle, Star, Settings, FileText, Camera as CameraIcon, Key, Save, MapPin, Activity, BarChart2, Lightbulb } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
 import { Switch } from "@/components/ui/switch";
 
