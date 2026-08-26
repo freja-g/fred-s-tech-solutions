@@ -71,6 +71,14 @@ const MessagesPage = () => {
           }
         }
       )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "messages", filter: `customer_id=eq.${user.id}` },
+        (payload) => {
+          const m = payload.new as Msg;
+          setMessages((prev) => prev.map((p) => (p.id === m.id ? { ...p, read_at: m.read_at } : p)));
+        }
+      )
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
