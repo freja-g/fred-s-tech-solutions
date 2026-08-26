@@ -128,12 +128,12 @@ const AdminMessagesPage = () => {
   const activeConversation = conversations.find((c) => c.customer_id === activeId);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-[100dvh] flex flex-col overflow-hidden">
       <Header />
-      <main className="flex-1 md:pt-24 pt-4 pb-12 container max-w-6xl">
-        <h1 className="text-2xl font-semibold mb-6">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
-        <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-12rem)] min-h-[500px]">
-          <div className={`bg-card border border-border rounded-xl overflow-y-auto flex flex-col ${activeId ? "hidden md:flex" : "flex"}`}>
+      <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-4 pb-20 md:pb-6 container max-w-6xl w-full">
+        <h1 className="text-2xl font-semibold mb-4 shrink-0">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
+        <div className="grid md:grid-cols-3 gap-4 flex-1 min-h-0">
+          <div className={`bg-card border border-border rounded-xl overflow-y-auto flex flex-col min-h-0 ${activeId ? "hidden md:flex" : "flex"}`}>
             <p className="text-xs uppercase font-medium text-muted-foreground p-3 border-b border-border sticky top-0 bg-card z-10">
               Conversations ({conversations.length})
             </p>
@@ -199,10 +199,11 @@ const AdminMessagesPage = () => {
                   ))}
                   <div ref={endRef} />
                 </div>
-                <div className="border-t border-border p-3 flex gap-2">
+                <div className="border-t border-border p-3 flex gap-2 shrink-0">
                   <Input
                     value={text}
                     onChange={(e) => setText(e.target.value)}
+                    onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ block: "end", behavior: "smooth" }), 300)}
                     onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); reply(); } }}
                     placeholder="Reply to customer..."
                     maxLength={4000}

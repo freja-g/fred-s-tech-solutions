@@ -84,11 +84,11 @@ const MessagesPage = () => {
   if (loading) return null;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-[100dvh] flex flex-col overflow-hidden">
       <Header />
-      <main className="flex-1 md:pt-24 pt-4 pb-12 container max-w-2xl">
+      <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-4 pb-20 md:pb-6 container max-w-2xl w-full">
         <h1 className="text-2xl font-semibold mb-2">Chat with Wiga Tech</h1>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="text-sm text-muted-foreground mb-4 hidden sm:block">
           Recent communications across all our channels. Reply here or reach us anywhere.
         </p>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -102,8 +102,8 @@ const MessagesPage = () => {
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> Email
           </a>
         </div>
-        <div className="bg-card border border-border rounded-xl flex flex-col h-[60vh]">
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div className="bg-card border border-border rounded-xl flex flex-col flex-1 min-h-0">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 && (
               <p className="text-center text-sm text-muted-foreground py-8">
                 No messages yet. Start the conversation below.
@@ -127,10 +127,11 @@ const MessagesPage = () => {
             ))}
             <div ref={endRef} />
           </div>
-          <div className="border-t border-border p-3 flex gap-2">
+          <div className="border-t border-border p-3 flex gap-2 shrink-0">
             <Input
               value={text}
               onChange={(e) => setText(e.target.value)}
+              onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ block: "end", behavior: "smooth" }), 300)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
               placeholder="Type your message..."
               maxLength={4000}
