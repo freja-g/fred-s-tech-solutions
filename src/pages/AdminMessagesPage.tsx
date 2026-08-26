@@ -16,6 +16,7 @@ type Msg = {
   sender_id: string;
   sender_role: "admin" | "customer" | "technician";
   body: string;
+  read_at: string | null;
   created_at: string;
 };
 
@@ -104,6 +105,12 @@ const AdminMessagesPage = () => {
         if (activeId && m.customer_id === activeId) {
           setMessages((prev) => [...prev, m]);
           if (m.sender_role === "customer") markThreadRead(activeId);
+        }
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages" }, (payload) => {
+        const m = payload.new as Msg;
+        if (activeId && m.customer_id === activeId) {
+          setMessages((prev) => prev.map((p) => (p.id === m.id ? { ...p, read_at: m.read_at } : p)));
         }
       })
       .subscribe();
@@ -208,6 +215,13 @@ const AdminMessagesPage = () => {
                           <span className="text-[10px] opacity-70">{new Date(m.created_at).toLocaleString()}</span>
                         </div>
                         <p className="whitespace-pre-wrap">{m.body}</p>
+                        {m.sender_role !== "customer" && (
+                          <p className="text-[10px] opacity-70 mt-1 text-right">
+                            {m.read_at
+                              ? `Seen ${new Date(m.read_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                              : "Sent"}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}
