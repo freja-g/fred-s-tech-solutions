@@ -15,6 +15,7 @@ type Msg = {
   sender_id: string;
   sender_role: "admin" | "customer" | "technician";
   body: string;
+  read_at: string | null;
   created_at: string;
 };
 
@@ -136,6 +137,11 @@ const MessagesPage = () => {
                   <p className="whitespace-pre-wrap">{m.body}</p>
                   <p className="text-[10px] opacity-70 mt-1">
                     {new Date(m.created_at).toLocaleString()}
+                    {m.sender_role === "customer" && (
+                      <span className="ml-1.5">
+                        · {m.read_at ? `Seen ${new Date(m.read_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Sent"}
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
