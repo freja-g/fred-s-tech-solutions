@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useAuth } from "@/hooks/useAuth";
-import { CheckCircle, Clock, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { CheckCircle, Clock, ExternalLink, Image as ImageIcon, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -17,6 +17,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const APP_TYPE = import.meta.env.VITE_APP_TYPE || "user";
 
 const AdminConsultationsPage = () => {
   const { user, loading, isAdmin, isTechnician } = useAuth();
@@ -27,23 +29,64 @@ const AdminConsultationsPage = () => {
   const [selectedConsultation, setSelectedConsultation] = useState<any>(null);
   const [logForm, setLogForm] = useState({ diagnostics: "", parts: "", notes: "", cost: "0" });
   const [rejectReason, setRejectReason] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
-  const isStaff = isAdmin || isTechnician;
+  // In the User App (WIGA TECH), NO ONE sees other people's consultations.
+  // In the Staff App (WIGA STAFF), admins/technicians see everything.
+  const isStaffPortal = APP_TYPE === "tech";
+  const isStaff = isStaffPortal && (isAdmin || isTechnician);
 
   const fetchConsultations = async () => {
-    let query = supabase
-      .from("consultations")
-      .select("*, profiles:customer_id(display_name, email), services:service_id(title)")
-      .order("created_at", { ascending: false });
+    if (loading) return;
+    setRefreshing(true);
+    try {
+      let query = supabase
+        .from("consultations")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (!isStaff && user) {
-      query = query.eq("customer_id", user.id);
+      // If we are NOT in the staff portal, OR we are not staff, only show own consultations.
+      if (!isStaff || !isStaffPortal) {
+        if (user) query = query.eq("customer_id", user.id);
+      }
+
+      const { data, error } = await query;
+      // ... rest of logic remains same
+
+      if (error) {
+        console.error("Consultation fetch error:", error);
+        toast({ title: "Fetch failed", description: error.message, variant: "destructive" });
+        return;
+      }
+
+      const list = data || [];
+      if (list.length === 0) {
+        setConsultations([]);
+        return;
+      }
+
+      // Manually join profiles and services since auto-relationship might be missing
+      const customerIds = Array.from(new Set(list.map((c: any) => c.customer_id)));
+      const serviceIds = Array.from(new Set(list.filter((c: any) => c.service_id).map((c: any) => c.service_id)));
+
+      const [{ data: profiles }, { data: services }] = await Promise.all([
+        supabase.from("profiles").select("user_id, display_name, email").in("user_id", customerIds),
+        serviceIds.length > 0
+          ? supabase.from("services").select("id, title").in("id", serviceIds)
+          : Promise.resolve({ data: [] })
+      ]);
+
+      const profileMap = new Map((profiles || []).map((p: any) => [p.user_id, p]));
+      const serviceMap = new Map((services || []).map((s: any) => [s.id, s]));
+
+      setConsultations(list.map((c: any) => ({
+        ...c,
+        profiles: profileMap.get(c.customer_id),
+        services: c.service_id ? serviceMap.get(c.service_id) : null
+      })));
+    } finally {
+      setRefreshing(false);
     }
-
-    const { data, error } = await query;
-
-    if (error) console.error(error);
-    else setConsultations(data || []);
   };
 
   const fetchTechnicians = async () => {
@@ -276,9 +319,14 @@ const AdminConsultationsPage = () => {
     <div className="min-h-screen">
       <Header />
       <main className="md:pt-24 pt-4 pb-12 container max-w-4xl">
-        <h1 className="text-3xl font-bold mb-6">
-          {isStaff ? "Consultation Requests" : "My Consultations"}
-        </h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">
+            {isStaff ? "Consultation Requests" : "My Consultations"}
+          </h1>
+          <Button variant="ghost" size="icon" onClick={fetchConsultations} disabled={refreshing}>
+            <RefreshCw size={20} className={refreshing ? "animate-spin" : ""} />
+          </Button>
+        </div>
 
         <Tabs defaultValue="pending" className="w-full">
           <TabsList className="grid grid-cols-4 w-full mb-6">

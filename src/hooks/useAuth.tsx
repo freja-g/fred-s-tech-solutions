@@ -29,18 +29,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkRoles = async (userId: string) => {
     try {
-      const { data: roles } = await supabase
+      const { data: roles, error } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", userId);
 
+      if (error) {
+        console.error("Error checking roles:", error);
+        return;
+      }
+
       if (roles) {
-        setIsAdmin(roles.some(r => (r.role as string) === "admin"));
-        setIsTechnician(roles.some(r => (r.role as string) === "technician"));
+        const roleStrings = roles.map(r => (r.role as string).toLowerCase());
+        setIsAdmin(roleStrings.includes("admin"));
+        setIsTechnician(roleStrings.includes("technician"));
       } else {
         setIsAdmin(false);
         setIsTechnician(false);
       }
+    } catch (err) {
+      console.error("Unexpected error checking roles:", err);
     } finally {
       setLoading(false);
     }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
@@ -10,11 +10,8 @@ import {
   ChartBar as BarChart3,
   ArrowRight,
   Briefcase,
-  Users,
-  Clock,
-  ChevronDown,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { supabase as supabaseClient } from "@/integrations/supabase/client";
 const supabase = supabaseClient as any;
@@ -112,24 +109,11 @@ type ServiceItem = {
   isCustom?: boolean;
 };
 
-type Consultation = {
-  id: string;
-  customer_id: string;
-  subject: string;
-  description: string;
-  status: string;
-  created_at: string;
-  service_id: string | null;
-  profile?: { display_name: string | null; email: string | null } | null;
-};
-
 const ServicesPage = () => {
-  const { isAdmin, isTechnician, user } = useAuth();
+  const { isAdmin, isTechnician } = useAuth();
   const isStaff = isAdmin || isTechnician;
 
   const [services, setServices] = useState<ServiceItem[]>(DEFAULT_SERVICES);
-  const [consultations, setConsultations] = useState<Consultation[]>([]);
-  const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -147,46 +131,6 @@ const ServicesPage = () => {
       setServices([...custom, ...DEFAULT_SERVICES]);
     })();
   }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      let query = supabase
-        .from("consultations")
-        .select("id, customer_id, subject, description, status, created_at, service_id")
-        .order("created_at", { ascending: false });
-
-      if (!isStaff) {
-        query = query.eq("customer_id", user.id);
-      }
-
-      const { data: cs } = await query;
-      const list = (cs || []) as Consultation[];
-      const ids = Array.from(new Set(list.map(c => c.customer_id)));
-      let profileMap: Record<string, any> = {};
-
-      if (isStaff && ids.length) {
-        const { data: profs } = await supabase
-          .from("profiles")
-          .select("user_id, display_name, email")
-          .in("user_id", ids);
-        (profs || []).forEach((p: any) => {
-          profileMap[p.user_id] = { display_name: p.display_name, email: p.email };
-        });
-      }
-      setConsultations(list.map(c => ({ ...c, profile: profileMap[c.customer_id] || null })));
-    })();
-  }, [isStaff, user?.id]);
-
-  const consultationsFor = (s: ServiceItem) => {
-    if (s.id.startsWith('default-')) {
-       const key = s.title.split(/\s|&/)[0].toLowerCase();
-       return consultations.filter(
-         c => !c.service_id && (c.subject.toLowerCase().includes(key) || s.title.toLowerCase().includes(key))
-       );
-    }
-    return consultations.filter(c => c.service_id === s.id);
-  };
 
   return (
     <div className="min-h-screen">
@@ -212,9 +156,6 @@ const ServicesPage = () => {
               </p>
               {isStaff && (
                 <div className="mt-5 flex items-center justify-center gap-3 flex-wrap">
-                  <Badge variant="secondary" className="text-xs">
-                    Admin view — tap a service to see customer requests
-                  </Badge>
                   <Link
                     to="/admin/content"
                     className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
@@ -228,9 +169,6 @@ const ServicesPage = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service, index) => {
                 const Icon = ICONS[service.icon_name || "Briefcase"] || Briefcase;
-                const open = expanded === service.id;
-                const issues = consultationsFor(service);
-                const hasBooked = !isStaff && issues.length > 0;
 
                 return (
                   <motion.div
@@ -244,14 +182,9 @@ const ServicesPage = () => {
                       <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors">
                         <Icon className="text-accent" size={22} />
                       </div>
-                      <div className="flex gap-2">
-                        {hasBooked && (
-                          <Badge variant="default" className="bg-green-500 text-[10px]">Active Booking</Badge>
-                        )}
-                        {service.isCustom && (
-                          <Badge variant="outline" className="text-[10px]">Custom</Badge>
-                        )}
-                      </div>
+                      {service.isCustom && (
+                        <Badge variant="outline" className="text-[10px]">Custom</Badge>
+                      )}
                     </div>
 
                     <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
@@ -270,97 +203,19 @@ const ServicesPage = () => {
                       </ul>
                     )}
 
-                    {isStaff ? (
-                      <>
-                        <Button
-                          variant="accent"
-                          className="w-full justify-between"
-                          onClick={() => setExpanded(open ? null : service.id)}
-                        >
-                          <span className="flex items-center gap-2">
-                            <Users size={16} />
-                            {issues.length} customer{issues.length === 1 ? "" : "s"} with issues
-                          </span>
-                          <ChevronDown
-                            size={16}
-                            className={cn("transition-transform", open && "rotate-180")}
-                          />
-                        </Button>
-
-                        <AnimatePresence>
-                          {open && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden"
-                            >
-                              <div className="pt-4 space-y-2">
-                                {issues.length === 0 && (
-                                  <p className="text-xs text-muted-foreground text-center py-4">
-                                    No customer requests for this service yet.
-                                  </p>
-                                )}
-                                {issues.map(c => (
-                                  <Link
-                                    key={c.id}
-                                    to="/admin/consultations"
-                                    className="block bg-secondary/60 hover:bg-secondary rounded-lg p-3 transition-colors"
-                                  >
-                                    <div className="flex items-center justify-between gap-2 mb-1">
-                                      <p className="text-sm font-medium truncate">
-                                        {c.profile?.display_name || c.profile?.email || "Customer"}
-                                      </p>
-                                      <Badge
-                                        variant={c.status === "pending" ? "outline" : "default"}
-                                        className="text-[10px] flex-shrink-0"
-                                      >
-                                        {c.status}
-                                      </Badge>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground truncate">
-                                      {c.subject}
-                                    </p>
-                                    <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
-                                      <Clock size={10} />
-                                      {new Date(c.created_at).toLocaleDateString()}
-                                    </p>
-                                  </Link>
-                                ))}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </>
-                    ) : hasBooked ? (
-                      <Link
-                        to="/consultations"
-                        className={cn(
-                          buttonVariants({ variant: "outline" }),
-                          "w-full group/btn border-green-500 text-green-600 hover:bg-green-50"
-                        )}
-                      >
-                        Go to Consultation
-                        <ArrowRight
-                          className="ml-2 group-hover/btn:translate-x-1 transition-transform"
-                          size={16}
-                        />
-                      </Link>
-                    ) : (
-                      <Link
-                        to={`/book?service=${encodeURIComponent(service.title)}&service_id=${service.id}`}
-                        className={cn(
-                          buttonVariants({ variant: "accent" }),
-                          "w-full group/btn"
-                        )}
-                      >
-                        Let's Get Started!
-                        <ArrowRight
-                          className="ml-2 group-hover/btn:translate-x-1 transition-transform"
-                          size={16}
-                        />
-                      </Link>
-                    )}
+                    <Link
+                      to={`/book?service=${encodeURIComponent(service.title)}&service_id=${service.id}`}
+                      className={cn(
+                        buttonVariants({ variant: "accent" }),
+                        "w-full group/btn"
+                      )}
+                    >
+                      Let's Get Started!
+                      <ArrowRight
+                        className="ml-2 group-hover/btn:translate-x-1 transition-transform"
+                        size={16}
+                      />
+                    </Link>
                   </motion.div>
                 );
               })}
