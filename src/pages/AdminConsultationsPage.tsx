@@ -17,6 +17,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import PayDialog from "@/components/payments/PayDialog";
+import { formatKES } from "@/lib/staff";
+
 
 const APP_TYPE = import.meta.env.VITE_APP_TYPE || "user";
 
@@ -297,11 +300,31 @@ const AdminConsultationsPage = () => {
           )}
 
           {(c.status === 'completed' || c.status === 'resolved') && (
-            <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground gap-2 py-2">
-              <CheckCircle size={16} className="text-accent" /> Completed
-              {c.completed_at && ` on ${new Date(c.completed_at).toLocaleDateString()}`}
+            <div className="flex-1 flex flex-wrap items-center justify-between gap-3 py-2">
+              <span className="flex items-center text-sm text-muted-foreground gap-2">
+                <CheckCircle size={16} className="text-accent" /> Completed
+                {c.completed_at && ` on ${new Date(c.completed_at).toLocaleDateString()}`}
+              </span>
+
+              {c.payment_status === 'paid' ? (
+                <Badge variant="secondary" className="gap-1">
+                  Paid{c.mpesa_receipt ? ` · ${c.mpesa_receipt}` : ""}
+                </Badge>
+              ) : Number(c.cost) > 0 ? (
+                isStaff ? (
+                  <Badge variant="outline">Awaiting payment · {formatKES(Number(c.cost))}</Badge>
+                ) : (
+                  <PayDialog
+                    consultationId={c.id}
+                    amount={Number(c.cost)}
+                    defaultPhone={c.phone || ""}
+                    onPaid={fetchConsultations}
+                  />
+                )
+              ) : null}
             </div>
           )}
+
         </div>
       </CardContent>
     </Card>
