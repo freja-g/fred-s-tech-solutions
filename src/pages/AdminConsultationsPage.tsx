@@ -17,6 +17,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import PayDialog from "@/components/payments/PayDialog";
+import { formatKES } from "@/lib/staff";
+
 
 const APP_TYPE = import.meta.env.VITE_APP_TYPE || "user";
 
