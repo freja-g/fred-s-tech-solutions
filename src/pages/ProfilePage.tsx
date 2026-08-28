@@ -223,6 +223,9 @@ const ProfilePage = () => {
                   Open Chat
                 </Button>
               )}
+              <Button variant="outline" onClick={() => nav("/legal")} className="flex-1">
+                <Shield size={16} className="mr-2" /> Legal
+              </Button>
               <Button variant="outline" onClick={signOut} className="flex-1">
                 <LogOut size={16} className="mr-2" /> Sign out
               </Button>

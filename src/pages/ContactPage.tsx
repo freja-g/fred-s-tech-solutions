@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Mail, MessageCircle, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { useContact } from "@/hooks/useContact";
+import { contactSchema } from "@/types/contact";
 
 const SERVICES = [
   "Technical Consulting",
@@ -21,12 +23,9 @@ const SERVICES = [
   "Business Process Automation",
 ];
 
-const WHATSAPP_NUMBER = "254742123999";
-const RECIPIENT_EMAIL = "wigatechnologies@gmail.com";
-
 const ContactPage = () => {
   const { toast } = useToast();
-  const nav = useNavigate();
+  const { handleExternalSubmit, handleInAppSubmit } = useContact();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -36,16 +35,13 @@ const ContactPage = () => {
   });
   const [showInAppForm, setShowInAppForm] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<"whatsapp" | "email" | "in_app" | null>(null);
-  const isSubmitting = false;
-
-  const { name, email, phone, service, details } = formData;
-  const isComplete = name.trim() && email.trim() && phone.trim() && service.trim() && details.trim();
 
   const handleMethodSelect = (method: "whatsapp" | "email" | "in_app") => {
-    if (!isComplete) {
+    const result = contactSchema.safeParse(formData);
+    if (!result.success) {
       toast({
-        title: "Please fill in all fields",
-        description: "We need your name, email, phone, service, and a short description of your needs.",
+        title: "Please fill in all fields correctly",
+        description: result.error.issues[0].message,
         variant: "destructive",
       });
       return;
@@ -56,39 +52,12 @@ const ContactPage = () => {
       setSelectedMethod(method);
     } else {
       setSelectedMethod(method);
-      handleExternalSubmit(method);
+      handleExternalSubmit(formData, method);
     }
   };
 
-  const handleExternalSubmit = (method: "whatsapp" | "email") => {
-    const message = `New consultation request from Wiga Tech Solutions website:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\n\nDetails:\n${details}`;
-
-    if (method === "whatsapp") {
-      const whatsappHref = `https://wa.me/254742123999?text=${encodeURIComponent(message)}`;
-      window.open(whatsappHref, "_blank");
-    } else if (method === "email") {
-      const mailtoHref = `mailto:wigatechnologies@gmail.com?subject=${encodeURIComponent(
-        `Consultation Request from ${name}`
-      )}&body=${encodeURIComponent(message)}`;
-      window.location.href = mailtoHref;
-    }
-
-    toast({
-      title: "Redirecting...",
-      description: "Your consultation request is ready to send.",
-    });
-  };
-
-  const handleInAppSubmit = () => {
-    const params = new URLSearchParams();
-    params.set("service", service);
-    params.set("details", details);
-
-    toast({
-      title: "Finishing request",
-      description: "Please confirm your details and add any photos if needed.",
-    });
-    nav(`/book?${params.toString()}`);
+  const onInAppSubmit = () => {
+    handleInAppSubmit(formData);
   };
 
 

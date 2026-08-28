@@ -8,21 +8,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { supabase as _sb } from "@/integrations/supabase/client";
-const supabase: any = _sb;
 import { useAuth } from "@/hooks/useAuth";
-import { Camera, Image as ImageIcon, X, Video } from "lucide-react";
+import { Camera, X, Video } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
+import { useConsultationBooking } from "@/hooks/useConsultationBooking";
 
 const BookingPage = () => {
-  const { user, loading, isAdmin, isTechnician } = useAuth();
+  const { user, isAdmin, isTechnician } = useAuth();
   const { toast } = useToast();
-  const nav = useNavigate();
   const [searchParams] = useSearchParams();
+  const { bookConsultation, busy } = useConsultationBooking();
 
   const isStaff = isAdmin || isTechnician;
 
-  const [busy, setBusy] = useState(false);
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [media, setMedia] = useState<string[]>([]);
@@ -33,7 +31,7 @@ const BookingPage = () => {
     const id = searchParams.get("service_id");
     const d = searchParams.get("details");
     if (s) setSubject(s);
-    if (id) setServiceId(id);
+    if (id && id.length === 36) setServiceId(id); // Simple UUID check
     if (d) setDescription(d);
   }, [searchParams]);
 
@@ -48,36 +46,12 @@ const BookingPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading) return;
-    if (!user) {
-      nav(`/auth?redirect=/book${window.location.search}`);
-      return;
-    }
-    if (!subject || !description) return;
-
-    setBusy(true);
-    const bookingData: any = {
-      customer_id: user.id,
+    await bookConsultation({
       subject,
       description,
-      attachment_urls: media,
-      status: "pending"
-    };
-
-    // Only include service_id if it's a valid UUID (not a "default-x" string)
-    if (serviceId && !serviceId.startsWith('default-')) {
-      bookingData.service_id = serviceId;
-    }
-
-    const { error } = await supabase.from("consultations").insert(bookingData);
-
-    setBusy(false);
-    if (error) {
-      toast({ title: "Booking failed", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Success!", description: "Consultation booked. A technician will review it shortly." });
-      nav(isStaff ? "/admin/consultations" : "/consultations");
-    }
+      service_id: serviceId,
+      attachment_urls: media
+    });
   };
 
   return (

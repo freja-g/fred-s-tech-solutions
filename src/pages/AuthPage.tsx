@@ -195,8 +195,10 @@ const AuthPage = () => {
             </button>
           )}
 
-          <p className="text-xs text-muted-foreground text-center mt-4">
+          <p className="text-xs text-muted-foreground text-center mt-4 space-x-2">
             <Link to="/" className="hover:text-accent">Back to home</Link>
+            <span>•</span>
+            <Link to="/legal" className="hover:text-accent">Terms & Privacy</Link>
           </p>
         </div>
       </main>

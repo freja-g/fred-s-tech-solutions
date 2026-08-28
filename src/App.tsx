@@ -20,6 +20,7 @@ import AdminConsultationsPage from "./pages/AdminConsultationsPage";
 import AdminAnalyticsPage from "./pages/AdminAnalyticsPage";
 import GetSmartPage from "./pages/GetSmartPage";
 import ProfilePage from "./pages/ProfilePage";
+import LegalPage from "./pages/LegalPage";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/layout/BottomNav";
 
@@ -54,6 +55,7 @@ const App = () => {
               <Route path="/consultations" element={<AdminConsultationsPage />} />
               <Route path="/get-smart" element={<GetSmartPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/legal" element={<LegalPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
