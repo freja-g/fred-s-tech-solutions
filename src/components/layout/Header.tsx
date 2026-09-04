@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import logoAsset from "@/assets/gicofix-logo.png.asset.json";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
