@@ -60,7 +60,7 @@ const StaffDashboard = () => {
           <Shield className="text-accent h-8 w-8" />
           <div>
             <h1 className="text-2xl font-bold">Staff Dashboard</h1>
-            <p className="text-muted-foreground text-sm">Welcome to the Wiga Staff Portal</p>
+            <p className="text-muted-foreground text-sm">Welcome to the GiCOFix Staff Portal</p>
           </div>
         </div>
         <div className="text-right hidden sm:block">

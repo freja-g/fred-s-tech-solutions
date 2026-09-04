@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.portfolio.technician',
-  appName: 'Wiga Staff',
+  appName: 'GiCOFix Staff',
   webDir: 'dist-tech',
   server: {
     androidScheme: 'https',

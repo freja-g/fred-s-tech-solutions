@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Wiga Staff</string>
-    <string name="title_activity_main">Wiga Staff</string>
+    <string name="app_name">GiCOFix Staff</string>
+    <string name="title_activity_main">GiCOFix Staff</string>
     <string name="package_name">com.portfolio.technician</string>
     <string name="custom_url_scheme">com.portfolio.technician</string>
 </resources>

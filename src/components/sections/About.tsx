@@ -25,7 +25,7 @@ const About = () => {
           
           <div className="space-y-6 text-muted-foreground leading-relaxed">
             <p>
-              At Wiga Tech Solutions, we provide technical consulting with a background spanning 
+              At GiCOFix Solutions, we provide technical consulting with a background spanning 
               hardware diagnostics, software development, and data analysis. Our approach is 
               simple: understand the problem, find the clearest solution, and make it work.
             </p>

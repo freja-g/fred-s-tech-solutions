@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-6">
             <Link to="/" className="text-lg font-semibold hover:opacity-80 transition-opacity">
-              Wiga Tech Solutions
+              GiCOFix Solutions
             </Link>
             <nav className="flex items-center gap-6 text-sm text-primary-foreground/70">
               <Link to="/about" className="hover:text-primary-foreground transition-colors">
@@ -25,7 +25,7 @@ const Footer = () => {
           </div>
 
           <p className="text-sm text-primary-foreground/60">
-            © {currentYear} Wiga Tech Solutions. All rights reserved.
+            © {currentYear} GiCOFix Solutions. All rights reserved.
           </p>
         </div>
       </div>

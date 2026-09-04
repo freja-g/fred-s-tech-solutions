@@ -17,7 +17,7 @@ interface PayDialogProps {
   onPaid?: () => void;
 }
 
-/** Customer-facing M-Pesa STK Push payment dialog (WIGA TECH). */
+/** Customer-facing M-Pesa STK Push payment dialog (GiCOFix). */
 const PayDialog = ({ consultationId, amount, defaultPhone = "", onPaid }: PayDialogProps) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);

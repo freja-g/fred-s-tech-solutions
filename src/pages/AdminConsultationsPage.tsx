@@ -34,8 +34,8 @@ const AdminConsultationsPage = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
-  // In the User App (WIGA TECH), NO ONE sees other people's consultations.
-  // In the Staff App (WIGA STAFF), admins/technicians see everything.
+  // In the User App (GiCOFix), NO ONE sees other people's consultations.
+  // In the Staff App (GiCOFix Staff), admins/technicians see everything.
   const isStaffPortal = APP_TYPE === "tech";
   const isStaff = isStaffPortal && (isAdmin || isTechnician);
 

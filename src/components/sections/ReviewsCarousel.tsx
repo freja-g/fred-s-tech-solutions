@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 type Review = { id: string; author_name: string; author_role: string | null; rating: number; title: string | null; body: string; created_at: string };
 
 const fallback: Review[] = [
-  { id: "f1", author_name: "Sarah K.", author_role: "Retail Owner", rating: 5, title: "Saved our POS in an hour", body: "Our system was down right before peak hours. Wiga Tech had us back up faster than I thought possible. Lifesavers.", created_at: "" },
+  { id: "f1", author_name: "Sarah K.", author_role: "Retail Owner", rating: 5, title: "Saved our POS in an hour", body: "Our system was down right before peak hours. GiCOFix had us back up faster than I thought possible. Lifesavers.", created_at: "" },
   { id: "f2", author_name: "James M.", author_role: "Startup Founder", rating: 5, title: "Practical, no jargon", body: "Finally, a tech consultant who explains things in plain English. Their automation cut our admin work in half.", created_at: "" },
   { id: "f3", author_name: "Linda W.", author_role: "Office Manager", rating: 5, title: "Reliable IT partner", body: "Whenever something breaks, one message and they're on it. Highly recommend for any small business.", created_at: "" },
 ];

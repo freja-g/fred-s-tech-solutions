@@ -57,7 +57,7 @@ const AuthPage = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // WIGA STAFF: staff accounts are provisioned by admins, self-signup is disabled.
+    // GiCOFix Staff: staff accounts are provisioned by admins, self-signup is disabled.
     if (APP_TYPE === "tech" && mode === "signup") {
       toast({
         title: "Sign-up disabled",
@@ -68,7 +68,7 @@ const AuthPage = () => {
       return;
     }
 
-    // WIGA TECH always creates customer accounts; role selector removed from schema check.
+    // GiCOFix always creates customer accounts; role selector removed from schema check.
     const finalRole: "customer" | "technician" = "customer";
 
     const parsed = schema.safeParse({
@@ -117,7 +117,7 @@ const AuthPage = () => {
             await supabase.auth.signOut();
             toast({
               title: "Access denied",
-              description: "This account is not a staff account. Please use the WIGA TECH app.",
+              description: "This account is not a staff account. Please use the GiCOFix app.",
               variant: "destructive",
             });
             return;
@@ -125,8 +125,8 @@ const AuthPage = () => {
           if (APP_TYPE !== "tech" && isStaff) {
             await supabase.auth.signOut();
             toast({
-              title: "Staff accounts only sign in on WIGA STAFF",
-              description: "Please open the WIGA STAFF app to access the admin portal.",
+              title: "Staff accounts only sign in on GiCOFix Staff",
+              description: "Please open the GiCOFix Staff app to access the admin portal.",
               variant: "destructive",
             });
             return;

@@ -19,7 +19,7 @@ export const useContact = () => {
     }
 
     const { name, email, phone, service, details } = values;
-    const message = `New consultation request from Wiga Tech Solutions:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\n\nDetails:\n${details}`;
+    const message = `New consultation request from GiCOFix Solutions:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\n\nDetails:\n${details}`;
 
     if (method === "whatsapp") {
       const whatsappHref = `https://wa.me/254742123999?text=${encodeURIComponent(message)}`;
