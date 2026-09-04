@@ -24,8 +24,8 @@ const Header = () => {
     >
       <div className="container flex items-center justify-between h-16 md:h-20">
         <Link to="/" className="flex items-center gap-2 group">
-          <img src="/logo.svg" alt="Wiga Tech" className="w-10 h-10 transition-transform group-hover:scale-110" />
-          <span className="text-xl font-semibold text-foreground">Wiga Tech Solutions</span>
+          <img src="/logo.svg" alt="GiCOFix" className="w-10 h-10 transition-transform group-hover:scale-110" />
+          <span className="text-xl font-semibold text-foreground">GiCOFix Solutions</span>
         </Link>
 
         <nav className="flex items-center gap-4">

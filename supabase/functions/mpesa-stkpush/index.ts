@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
         PhoneNumber: msisdn,
         CallBackURL: callbackUrl,
         AccountReference: (consultationId || payment.id).slice(0, 12),
-        TransactionDesc: "Wiga Tech service payment",
+        TransactionDesc: "GiCOFix service payment",
       }),
     });
     const stk = await stkRes.json();

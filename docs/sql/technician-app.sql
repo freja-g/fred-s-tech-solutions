@@ -1,5 +1,5 @@
 -- ============================================================
--- WIGA STAFF — Technician app schema
+-- GiCOFix Staff — Technician app schema
 -- Run this once in your Supabase SQL editor. Safe to re-run.
 -- NOTE: run section 1 on its own first (Postgres requires new enum
 -- values to be committed before they can be used).

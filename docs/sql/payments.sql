@@ -1,5 +1,5 @@
 -- ============================================================
--- WIGA TECH / WIGA STAFF — M-Pesa payments schema
+-- GiCOFix / GiCOFix Staff — M-Pesa payments schema
 -- Run this in your Supabase SQL editor (sections in order).
 -- ============================================================
 

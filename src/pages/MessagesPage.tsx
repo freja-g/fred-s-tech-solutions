@@ -111,7 +111,7 @@ const MessagesPage = () => {
     <div className="h-[100dvh] flex flex-col overflow-hidden">
       <Header />
       <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-4 pb-20 md:pb-6 container max-w-2xl w-full">
-        <h1 className="text-2xl font-semibold mb-2">Chat with Wiga Tech</h1>
+        <h1 className="text-2xl font-semibold mb-2">Chat with GiCOFix</h1>
         <p className="text-sm text-muted-foreground mb-4 hidden sm:block">
           Recent communications across all our channels. Reply here or reach us anywhere.
         </p>
