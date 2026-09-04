@@ -30,10 +30,12 @@ export const useConsultationBooking = () => {
 
     setBusy(true);
     try {
-      const { error } = await supabase.from("consultations").insert({
+      const { error } = await (supabase as unknown as {
+        from: (t: string) => { insert: (row: Record<string, unknown>) => Promise<{ error: { message: string } | null }> };
+      }).from("consultations").insert({
         customer_id: user.id,
         ...values,
-        status: "pending"
+        status: "pending",
       });
 
       if (error) {

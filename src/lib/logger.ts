@@ -29,7 +29,7 @@ export const logger = {
       data: scrubData(data),
     };
 
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       // In production, we would ship this to ElasticSearch / Grafana Loki
       // For now, we'll just log structured JSON as per blueprint Standard #12
       console.log(JSON.stringify(payload));

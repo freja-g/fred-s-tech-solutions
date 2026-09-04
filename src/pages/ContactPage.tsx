@@ -232,11 +232,10 @@ const ContactPage = () => {
                           Back
                         </button>
                         <button
-                          onClick={handleInAppSubmit}
-                          disabled={isSubmitting}
+                          onClick={onInAppSubmit}
                           className={cn(buttonVariants({ variant: "accent" }), "flex-1")}
                         >
-                          {isSubmitting ? "Submitting..." : "Submit Request"}
+                          Submit Request
                         </button>
                       </div>
                     </motion.div>
