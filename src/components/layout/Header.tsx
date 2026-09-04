@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import logoAsset from "@/assets/gicofix-logo.png.asset.json";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -24,7 +25,7 @@ const Header = () => {
     >
       <div className="container flex items-center justify-between h-16 md:h-20">
         <Link to="/" className="flex items-center gap-2 group">
-          <img src="/logo.svg" alt="GiCOFix" className="w-10 h-10 transition-transform group-hover:scale-110" />
+          <img src={logoAsset.url} alt="GiCOFix Solutions" className="w-10 h-10 rounded-lg object-cover transition-transform group-hover:scale-110" />
           <span className="text-xl font-semibold text-foreground">GiCOFix Solutions</span>
         </Link>
 
