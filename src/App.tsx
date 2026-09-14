@@ -23,6 +23,7 @@ import ProfilePage from "./pages/ProfilePage";
 import LegalPage from "./pages/LegalPage";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/layout/BottomNav";
+import backgroundAsset from "./assets/gicofix-3d-background.jpg.asset.json";
 
 const queryClient = new QueryClient();
 
@@ -38,26 +39,38 @@ const App = () => {
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <div className="pb-20">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/book" element={<BookingPage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/messages" element={<MessagesPage />} />
-              <Route path="/reviews" element={<ReviewsPage />} />
-              <Route path="/admin/messages" element={<AdminMessagesPage />} />
-              <Route path="/admin/reviews" element={<AdminReviewsPage />} />
-              <Route path="/admin/content" element={<AdminContentPage />} />
-              <Route path="/admin/consultations" element={<AdminConsultationsPage />} />
-              <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
-              <Route path="/consultations" element={<AdminConsultationsPage />} />
-              <Route path="/get-smart" element={<GetSmartPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/legal" element={<LegalPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+          <div className="relative min-h-[100dvh] overflow-x-hidden pb-20">
+            <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
+              <img
+                src={backgroundAsset.url}
+                alt=""
+                width={1920}
+                height={1080}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-background/88 dark:bg-background/76" />
+            </div>
+            <div className="relative z-10">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/services" element={<ServicesPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/book" element={<BookingPage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/reviews" element={<ReviewsPage />} />
+                <Route path="/admin/messages" element={<AdminMessagesPage />} />
+                <Route path="/admin/reviews" element={<AdminReviewsPage />} />
+                <Route path="/admin/content" element={<AdminContentPage />} />
+                <Route path="/admin/consultations" element={<AdminConsultationsPage />} />
+                <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+                <Route path="/consultations" element={<AdminConsultationsPage />} />
+                <Route path="/get-smart" element={<GetSmartPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/legal" element={<LegalPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
           </div>
           <BottomNav />
         </AuthProvider>
