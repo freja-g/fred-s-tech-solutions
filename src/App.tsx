@@ -48,7 +48,7 @@ const App = () => {
                 height={1080}
                 className="h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-background/88 dark:bg-background/76" />
+              <div className="absolute inset-0 bg-background/95 dark:bg-background/90" />
             </div>
             <div className="relative z-10 [&_section]:!bg-transparent">
               <Routes>
