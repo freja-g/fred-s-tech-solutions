@@ -50,7 +50,7 @@ const App = () => {
               />
               <div className="absolute inset-0 bg-background/88 dark:bg-background/76" />
             </div>
-            <div className="relative z-10">
+            <div className="relative z-10 [&_section]:!bg-transparent">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/services" element={<ServicesPage />} />
