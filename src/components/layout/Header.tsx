@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import wordmarkAsset from "@/assets/gicofix-wordmark.png.asset.json";
+import wordmark from "@/assets/gicofix-wordmark-transparent.png";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,7 +25,7 @@ const Header = () => {
     >
       <div className="container flex items-center justify-between h-16 md:h-20">
         <Link to="/" className="flex items-center group">
-          <img src={wordmarkAsset.url} alt="GiCOFix Solutions" className="h-9 w-auto rounded-md transition-transform group-hover:scale-105" />
+          <img src={wordmark} alt="GiCOFix Solutions" className="h-9 w-auto transition-transform group-hover:scale-105" />
         </Link>
 
         <nav className="flex items-center gap-4">
