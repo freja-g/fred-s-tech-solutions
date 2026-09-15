@@ -7,11 +7,12 @@ const Footer = () => {
     <footer className="py-8 bg-primary text-primary-foreground">
       <div className="container">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <Link to="/" className="text-lg font-semibold hover:opacity-80 transition-opacity">
-              GiCOFix Solutions
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <img src="/logo.svg" alt="GiCOFix" className="w-6 h-6" />
+              <span className="text-lg font-bold">GiCOFix Solutions</span>
             </Link>
-            <nav className="flex items-center gap-6 text-sm text-primary-foreground/70">
+            <nav className="flex items-center gap-4 sm:gap-6 text-sm text-primary-foreground/70">
               <Link to="/about" className="hover:text-primary-foreground transition-colors">
                 About
               </Link>

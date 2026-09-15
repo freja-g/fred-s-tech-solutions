@@ -10,9 +10,9 @@ import Contact from "@/components/sections/Contact";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <main>
+      <main className="flex-1 pt-16 md:pt-20">
         <Hero />
         <About />
         <Services />

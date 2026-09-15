@@ -23,12 +23,12 @@ const BottomNav = () => {
     },
     {
       to: isStaff ? "/admin/consultations" : "/consultations",
-      label: "Consultations",
+      label: isStaff ? "Admin" : "Requests",
       icon: ClipboardList,
       match: (p: string) => p.startsWith("/consultations") || p.startsWith("/admin/consultations"),
       badge: 0
     },
-    { to: "/profile", label: "Profile", icon: User, match: (p: string) => (p.startsWith("/profile") || p.startsWith("/auth")) && !p.startsWith("/admin"), badge: 0 },
+    { to: "/profile", label: "Account", icon: User, match: (p: string) => (p.startsWith("/profile") || p.startsWith("/auth")) && !p.startsWith("/admin"), badge: 0 },
   ];
 
   return (

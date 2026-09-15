@@ -64,10 +64,10 @@ const App = () => {
                 <Route path="/admin/content" element={<AdminContentPage />} />
                 <Route path="/admin/consultations" element={<AdminConsultationsPage />} />
                 <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
-                <Route path="/consultations" element={<AdminConsultationsPage />} />
                 <Route path="/get-smart" element={<GetSmartPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/legal" element={<LegalPage />} />
+                <Route path="/consultations" element={<AdminConsultationsPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
