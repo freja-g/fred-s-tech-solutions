@@ -57,11 +57,11 @@ const BookingPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-12 container max-w-2xl">
-        <h1 className="text-3xl font-bold mb-2">Book a Consultation</h1>
-        <p className="text-muted-foreground mb-8">Tell us about your technical issue or project needs. Photos or videos (max 50MB) help us understand better.</p>
+      <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-2xl">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Book a Consultation</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">Tell us about your technical issue or project needs. Photos or videos (max 50MB) help us understand better.</p>
 
-        <form onSubmit={handleSubmit} className="space-y-6 bg-card border p-6 rounded-xl shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-card border p-4 sm:p-6 rounded-xl shadow-sm">
           <div className="space-y-2">
             <Label htmlFor="subject">Subject</Label>
             <Input id="subject" placeholder="e.g. Broken Laptop Screen, Network Setup" value={subject} onChange={e => setSubject(e.target.value)} required />
@@ -82,29 +82,31 @@ const BookingPage = () => {
                   ) : (
                     <img src={url} alt="Uploaded" className="w-full h-full object-cover" />
                   )}
-                  <button onClick={() => setMedia(media.filter((_, idx) => i !== idx))} className="absolute top-0 right-0 p-1 bg-black/50 text-white rounded-bl">
+                  <Button type="button" size="icon" variant="destructive" onClick={() => setMedia(media.filter((_, idx) => i !== idx))} className="absolute top-0 right-0 h-8 w-8 rounded-bl rounded-tr-none">
                     <X size={14} />
-                  </button>
+                  </Button>
                   {url.includes('.mp4') && <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><Video size={20} className="text-white drop-shadow-md" /></div>}
                 </div>
               ))}
               <div className="flex gap-2">
-                 <button
+                 <Button
                   type="button"
                   onClick={() => handleUploadMedia('image')}
-                  className="w-24 h-24 rounded border-2 border-dashed flex flex-col items-center justify-center text-muted-foreground hover:bg-secondary transition-colors"
+                   variant="outline"
+                   className="w-24 h-24 border-2 border-dashed flex flex-col items-center justify-center text-muted-foreground"
                 >
                   <Camera size={24} />
                   <span className="text-[10px] mt-1">Add Photo</span>
-                </button>
-                <button
+                 </Button>
+                 <Button
                   type="button"
                   onClick={() => handleUploadMedia('video')}
-                  className="w-24 h-24 rounded border-2 border-dashed flex flex-col items-center justify-center text-muted-foreground hover:bg-secondary transition-colors"
+                   variant="outline"
+                   className="w-24 h-24 border-2 border-dashed flex flex-col items-center justify-center text-muted-foreground"
                 >
                   <Video size={24} />
                   <span className="text-[10px] mt-1">Add Video</span>
-                </button>
+                 </Button>
               </div>
             </div>
           </div>

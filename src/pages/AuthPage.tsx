@@ -155,8 +155,8 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-12 container max-w-md">
-        <div className="bg-card border border-border rounded-xl p-8">
+      <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-md">
+        <div className="bg-card border border-border rounded-xl p-5 sm:p-8">
           <h1 className="text-2xl font-semibold mb-2">
             {APP_TYPE === "tech" ? "Staff Login" : mode === "signin" ? "Sign in" : "Create your account"}
           </h1>

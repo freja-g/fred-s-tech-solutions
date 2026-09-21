@@ -90,16 +90,16 @@ const ReviewsPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-12">
+      <main className="md:pt-24 pt-4 pb-24 md:pb-12">
         <section className="container max-w-4xl">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 sm:mb-12">
             <p className="text-accent font-medium text-sm uppercase tracking-wide mb-3">Reviews</p>
             <h1 className="text-3xl md:text-4xl font-semibold mb-3">Customer Reviews & Testimonials</h1>
             <p className="text-muted-foreground">Real feedback from clients we've helped.</p>
           </div>
 
           {/* Submit form */}
-          <div className="bg-card border border-border rounded-xl p-6 md:p-8 mb-12">
+          <div className="bg-card border border-border rounded-xl p-4 sm:p-6 md:p-8 mb-8 sm:mb-12">
             <h2 className="text-xl font-semibold mb-4">Share your experience</h2>
             {!user ? (
               <p className="text-sm text-muted-foreground">
@@ -111,7 +111,7 @@ const ReviewsPage = () => {
                   <Label>Rating</Label>
                   <div className="flex gap-1 mt-2">
                     {[1, 2, 3, 4, 5].map((n) => (
-                      <button key={n} type="button" onClick={() => setRating(n)}>
+                      <button key={n} type="button" onClick={() => setRating(n)} className="flex h-10 w-10 items-center justify-center" aria-label={`${n} star rating`}>
                         <Star className={`w-7 h-7 ${n <= rating ? "fill-accent text-accent" : "text-muted-foreground"}`} />
                       </button>
                     ))}

@@ -137,10 +137,10 @@ const AdminAnalyticsPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-12 container max-w-5xl">
+      <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-5xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Technician Analytics</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Technician Analytics</h1>
             <p className="text-muted-foreground">Earnings, job history, ratings and response times.</p>
           </div>
           <Badge variant="outline" className="w-fit py-1.5 px-3">
@@ -168,7 +168,7 @@ const AdminAnalyticsPage = () => {
               <CardTitle>Earnings by month</CardTitle>
               <CardDescription>Invoiced value of completed jobs.</CardDescription>
             </CardHeader>
-            <CardContent className="h-[260px]">
+            <CardContent className="h-[220px] sm:h-[260px] px-2 sm:px-6">
               {stats.monthly.length === 0 ? (
                 <p className="text-center py-16 text-muted-foreground">No completed jobs yet.</p>
               ) : (
@@ -220,7 +220,7 @@ const AdminAnalyticsPage = () => {
                 <p className="text-center py-8 text-muted-foreground">No completed jobs yet.</p>
               ) : (
                 stats.recentJobs.map((job: any) => (
-                  <div key={job.id} className="flex items-center justify-between gap-3 p-3 sm:p-4 border rounded-lg hover:bg-secondary/50 transition-colors">
+                  <div key={job.id} className="flex items-center justify-between gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg hover:bg-secondary/50 transition-colors">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-10 h-10 shrink-0 rounded-full bg-accent/10 flex items-center justify-center text-accent">
                         <Briefcase size={18} />
@@ -249,7 +249,7 @@ const AdminAnalyticsPage = () => {
               <CardTitle>Service mix</CardTitle>
               <CardDescription>Where your jobs come from.</CardDescription>
             </CardHeader>
-            <CardContent className="h-[260px]">
+             <CardContent className="h-[220px] sm:h-[260px] px-2 sm:px-6">
               {stats.services.length === 0 ? (
                 <p className="text-center py-16 text-muted-foreground">No data yet.</p>
               ) : (

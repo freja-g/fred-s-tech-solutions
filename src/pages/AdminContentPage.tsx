@@ -141,7 +141,7 @@ const AdminContentPage = () => {
                          </button>
                       </div>
                    ) : (
-                      <div className="flex gap-3">
+                       <div className="flex flex-col sm:flex-row gap-3">
                          <Button type="button" variant="outline" onClick={() => handleUploadTipMedia('image')} className="flex-1">
                             <Camera className="mr-2" size={16} /> Add Photo
                          </Button>
@@ -158,14 +158,14 @@ const AdminContentPage = () => {
 
             <div className="grid gap-4">
               {tips.map(t => (
-                <div key={t.id} className="flex items-center justify-between p-4 bg-card border rounded-lg">
-                  <div className="flex gap-4 items-center">
+                 <div key={t.id} className="flex items-center justify-between gap-3 p-3 sm:p-4 bg-card border rounded-lg">
+                   <div className="flex min-w-0 gap-3 sm:gap-4 items-center">
                     {t.image_url && (
                        <div className="w-16 h-16 rounded border overflow-hidden flex-shrink-0">
                          {t.image_url.includes('.mp4') ? <div className="w-full h-full bg-secondary flex items-center justify-center"><Video size={20} /></div> : <img src={t.image_url} className="w-full h-full object-cover" />}
                        </div>
                     )}
-                    <div>
+                     <div className="min-w-0">
                       <h3 className="font-semibold">{t.title}</h3>
                       <p className="text-sm text-muted-foreground truncate max-w-md">{t.body}</p>
                     </div>

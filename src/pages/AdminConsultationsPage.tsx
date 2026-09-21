@@ -169,10 +169,10 @@ const AdminConsultationsPage = () => {
 
   const renderCard = (c: any) => (
     <Card key={c.id}>
-      <CardHeader className="flex flex-row items-start justify-between space-y-0">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <CardTitle>{c.services?.title || c.subject}</CardTitle>
+      <CardHeader className="flex flex-col sm:flex-row items-start justify-between gap-2 space-y-0 p-4 sm:p-6">
+        <div className="min-w-0 space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <CardTitle className="break-words">{c.services?.title || c.subject}</CardTitle>
             <Badge variant={c.status === 'pending' ? 'outline' : c.status === 'rejected' ? 'destructive' : 'default'}>
               {c.status}
             </Badge>
@@ -190,12 +190,12 @@ const AdminConsultationsPage = () => {
             )}
           </CardDescription>
         </div>
-        <div className="text-right text-xs text-muted-foreground">
+        <div className="shrink-0 text-left sm:text-right text-xs text-muted-foreground">
           <Clock size={12} className="inline mr-1" />
           {new Date(c.created_at).toLocaleDateString()}
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-4 pt-0 sm:p-6 sm:pt-0">
         <p className="text-sm">{c.description}</p>
 
         {c.status === 'rejected' && c.rejected_reason && (
@@ -341,9 +341,9 @@ const AdminConsultationsPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-12 container max-w-4xl">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">
+      <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-4xl">
+        <div className="flex items-center justify-between gap-3 mb-5 sm:mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold">
             {isStaff ? "Consultation Requests" : "My Consultations"}
           </h1>
           <Button variant="ghost" size="icon" onClick={fetchConsultations} disabled={refreshing}>
@@ -352,11 +352,11 @@ const AdminConsultationsPage = () => {
         </div>
 
         <Tabs defaultValue="pending" className="w-full">
-          <TabsList className="grid grid-cols-4 w-full mb-6">
-            <TabsTrigger value="pending">Pending ({groups.pending.length})</TabsTrigger>
-            <TabsTrigger value="active">Active ({groups.active.length})</TabsTrigger>
-            <TabsTrigger value="completed">Done ({groups.completed.length})</TabsTrigger>
-            <TabsTrigger value="rejected">Rejected ({groups.rejected.length})</TabsTrigger>
+          <TabsList className="grid h-auto grid-cols-2 sm:grid-cols-4 w-full mb-6 gap-1 p-1">
+            <TabsTrigger className="min-w-0 px-2" value="pending">Pending ({groups.pending.length})</TabsTrigger>
+            <TabsTrigger className="min-w-0 px-2" value="active">Active ({groups.active.length})</TabsTrigger>
+            <TabsTrigger className="min-w-0 px-2" value="completed">Done ({groups.completed.length})</TabsTrigger>
+            <TabsTrigger className="min-w-0 px-2" value="rejected">Rejected ({groups.rejected.length})</TabsTrigger>
           </TabsList>
           <TabsContent value="pending">{renderList(groups.pending)}</TabsContent>
           <TabsContent value="active">{renderList(groups.active)}</TabsContent>

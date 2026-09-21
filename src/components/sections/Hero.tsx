@@ -15,7 +15,7 @@ const valueBullets = [
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section className="relative min-h-[calc(100svh-4rem)] md:min-h-screen flex items-center overflow-hidden">
       {/* Background Image */}
       <div 
         className="absolute inset-0 z-0"
@@ -34,10 +34,10 @@ const Hero = () => {
         <FloatingShapes />
       </div>
       
-      <div className="container relative z-10 py-32 md:py-40">
+      <div className="container relative z-10 py-16 sm:py-24 md:py-40">
         <div className="max-w-3xl">
           <motion.h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-semibold text-primary-foreground leading-tight mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-primary-foreground leading-tight mb-5 md:mb-6"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
