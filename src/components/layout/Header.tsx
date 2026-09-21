@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import fullmarkAsset from "@/assets/gicofix-fullmark-transparent.png.asset.json";
+import fullmarkAsset from "@/assets/gicofix-fullmark-transparent.png";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,7 +25,7 @@ const Header = () => {
     >
       <div className="container flex items-center justify-between gap-2 h-16 md:h-20">
         <Link to="/" className="flex min-w-0 items-center group" aria-label="GiCOFix Solutions home">
-          <img src={fullmarkAsset.url} alt="GiCOFix Solutions" className="h-12 w-auto max-w-[118px] object-contain transition-transform group-hover:scale-105 md:h-16 md:max-w-none" />
+          <img src={fullmarkAsset} alt="GiCOFix Solutions" className="h-12 w-auto max-w-[118px] object-contain transition-transform group-hover:scale-105 md:h-16 md:max-w-none" />
         </Link>
 
         <nav className="flex shrink-0 items-center gap-2 sm:gap-4">
