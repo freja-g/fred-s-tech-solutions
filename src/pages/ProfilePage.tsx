@@ -138,10 +138,10 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-6 pb-12">
+      <main className="md:pt-24 pt-4 pb-24 md:pb-12">
         <div className="container max-w-3xl space-y-6">
           {/* Account card */}
-          <section className="bg-card border border-border rounded-xl p-6 shadow-card">
+          <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card">
             <div className="flex items-center gap-4 mb-6">
               <div className="relative group">
                 <div className="w-16 h-16 rounded-full bg-accent/15 text-accent flex items-center justify-center text-2xl font-semibold overflow-hidden">
@@ -265,12 +265,12 @@ const ProfilePage = () => {
 
           {isStaff && (
             <>
-            <section className="bg-card border border-border rounded-xl p-6 shadow-card">
+            <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card">
               <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
                 <Activity size={18} className="text-accent" /> Availability & Coverage
               </h2>
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-accent/5 rounded-lg border border-accent/10">
+                <div className="flex items-center justify-between gap-4 p-3 sm:p-4 bg-accent/5 rounded-lg border border-accent/10">
                   <div>
                     <Label className="text-base">Online Status</Label>
                     <p className="text-sm text-muted-foreground">Toggle to show if you are currently available for jobs.</p>
@@ -291,7 +291,7 @@ const ProfilePage = () => {
               </div>
             </section>
 
-            <section className="bg-card border border-border rounded-xl p-6 shadow-card">
+            <section className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-card">
               <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
                 <Shield size={18} className="text-accent" /> Staff Portal
               </h2>

@@ -51,9 +51,9 @@ const AdminReviewsPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-12 container max-w-4xl">
+      <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-4xl">
         <h1 className="text-2xl font-semibold mb-6">Review Moderation</h1>
-        <div className="flex gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-6">
           {(["pending", "approved", "rejected"] as const).map((f) => (
             <Button key={f} variant={filter === f ? "accent" : "outline"} size="sm" onClick={() => setFilter(f)}>
               {f.charAt(0).toUpperCase() + f.slice(1)}

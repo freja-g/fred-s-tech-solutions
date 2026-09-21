@@ -33,7 +33,7 @@ const BottomNav = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md md:hidden"
       aria-label="Primary"
     >
       <ul className="grid grid-cols-5 max-w-screen-md mx-auto">
@@ -44,7 +44,7 @@ const BottomNav = () => {
               <NavLink
                 to={to}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium transition-colors",
+                  "flex min-h-16 flex-col items-center justify-center gap-1 px-0.5 py-2 text-[11px] font-medium transition-colors",
                   active ? "text-accent" : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -59,7 +59,7 @@ const BottomNav = () => {
                     </span>
                   )}
                 </span>
-                <span className="leading-none">{label}</span>
+                <span className="max-w-full truncate leading-none">{label === "Consultations" ? "Requests" : label}</span>
               </NavLink>
             </li>
           );

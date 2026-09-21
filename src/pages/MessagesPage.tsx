@@ -108,9 +108,9 @@ const MessagesPage = () => {
   if (loading) return null;
 
   return (
-    <div className="h-[100dvh] flex flex-col overflow-hidden">
+    <div className="h-[calc(100dvh-5rem-env(safe-area-inset-bottom,0px))] md:h-[100dvh] flex flex-col overflow-hidden">
       <Header />
-      <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-4 pb-20 md:pb-6 container max-w-2xl w-full">
+      <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-3 pb-2 md:pb-6 container max-w-2xl w-full">
         <h1 className="text-2xl font-semibold mb-2">Chat with GiCOFix</h1>
         <p className="text-sm text-muted-foreground mb-4 hidden sm:block">
           Recent communications across all our channels. Reply here or reach us anywhere.
@@ -127,7 +127,7 @@ const MessagesPage = () => {
           </a>
         </div>
         <div className="bg-card border border-border rounded-xl flex flex-col flex-1 min-h-0">
-          <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
+          <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 space-y-3 overscroll-contain">
             {messages.length === 0 && (
               <p className="text-center text-sm text-muted-foreground py-8">
                 No messages yet. Start the conversation below.
@@ -136,7 +136,7 @@ const MessagesPage = () => {
             {messages.map((m) => (
               <div key={m.id} className={`flex ${m.sender_role === "customer" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[75%] rounded-lg px-4 py-2 text-sm ${
+                  className={`max-w-[88%] sm:max-w-[75%] break-words rounded-lg px-3 sm:px-4 py-2 text-sm ${
                     m.sender_role === "customer"
                       ? "bg-accent text-accent-foreground"
                       : "bg-secondary text-secondary-foreground"
@@ -156,11 +156,10 @@ const MessagesPage = () => {
             ))}
             <div ref={endRef} />
           </div>
-          <div className="border-t border-border p-3 flex gap-2 shrink-0">
+          <div className="border-t border-border p-2 sm:p-3 flex gap-2 shrink-0 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
             <Input
               value={text}
               onChange={(e) => setText(e.target.value)}
-              onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ block: "end", behavior: "smooth" }), 300)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
               placeholder="Type your message..."
               maxLength={4000}

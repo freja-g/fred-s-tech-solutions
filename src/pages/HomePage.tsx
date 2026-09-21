@@ -16,7 +16,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 md:pt-20 pt-16">
+      <main className="flex-1 md:pt-20">
         {isStaff ? (
           <div className="px-4 py-6">
             <StaffDashboard />

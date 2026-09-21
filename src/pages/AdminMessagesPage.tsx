@@ -149,10 +149,10 @@ const AdminMessagesPage = () => {
   const activeConversation = conversations.find((c) => c.customer_id === activeId);
 
   return (
-    <div className="h-[100dvh] flex flex-col overflow-hidden">
+    <div className="h-[calc(100dvh-5rem-env(safe-area-inset-bottom,0px))] md:h-[100dvh] flex flex-col overflow-hidden">
       <Header />
-      <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-4 pb-20 md:pb-6 container max-w-6xl w-full">
-        <h1 className="text-2xl font-semibold mb-4 shrink-0">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
+      <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-3 pb-2 md:pb-6 container max-w-6xl w-full">
+        <h1 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 shrink-0">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
         <div className="grid md:grid-cols-3 gap-4 flex-1 min-h-0">
           <div className={`bg-card border border-border rounded-xl overflow-y-auto flex flex-col min-h-0 ${activeId ? "hidden md:flex" : "flex"}`}>
             <p className="text-xs uppercase font-medium text-muted-foreground p-3 border-b border-border sticky top-0 bg-card z-10">
@@ -198,15 +198,15 @@ const AdminMessagesPage = () => {
                     <p className="text-xs text-muted-foreground truncate">{activeConversation?.email}</p>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 min-h-0 overscroll-contain">
                   {messages.map((m) => (
                     <div key={m.id} className={`flex ${m.sender_role !== "customer" ? "justify-end" : "justify-start"}`}>
-                      <div className={`max-w-[75%] rounded-lg px-4 py-2 text-sm ${
+                      <div className={`max-w-[88%] sm:max-w-[75%] break-words rounded-lg px-3 sm:px-4 py-2 text-sm ${
                         m.sender_role !== "customer"
                           ? "bg-accent text-accent-foreground"
                           : "bg-secondary text-secondary-foreground"
                       }`}>
-                        <div className="flex justify-between items-center gap-4 mb-1">
+                        <div className="flex flex-wrap justify-between items-center gap-x-4 gap-y-1 mb-1">
                           <span className="text-[10px] font-bold uppercase">
                             {m.sender_role === "customer"
                               ? (activeConversation?.display_name ?? "Customer")
@@ -227,11 +227,10 @@ const AdminMessagesPage = () => {
                   ))}
                   <div ref={endRef} />
                 </div>
-                <div className="border-t border-border p-3 flex gap-2 shrink-0">
+                <div className="border-t border-border p-2 sm:p-3 flex gap-2 shrink-0 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
                   <Input
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ block: "end", behavior: "smooth" }), 300)}
                     onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); reply(); } }}
                     placeholder="Reply to customer..."
                     maxLength={4000}

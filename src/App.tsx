@@ -39,7 +39,7 @@ const App = () => {
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <div className="relative min-h-[100dvh] overflow-x-hidden pb-20">
+          <div className="relative min-h-[100dvh] overflow-x-hidden pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
             <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
               <img
                 src={backgroundAsset.url}
