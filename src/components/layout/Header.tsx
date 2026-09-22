@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import fullmarkAsset from "@/assets/gicofix-fullmark-transparent.png";
@@ -28,7 +26,7 @@ const Header = () => {
           <img src={fullmarkAsset} alt="GiCOFix Solutions" className="h-12 w-auto max-w-[118px] object-contain transition-transform group-hover:scale-105 md:h-16 md:max-w-none" />
         </Link>
 
-        <nav className="flex shrink-0 items-center gap-2 sm:gap-4">
+        <nav className="flex shrink-0 items-center">
           {user ? (
             <button
               onClick={signOut}
@@ -42,9 +40,6 @@ const Header = () => {
               Sign in
             </Link>
           )}
-          <Link to="/book" className={cn(buttonVariants({ variant: "accent", size: "sm" }), "px-3 sm:px-4")}>
-            <span className="md:hidden">Book</span><span className="hidden md:inline">Book Consultation</span>
-          </Link>
         </nav>
       </div>
     </header>
