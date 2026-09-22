@@ -10,7 +10,7 @@ type Slide = {
   tag: string;
   title: string;
   body: string;
-  bullets?: string[];
+  bullets?: { icon: React.ElementType; text: string }[];
 };
 
 const slides: Slide[] = [
