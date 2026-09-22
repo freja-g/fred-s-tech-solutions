@@ -18,13 +18,13 @@ const slides: Slide[] = [
     icon: Target,
     tag: "Mission",
     title: "What drives us",
-    body: "To deliver practical technical solutions that help small businesses and startups run smoother — diagnosing problems clearly, implementing fixes that last, and explaining every step in plain language.",
+    body: "To help small businesses and startups run smoother through practical technical consulting. We diagnose hardware and software problems, implement fixes that last, and explain every step in plain language. No buzzwords, no upselling. Just technical help that makes a difference.",
   },
   {
     icon: Eye,
     tag: "Vision",
     title: "Where we're headed",
-    body: "To be the most trusted technical partner for growing businesses across the region — the team you call when something must work, and the one that makes sure it keeps working.",
+    body: "To be the most trusted technical partner for growing businesses across Kenya and the region. The team you call when a system goes down, when data needs to make sense, or when you need clear technical direction. We want every client to feel confident, not overwhelmed, by their technology.",
   },
   {
     icon: Heart,
@@ -32,9 +32,9 @@ const slides: Slide[] = [
     title: "How we work",
     body: "Our principles shape every consultation, every fix, and every conversation:",
     bullets: [
-      { icon: Shield, text: "Clarity — no jargon, no upselling, just plain answers." },
-      { icon: Lightbulb, text: "Practical focus — outcomes that matter, not reports that gather dust." },
-      { icon: Users, text: "Partnership — we stay engaged until it's actually solved." },
+      { icon: Shield, text: "Clarity: we explain things in plain language, with no jargon and no upselling." },
+      { icon: Lightbulb, text: "Practical focus: we deliver outcomes that matter, not reports that gather dust." },
+      { icon: Users, text: "Partnership: we stay engaged until the problem is actually solved." },
     ],
   },
 ];
