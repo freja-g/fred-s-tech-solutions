@@ -35,7 +35,7 @@ const slides: Slide[] = [
       { icon: Shield, text: "Clarity — no jargon, no upselling, just plain answers." },
       { icon: Lightbulb, text: "Practical focus — outcomes that matter, not reports that gather dust." },
       { icon: Users, text: "Partnership — we stay engaged until it's actually solved." },
-    ].map((b) => ({ ...b, icon: b.icon })),
+    ],
   },
 ];
 
