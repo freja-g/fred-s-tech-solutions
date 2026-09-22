@@ -73,7 +73,7 @@ const About = () => {
           <p className="text-accent font-medium mb-2 text-xs md:text-sm uppercase tracking-wide">About</p>
           <h2 className="text-2xl md:text-4xl font-semibold mb-3">Who We Are</h2>
           <p className="text-sm md:text-base text-muted-foreground">
-            Technical consulting grounded in practical results — built on a clear mission, a focused vision, and values we live by.
+            Technical consulting grounded in practical results: a clear mission, a focused vision, and values we live by.
           </p>
         </motion.div>
 
