@@ -19,49 +19,30 @@ const slides: Slide[] = [
     icon: Building2,
     tag: "About Us",
     title: "Who We Are",
-    body: "GiCOFix Solutions is a technology support and solutions company.",
-    bullets: [
-      { icon: CheckCircle2, text: "Helping individuals and businesses solve technology challenges." },
-      { icon: CheckCircle2, text: "Making technology support simple, accessible and reliable." },
-      { icon: CheckCircle2, text: "Connecting customers with the right solutions and support." },
-      { icon: CheckCircle2, text: "Building trust through clear communication and quality service." },
-      { icon: CheckCircle2, text: "Creating a better and more convenient technology experience." },
-    ],
+    body: "At GiCOFix Solutions, we bridge the gap between people and technology. We are a dedicated technology support and solutions company committed to making tech simple, accessible, and reliable for both individuals and businesses. By combining technical expertise with clear communication, we remove the complexity from technology so you can focus on what matters most.",
   },
   {
     icon: Target,
     tag: "Mission",
     title: "Our Mission",
-    bullets: [
-      { icon: CheckCircle2, text: "Making technology support easy to access." },
-      { icon: CheckCircle2, text: "Providing reliable and practical solutions." },
-      { icon: CheckCircle2, text: "Connecting customers with the right support." },
-      { icon: CheckCircle2, text: "Keeping customers informed throughout the process." },
-      { icon: CheckCircle2, text: "Delivering quality service with honesty and professionalism." },
-      { icon: CheckCircle2, text: "Helping people and businesses use technology with confidence." },
-    ],
+    body: "To deliver accessible, practical, and honest technology support that empowers individuals and businesses to navigate the digital world with total confidence.",
   },
   {
     icon: Eye,
     tag: "Vision",
     title: "Our Vision",
-    bullets: [
-      { icon: CheckCircle2, text: "To become the most trusted technology support and solutions company." },
-      { icon: CheckCircle2, text: "To be a reliable partner for individuals and businesses." },
-      { icon: CheckCircle2, text: "To make technology support simple and accessible." },
-      { icon: CheckCircle2, text: "To create the best experience for everyone seeking technology solutions." },
-    ],
+    body: "To be the most trusted technology support and solutions partner—recognized for seamlessly connecting people with the right tools, reliable service, and an exceptional customer experience.",
   },
   {
     icon: Heart,
     tag: "Core Values",
     title: "Our Core Values",
     values: [
-      { icon: Handshake, name: "Trust", items: ["Commitment", "Honesty", "Long-lasting relationships"] },
-      { icon: Users, name: "Customer First", items: ["Understanding customer needs", "Putting customers first", "Creating a positive experience"] },
-      { icon: Wrench, name: "Reliability", items: ["Dependable service", "Consistency", "Keeping our promises"] },
-      { icon: MessageSquare, name: "Transparency", items: ["Clear communication", "Openness", "Keeping customers informed"] },
-      { icon: Sparkles, name: "Quality & Innovation", items: ["High standards", "Continuous improvement", "Better and smarter solutions"] },
+      { icon: Handshake, name: "Trust", items: ["Built on honesty, unwavering commitment, and long-lasting partnerships."] },
+      { icon: Users, name: "Customer-First", items: ["Dedicated to understanding your unique needs and delivering positive, impactful outcomes."] },
+      { icon: Wrench, name: "Reliability", items: ["Grounded in dependable service, consistency, and honoring our promises."] },
+      { icon: MessageSquare, name: "Transparency", items: ["Driven by clear communication, openness, and keeping you informed every step of the way."] },
+      { icon: Sparkles, name: "Quality & Innovation", items: ["Committed to high standards, continuous improvement, and delivering smarter solutions."] },
     ],
   },
 ];
@@ -100,7 +81,7 @@ const About = () => {
           <p className="text-accent font-medium mb-2 text-xs md:text-sm uppercase tracking-wide">About</p>
           <h2 className="text-2xl md:text-4xl font-semibold mb-3">Who We Are</h2>
           <p className="text-sm md:text-base text-muted-foreground">
-            A technology support and solutions company built on trust, reliability, and clear communication.
+            We bridge the gap between people and technology — making support simple, accessible, and reliable.
           </p>
         </motion.div>
 
@@ -155,11 +136,9 @@ const About = () => {
                                 </span>
                                 <span className="text-sm font-semibold text-foreground">{v.name}</span>
                               </div>
-                              <ul className="space-y-1 pl-10">
-                                {v.items.map((item, ii) => (
-                                  <li key={ii} className="text-xs text-muted-foreground leading-snug">{item}</li>
-                                ))}
-                              </ul>
+                              <p className="text-xs text-muted-foreground leading-snug pl-10">
+                                {v.items[0]}
+                              </p>
                             </div>
                           ))}
                         </div>
