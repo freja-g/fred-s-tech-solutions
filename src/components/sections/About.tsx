@@ -136,11 +136,9 @@ const About = () => {
                                 </span>
                                 <span className="text-sm font-semibold text-foreground">{v.name}</span>
                               </div>
-                              <ul className="space-y-1 pl-10">
-                                {v.items.map((item, ii) => (
-                                  <li key={ii} className="text-xs text-muted-foreground leading-snug">{item}</li>
-                                ))}
-                              </ul>
+                              <p className="text-xs text-muted-foreground leading-snug pl-10">
+                                {v.items[0]}
+                              </p>
                             </div>
                           ))}
                         </div>
