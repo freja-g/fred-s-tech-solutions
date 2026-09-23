@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, type CarouselApi } from "@/components/ui/carousel";
-import { Target, Eye, Heart, Shield, Lightbulb, Users } from "lucide-react";
+import { Target, Eye, Heart, Handshake, Users, Wrench, MessageSquare, Sparkles, CheckCircle2, Building2 } from "lucide-react";
 
 const AUTO_SCROLL_INTERVAL = 6000;
 
@@ -9,32 +9,59 @@ type Slide = {
   icon: React.ElementType;
   tag: string;
   title: string;
-  body: string;
+  body?: string;
   bullets?: { icon: React.ElementType; text: string }[];
+  values?: { icon: React.ElementType; name: string; items: string[] }[];
 };
 
 const slides: Slide[] = [
   {
+    icon: Building2,
+    tag: "About Us",
+    title: "Who We Are",
+    body: "GiCOFix Solutions is a technology support and solutions company.",
+    bullets: [
+      { icon: CheckCircle2, text: "Helping individuals and businesses solve technology challenges." },
+      { icon: CheckCircle2, text: "Making technology support simple, accessible and reliable." },
+      { icon: CheckCircle2, text: "Connecting customers with the right solutions and support." },
+      { icon: CheckCircle2, text: "Building trust through clear communication and quality service." },
+      { icon: CheckCircle2, text: "Creating a better and more convenient technology experience." },
+    ],
+  },
+  {
     icon: Target,
     tag: "Mission",
-    title: "What drives us",
-    body: "To help small businesses and startups run smoother through practical technical consulting. We diagnose hardware and software problems, implement fixes that last, and explain every step in plain language. No buzzwords, no upselling. Just technical help that makes a difference.",
+    title: "Our Mission",
+    bullets: [
+      { icon: CheckCircle2, text: "Making technology support easy to access." },
+      { icon: CheckCircle2, text: "Providing reliable and practical solutions." },
+      { icon: CheckCircle2, text: "Connecting customers with the right support." },
+      { icon: CheckCircle2, text: "Keeping customers informed throughout the process." },
+      { icon: CheckCircle2, text: "Delivering quality service with honesty and professionalism." },
+      { icon: CheckCircle2, text: "Helping people and businesses use technology with confidence." },
+    ],
   },
   {
     icon: Eye,
     tag: "Vision",
-    title: "Where we're headed",
-    body: "To be the most trusted technical partner for growing businesses across Kenya and the region. The team you call when a system goes down, when data needs to make sense, or when you need clear technical direction. We want every client to feel confident, not overwhelmed, by their technology.",
+    title: "Our Vision",
+    bullets: [
+      { icon: CheckCircle2, text: "To become the most trusted technology support and solutions company." },
+      { icon: CheckCircle2, text: "To be a reliable partner for individuals and businesses." },
+      { icon: CheckCircle2, text: "To make technology support simple and accessible." },
+      { icon: CheckCircle2, text: "To create the best experience for everyone seeking technology solutions." },
+    ],
   },
   {
     icon: Heart,
     tag: "Core Values",
-    title: "How we work",
-    body: "Our principles shape every consultation, every fix, and every conversation:",
-    bullets: [
-      { icon: Shield, text: "Clarity: we explain things in plain language, with no jargon and no upselling." },
-      { icon: Lightbulb, text: "Practical focus: we deliver outcomes that matter, not reports that gather dust." },
-      { icon: Users, text: "Partnership: we stay engaged until the problem is actually solved." },
+    title: "Our Core Values",
+    values: [
+      { icon: Handshake, name: "Trust", items: ["Commitment", "Honesty", "Long-lasting relationships"] },
+      { icon: Users, name: "Customer First", items: ["Understanding customer needs", "Putting customers first", "Creating a positive experience"] },
+      { icon: Wrench, name: "Reliability", items: ["Dependable service", "Consistency", "Keeping our promises"] },
+      { icon: MessageSquare, name: "Transparency", items: ["Clear communication", "Openness", "Keeping customers informed"] },
+      { icon: Sparkles, name: "Quality & Innovation", items: ["High standards", "Continuous improvement", "Better and smarter solutions"] },
     ],
   },
 ];
@@ -73,7 +100,7 @@ const About = () => {
           <p className="text-accent font-medium mb-2 text-xs md:text-sm uppercase tracking-wide">About</p>
           <h2 className="text-2xl md:text-4xl font-semibold mb-3">Who We Are</h2>
           <p className="text-sm md:text-base text-muted-foreground">
-            Technical consulting grounded in practical results: a clear mission, a focused vision, and values we live by.
+            A technology support and solutions company built on trust, reliability, and clear communication.
           </p>
         </motion.div>
 
@@ -101,11 +128,13 @@ const About = () => {
                         {s.tag}
                       </span>
                       <h3 className="text-xl sm:text-2xl font-semibold mb-3">{s.title}</h3>
-                      <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">
-                        {s.body}
-                      </p>
+                      {s.body && (
+                        <p className="text-sm sm:text-base text-foreground font-medium leading-relaxed max-w-xl mb-1">
+                          {s.body}
+                        </p>
+                      )}
                       {s.bullets && (
-                        <ul className="mt-5 space-y-3 w-full max-w-md text-left">
+                        <ul className="mt-4 space-y-3 w-full max-w-md text-left">
                           {s.bullets.map((b, bi) => (
                             <li key={bi} className="flex items-start gap-3">
                               <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-accent">
@@ -115,6 +144,25 @@ const About = () => {
                             </li>
                           ))}
                         </ul>
+                      )}
+                      {s.values && (
+                        <div className="mt-4 w-full max-w-lg text-left grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {s.values.map((v, vi) => (
+                            <div key={vi} className="bg-secondary/60 rounded-lg p-4">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
+                                  <v.icon size={16} />
+                                </span>
+                                <span className="text-sm font-semibold text-foreground">{v.name}</span>
+                              </div>
+                              <ul className="space-y-1 pl-10">
+                                {v.items.map((item, ii) => (
+                                  <li key={ii} className="text-xs text-muted-foreground leading-snug">{item}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </motion.div>
