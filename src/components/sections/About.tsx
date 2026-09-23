@@ -80,9 +80,6 @@ const About = () => {
         >
           <p className="text-accent font-medium mb-2 text-xs md:text-sm uppercase tracking-wide">About</p>
           <h2 className="text-2xl md:text-4xl font-semibold mb-3">Who We Are</h2>
-          <p className="text-sm md:text-base text-muted-foreground">
-            We bridge the gap between people and technology — making support simple, accessible, and reliable.
-          </p>
         </motion.div>
 
         <div
@@ -101,7 +98,7 @@ const About = () => {
                     transition={{ duration: 0.4 }}
                     className="h-full"
                   >
-                    <div className="bg-card border border-border rounded-xl p-6 sm:p-8 shadow-card h-full flex flex-col items-center text-center min-h-[300px]">
+                    <div className="bg-card border border-border rounded-xl p-6 sm:p-8 shadow-card h-full flex flex-col items-center text-center">
                       <div className="flex items-center justify-center h-14 w-14 rounded-full bg-accent/15 text-accent mb-4">
                         <s.icon size={26} />
                       </div>
@@ -166,31 +163,6 @@ const About = () => {
             ))}
           </div>
         </div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto"
-        >
-          {[
-            { value: "10+", label: "Years of Experience" },
-            { value: "50+", label: "Clients Helped" },
-            { value: "100%", label: "Practical Focus" },
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              className="text-center p-6 bg-secondary rounded-lg"
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <p className="text-3xl font-semibold text-foreground mb-1">{stat.value}</p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </motion.div>
-          ))}
-        </motion.div>
       </div>
     </section>
   );
