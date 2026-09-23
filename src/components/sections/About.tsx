@@ -80,9 +80,6 @@ const About = () => {
         >
           <p className="text-accent font-medium mb-2 text-xs md:text-sm uppercase tracking-wide">About</p>
           <h2 className="text-2xl md:text-4xl font-semibold mb-3">Who We Are</h2>
-          <p className="text-sm md:text-base text-muted-foreground">
-            We bridge the gap between people and technology — making support simple, accessible, and reliable.
-          </p>
         </motion.div>
 
         <div
