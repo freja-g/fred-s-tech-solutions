@@ -96,9 +96,9 @@ const About = () => {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4 }}
-                    className="h-full"
+                    className=""
                   >
-                    <div className="bg-card border border-border rounded-xl p-6 sm:p-8 shadow-card h-full flex flex-col items-center text-center">
+                    <div className="bg-card border border-border rounded-xl p-6 sm:p-8 shadow-card flex flex-col items-center text-center">
                       <div className="flex items-center justify-center h-14 w-14 rounded-full bg-accent/15 text-accent mb-4">
                         <s.icon size={26} />
                       </div>
