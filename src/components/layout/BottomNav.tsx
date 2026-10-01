@@ -59,7 +59,7 @@ const BottomNav = () => {
                     </span>
                   )}
                 </span>
-                <span className="max-w-full truncate leading-none">{label === "Consultations" ? "Requests" : label}</span>
+                <span className="max-w-full truncate leading-none">{label}</span>
               </NavLink>
             </li>
           );
