@@ -144,15 +144,11 @@ const ServicesPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-accent font-medium mb-3 text-sm uppercase tracking-wide">
-                What we love doing
-              </p>
               <h1 className="text-3xl md:text-4xl font-semibold mb-4">
-                Tech help that gets you excited again
+                Our Services
               </h1>
               <p className="text-muted-foreground">
-                We don't just fix problems — we turn them into wins. Every service below is built to
-                save you time, cut frustration, and unlock what your business can really do.
+                Pick a service below to get started.
               </p>
               {isStaff && (
                 <div className="mt-5 flex items-center justify-center gap-3 flex-wrap">

@@ -10,20 +10,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, LogOut, Mail, User as UserIcon, Calendar, Shield, MessageCircle, Star, Settings, FileText, Camera as CameraIcon, Key, Save, MapPin, Activity, BarChart2, Lightbulb } from "lucide-react";
+import { LogOut, Mail, Calendar, Shield, MessageCircle, Star, Settings, FileText, Camera as CameraIcon, Key, Save, MapPin, Activity, BarChart2, Lightbulb } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
 import { Switch } from "@/components/ui/switch";
 
 type Profile = { display_name: string | null; email: string | null; created_at: string; avatar_url: string | null; is_online?: boolean; coverage_zones?: string[] };
-type MsgRow = { id: string; body: string; created_at: string; sender_role: string };
 
 const ProfilePage = () => {
   const { user, loading, isAdmin, isTechnician, signOut } = useAuth();
   const nav = useNavigate();
   const { toast } = useToast();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [resolved, setResolved] = useState<MsgRow[]>([]);
-  const [totalMessages, setTotalMessages] = useState(0);
 
   const [newName, setNewName] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -114,23 +111,6 @@ const ProfilePage = () => {
         if (data?.is_online !== undefined) setIsOnline(data.is_online);
         if (data?.coverage_zones) setZones(data.coverage_zones.join(", "));
       });
-
-    if (!isStaff) {
-      supabase
-        .from("messages")
-        .select("id, body, created_at, sender_role")
-        .eq("customer_id", user.id)
-        .neq("sender_role", "customer")
-        .order("created_at", { ascending: false })
-        .limit(10)
-        .then(({ data }) => setResolved((data as MsgRow[]) ?? []));
-
-      supabase
-        .from("messages")
-        .select("id", { count: "exact", head: true })
-        .eq("customer_id", user.id)
-        .then(({ count }) => setTotalMessages(count ?? 0));
-    }
   }, [user, isStaff]);
 
   if (loading || !user) return null;
@@ -233,34 +213,19 @@ const ProfilePage = () => {
           </section>
 
           {!isStaff && (
-            <>
-              {/* Actions */}
-              <section className="bg-card border border-border rounded-xl p-6 shadow-card">
-                <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                  <Settings size={18} className="text-accent" /> Quick Actions
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Button variant="outline" onClick={() => nav("/consultations")} className="justify-start">
-                    <FileText size={16} className="mr-2" /> My Consultations
-                  </Button>
-                  <Button variant="outline" onClick={() => nav("/get-smart")} className="justify-start">
-                    <Lightbulb size={16} className="mr-2" /> Tech Tips (Get Smart)
-                  </Button>
-                </div>
-              </section>
-
-              {/* Stats */}
-              <section className="grid grid-cols-2 gap-4">
-                <div className="bg-card border border-border rounded-xl p-4 text-center">
-                  <p className="text-3xl font-semibold text-accent">{totalMessages}</p>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Total Messages</p>
-                </div>
-                <div className="bg-card border border-border rounded-xl p-4 text-center">
-                  <p className="text-3xl font-semibold text-accent">{resolved.length}</p>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Support Replies</p>
-                </div>
-              </section>
-            </>
+            <section className="bg-card border border-border rounded-xl p-6 shadow-card">
+              <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                <Settings size={18} className="text-accent" /> Quick Actions
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Button variant="outline" onClick={() => nav("/consultations")} className="justify-start">
+                  <FileText size={16} className="mr-2" /> My Consultations
+                </Button>
+                <Button variant="outline" onClick={() => nav("/get-smart")} className="justify-start">
+                  <Lightbulb size={16} className="mr-2" /> Tech Tips (Get Smart)
+                </Button>
+              </div>
+            </section>
           )}
 
           {isStaff && (

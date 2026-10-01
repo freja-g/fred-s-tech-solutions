@@ -111,21 +111,7 @@ const MessagesPage = () => {
     <div className="h-[calc(100dvh-5rem-env(safe-area-inset-bottom,0px))] md:h-[100dvh] flex flex-col overflow-hidden">
       <Header />
       <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-3 pb-2 md:pb-6 container max-w-2xl w-full">
-        <h1 className="text-2xl font-semibold mb-2">Chat with GiCOFix</h1>
-        <p className="text-sm text-muted-foreground mb-4 hidden sm:block">
-          Recent communications across all our channels. Reply here or reach us anywhere.
-        </p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-accent/15 text-accent px-2.5 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent" /> In-App · Active
-          </span>
-          <a href="https://wa.me/254742123999" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full hover:bg-secondary/70">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> WhatsApp
-          </a>
-          <a href="mailto:wigatechnologies@gmail.com" className="inline-flex items-center gap-1.5 text-xs font-medium bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full hover:bg-secondary/70">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> Email
-          </a>
-        </div>
+        <h1 className="text-2xl font-semibold mb-3">Chat with GiCOFix</h1>
         <div className="bg-card border border-border rounded-xl flex flex-col flex-1 min-h-0">
           <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 space-y-3 overscroll-contain">
             {messages.length === 0 && (
