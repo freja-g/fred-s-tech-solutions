@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield, MessageCircle, Star, Settings, FileText, User, BarChart2, Activity } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Shield, MessageCircle, Star, Settings, FileText, BarChart2 } from "lucide-react";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 
