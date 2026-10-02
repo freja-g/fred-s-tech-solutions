@@ -30,7 +30,7 @@ Reply ONLY with JSON: {"service_id": string, "reason": string (max 2 sentences),
     const call = createResponsesCall(
       req,
       { baseURL: "https://ai.gateway.lovable.dev/v1", apiKey, model: "openai/gpt-6-astra" },
-      [{ role: "system", content: system }, { role: "user", content: problem.trim() }],
+      [{ role: "user", content: `${system}\n\nCustomer problem:\n${problem.trim()}` }],
     );
     let text = "";
     for await (const part of call.result.fullStream) {
@@ -53,7 +53,7 @@ Reply ONLY with JSON: {"service_id": string, "reason": string (max 2 sentences),
     if (status === 403) return json({ error: "AI access is blocked for this workspace." }, 403);
     console.error(e);
     if (/not registered/i.test(String(e?.responseBody ?? e?.message))) return json({ error: "AI is not configured for this app yet." }, 500);
-    return json({ error: "Something went wrong. Please try again.", detail: String(e?.message ?? e).slice(0, 300) }, 500);
+    return json({ error: "Something went wrong. Please try again." }, 500);
     return json({ error: "Something went wrong. Please try again." }, 500);
   }
 });
