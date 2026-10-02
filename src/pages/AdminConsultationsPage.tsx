@@ -196,6 +196,11 @@ const AdminConsultationsPage = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4 p-4 pt-0 sm:p-6 sm:pt-0">
+        {c.delivery_method && (
+          <span className="inline-block rounded-full bg-accent/15 px-3 py-1 text-xs font-medium capitalize text-accent">
+            Delivery: {String(c.delivery_method).replace("_", "-")}
+          </span>
+        )}
         <p className="text-sm">{c.description}</p>
 
         {c.status === 'rejected' && c.rejected_reason && (

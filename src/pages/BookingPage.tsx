@@ -9,9 +9,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Camera, X, Video } from "lucide-react";
+import { Camera, X, Video, Home, Truck, Store, Monitor } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
 import { useConsultationBooking } from "@/hooks/useConsultationBooking";
+
+type Delivery = "doorstep" | "pick_up" | "drop_off" | "remote";
+const DELIVERY_OPTIONS: { value: Delivery; label: string; hint: string; Icon: typeof Home }[] = [
+  { value: "doorstep", label: "Doorstep", hint: "We come to you", Icon: Home },
+  { value: "pick_up", label: "Pick-up", hint: "We collect your device", Icon: Truck },
+  { value: "drop_off", label: "Drop-off", hint: "You bring it to us", Icon: Store },
+  { value: "remote", label: "Remote", hint: "We fix it online", Icon: Monitor },
+];
 
 const BookingPage = () => {
   const { user, isAdmin, isTechnician } = useAuth();
@@ -25,6 +33,7 @@ const BookingPage = () => {
   const [description, setDescription] = useState("");
   const [media, setMedia] = useState<string[]>([]);
   const [serviceId, setServiceId] = useState<string | null>(null);
+  const [delivery, setDelivery] = useState<Delivery | null>(null);
 
   useEffect(() => {
     const s = searchParams.get("service");
@@ -46,11 +55,16 @@ const BookingPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!delivery) {
+      toast({ title: "Choose a delivery option", description: "Tell us how you'd like your service delivered.", variant: "destructive" });
+      return;
+    }
     await bookConsultation({
       subject,
       description,
       service_id: serviceId,
-      attachment_urls: media
+      attachment_urls: media,
+      delivery_method: delivery,
     });
   };
 
@@ -70,6 +84,25 @@ const BookingPage = () => {
           <div className="space-y-2">
             <Label htmlFor="desc">Problem Description</Label>
             <Textarea id="desc" placeholder="Please provide details about what's happening..." rows={6} value={description} onChange={e => setDescription(e.target.value)} required />
+          </div>
+
+          <div className="space-y-3">
+            <Label>How would you like your service delivered?</Label>
+            <div className="grid grid-cols-2 gap-3">
+              {DELIVERY_OPTIONS.map(({ value, label, hint, Icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setDelivery(value)}
+                  aria-pressed={delivery === value}
+                  className={`flex flex-col items-start gap-1 rounded-lg border-2 p-3 text-left transition-colors ${delivery === value ? "border-accent bg-accent/10" : "border-border hover:border-accent/50"}`}
+                >
+                  <Icon size={20} className="text-accent" />
+                  <span className="text-sm font-semibold">{label}</span>
+                  <span className="text-xs text-muted-foreground">{hint}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-3">
