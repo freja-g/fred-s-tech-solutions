@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import { supabase as supabaseClient } from "@/integrations/supabase/client";
 const supabase = supabaseClient as any;
 import { useAuth } from "@/hooks/useAuth";
+import ServiceAdvisor from "@/components/sections/ServiceAdvisor";
 
 const ICONS: Record<string, any> = { Settings, Wrench, BarChart3, Briefcase };
 
@@ -161,6 +162,8 @@ const ServicesPage = () => {
                 </div>
               )}
             </motion.div>
+
+            {!isStaff && <ServiceAdvisor services={services} />}
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service, index) => {
