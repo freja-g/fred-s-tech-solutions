@@ -32,7 +32,11 @@ Reply ONLY with JSON: {"service_id": string, "reason": string (max 2 sentences),
       { baseURL: "https://ai.gateway.lovable.dev/v1", apiKey, model: "openai/gpt-6-astra" },
       [{ role: "system", content: system }, { role: "user", content: problem.trim() }],
     );
-    const text = await call.result.text;
+    let text = "";
+    for await (const part of call.result.fullStream) {
+      if (part.type === "text-delta") text += (part as any).text ?? (part as any).delta ?? "";
+      if (part.type === "error") throw (part as any).error;
+    }
     const match = text.match(/\{[\s\S]*\}/);
     const parsed = match ? JSON.parse(match[0]) : null;
     const service = list.find((s) => s.id === parsed?.service_id) ?? null;
