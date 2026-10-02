@@ -6,6 +6,9 @@ export const consultationSchema = z.object({
   description: z.string().min(10, "Please provide more detail (at least 10 characters)").max(2000),
   service_id: z.string().uuid().nullable().optional(),
   attachment_urls: z.array(z.string()).default([]),
+  delivery_method: z.enum(["doorstep", "pick_up", "drop_off", "remote"], {
+    errorMap: () => ({ message: "Please choose how you want the service delivered" }),
+  }),
 });
 
 export type ConsultationFormValues = z.infer<typeof consultationSchema>;
