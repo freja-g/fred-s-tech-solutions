@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Camera, X, Video, Home, Truck, Store, Monitor } from "lucide-react";
+import { ArrowLeft, Camera, X, Video, Home, Truck, Store, Monitor } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
 import { useConsultationBooking } from "@/hooks/useConsultationBooking";
 
@@ -24,6 +24,7 @@ const DELIVERY_OPTIONS: { value: Delivery; label: string; hint: string; Icon: ty
 const BookingPage = () => {
   const { user, isAdmin, isTechnician } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { bookConsultation, busy } = useConsultationBooking();
 
@@ -72,6 +73,16 @@ const BookingPage = () => {
     <div className="min-h-screen">
       <Header />
       <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-2xl">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => navigate("/services")}
+          className="mb-4 -ml-3 gap-2"
+          aria-label="Back to services"
+        >
+          <ArrowLeft size={18} />
+          Back to Services
+        </Button>
         <h1 className="text-2xl sm:text-3xl font-bold mb-2">Book a Consultation</h1>
         <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">Tell us about your technical issue or project needs. Photos or videos (max 50MB) help us understand better.</p>
 
@@ -145,7 +156,7 @@ const BookingPage = () => {
           </div>
 
           <Button type="submit" variant="accent" className="w-full" disabled={busy}>
-            {busy ? "Booking..." : "Submit Consultation Request"}
+            {busy ? "Booking..." : "Book Consultation"}
           </Button>
         </form>
       </main>
