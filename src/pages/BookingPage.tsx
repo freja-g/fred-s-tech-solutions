@@ -24,6 +24,7 @@ const DELIVERY_OPTIONS: { value: Delivery; label: string; hint: string; Icon: ty
 const BookingPage = () => {
   const { user, isAdmin, isTechnician } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { bookConsultation, busy } = useConsultationBooking();
 
@@ -75,7 +76,7 @@ const BookingPage = () => {
         <Button
           type="button"
           variant="ghost"
-          onClick={() => window.history.length > 1 ? window.history.back() : window.location.assign("/services")}
+          onClick={() => navigate("/services")}
           className="mb-4 -ml-3 gap-2"
           aria-label="Back to services"
         >
