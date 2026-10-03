@@ -23,7 +23,7 @@ const BottomNav = () => {
     },
     {
       to: isStaff ? "/admin/consultations" : "/consultations",
-      label: isStaff ? "Admin" : "Requests",
+      label: "Consultations",
       icon: ClipboardList,
       match: (p: string) => p.startsWith("/consultations") || p.startsWith("/admin/consultations"),
       badge: 0
@@ -44,7 +44,7 @@ const BottomNav = () => {
               <NavLink
                 to={to}
                 className={cn(
-                  "flex min-h-16 flex-col items-center justify-center gap-1 px-0.5 py-2 text-[11px] font-medium transition-colors",
+                  "flex min-h-16 flex-col items-center justify-center gap-1 px-0.5 py-2 text-[10px] font-medium transition-colors sm:text-[11px]",
                   active ? "text-accent" : "text-muted-foreground hover:text-foreground",
                 )}
               >
