@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, Trash2, Edit2, Lightbulb, Briefcase, Camera, Video, X } from "lucide-react";
+import { Plus, Trash2, Camera, Video, X } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
 
 const AdminContentPage = () => {
@@ -21,7 +21,7 @@ const AdminContentPage = () => {
   const [tips, setTips] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
 
-  const [newService, setNewService] = useState({ title: "", description: "", icon_name: "Briefcase" });
+  const [newService, setNewService] = useState({ title: "", description: "", icon_name: "Briefcase", media_url: "" });
   const [newTip, setNewTip] = useState({ title: "", body: "", category: "Tech Tip", image_url: "" });
 
   const isStaff = isAdmin || isTechnician;
@@ -44,9 +44,14 @@ const AdminContentPage = () => {
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
       toast({ title: "Success", description: "Service added successfully" });
-      setNewService({ title: "", description: "", icon_name: "Briefcase" });
+      setNewService({ title: "", description: "", icon_name: "Briefcase", media_url: "" });
       fetchContent();
     }
+  };
+
+  const handleUploadServiceMedia = async (type: 'image' | 'video') => {
+    const url = await uploadMedia("attachments", "services", type);
+    if (url) setNewService({ ...newService, media_url: url });
   };
 
   const handleAddTip = async () => {
@@ -98,16 +103,37 @@ const AdminContentPage = () => {
               <CardContent className="space-y-4">
                 <Input placeholder="Title" value={newService.title} onChange={e => setNewService({...newService, title: e.target.value})} />
                 <Textarea placeholder="Description" value={newService.description} onChange={e => setNewService({...newService, description: e.target.value})} />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Service photo or video</p>
+                  {newService.media_url ? (
+                    <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-secondary">
+                      {/\.(mp4|webm|mov|m4v)(?:\?|#|$)/i.test(newService.media_url) ? (
+                        <video src={newService.media_url} muted loop autoPlay playsInline className="h-full w-full object-cover" />
+                      ) : (
+                        <img src={newService.media_url} className="h-full w-full object-cover" alt="New service preview" />
+                      )}
+                      <Button type="button" variant="secondary" size="icon" aria-label="Remove service media" onClick={() => setNewService({ ...newService, media_url: "" })} className="absolute right-2 top-2"><X size={16} /></Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button type="button" variant="outline" onClick={() => handleUploadServiceMedia('image')}><Camera size={16} /> Add Photo</Button>
+                      <Button type="button" variant="outline" onClick={() => handleUploadServiceMedia('video')}><Video size={16} /> Add Video</Button>
+                    </div>
+                  )}
+                </div>
                 <Button onClick={handleAddService} disabled={busy} className="w-full"><Plus className="mr-2" size={16} /> Add Service</Button>
               </CardContent>
             </Card>
 
             <div className="grid gap-4">
               {services.map(s => (
-                <div key={s.id} className="flex items-center justify-between p-4 bg-card border rounded-lg">
-                  <div>
+                <div key={s.id} className="flex items-center justify-between gap-3 p-3 sm:p-4 bg-card border rounded-lg">
+                  <div className="flex min-w-0 items-center gap-3">
+                    {s.media_url && <div className="h-16 w-20 shrink-0 overflow-hidden rounded border bg-secondary">{/\.(mp4|webm|mov|m4v)(?:\?|#|$)/i.test(s.media_url) ? <video src={s.media_url} muted className="h-full w-full object-cover" /> : <img src={s.media_url} alt="" className="h-full w-full object-cover" />}</div>}
+                    <div className="min-w-0">
                     <h3 className="font-semibold">{s.title}</h3>
-                    <p className="text-sm text-muted-foreground">{s.description}</p>
+                    <p className="line-clamp-2 text-sm text-muted-foreground">{s.description}</p>
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <Button variant="ghost" size="icon" onClick={() => handleDelete("services", s.id)}><Trash2 size={16} className="text-destructive" /></Button>
