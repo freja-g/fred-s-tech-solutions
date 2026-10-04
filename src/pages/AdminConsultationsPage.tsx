@@ -124,7 +124,7 @@ const AdminConsultationsPage = () => {
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
       const label =
-        status === "accepted" ? "Accepted — you are assigned to this request." :
+        status === "accepted" ? "Accepted. You are assigned to this consultation." :
         status === "completed" ? "Marked as completed. 🎉" :
         status === "rejected" ? "Consultation rejected." :
         "Updated.";
@@ -186,7 +186,7 @@ const AdminConsultationsPage = () => {
             {isStaff ? (
               <>From: {c.profiles?.display_name || "Unknown"} ({c.profiles?.email})</>
             ) : (
-              <>Requested on {new Date(c.created_at).toLocaleDateString()}</>
+              <>Booked on {new Date(c.created_at).toLocaleDateString()}</>
             )}
           </CardDescription>
         </div>
@@ -247,7 +247,7 @@ const AdminConsultationsPage = () => {
                   <DialogHeader><DialogTitle>Reject Consultation</DialogTitle></DialogHeader>
                   <div className="space-y-4 py-4">
                     <Label>Reason for Rejection</Label>
-                    <Textarea value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="Explain why this request is being rejected..." />
+                    <Textarea value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="Explain why this consultation is being rejected..." />
                   </div>
                   <DialogFooter>
                     <Button variant="destructive" onClick={() => handleReject(c.id)} disabled={!rejectReason}>Confirm Rejection</Button>
@@ -349,7 +349,7 @@ const AdminConsultationsPage = () => {
       <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-4xl">
         <div className="flex items-center justify-between gap-3 mb-5 sm:mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold">
-            {isStaff ? "Consultation Requests" : "My Consultations"}
+            {isStaff ? "Consultations" : "My Consultations"}
           </h1>
           <Button variant="ghost" size="icon" onClick={fetchConsultations} disabled={refreshing}>
             <RefreshCw size={20} className={refreshing ? "animate-spin" : ""} />
