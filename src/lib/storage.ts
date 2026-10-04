@@ -59,7 +59,10 @@ export const uploadMedia = (
       const { data: { publicUrl } } = supabase.storage
         .from(bucket)
         .getPublicUrl(data.path);
-      finish(publicUrl);
+      const { data: signed } = await supabase.storage
+        .from(bucket)
+        .createSignedUrl(data.path, 60 * 60 * 24 * 365 * 10);
+      finish(signed?.signedUrl || publicUrl);
     };
 
     // Fallback: if the picker is cancelled we won't get a change event.

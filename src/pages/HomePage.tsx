@@ -5,6 +5,7 @@ import About from "@/components/sections/About";
 import TrendsCarousel from "@/components/sections/TrendsCarousel";
 import ReviewsCarousel from "@/components/sections/ReviewsCarousel";
 import StaffDashboard from "@/components/admin/StaffDashboard";
+import HomeServices from "@/components/sections/HomeServices";
 import { useAuth } from "@/hooks/useAuth";
 
 const HomePage = () => {
@@ -24,6 +25,7 @@ const HomePage = () => {
         ) : (
           <>
             <Hero />
+            <HomeServices />
             <TrendsCarousel />
             <About />
             <ReviewsCarousel />
