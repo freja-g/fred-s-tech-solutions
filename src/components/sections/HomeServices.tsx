@@ -42,36 +42,26 @@ const HomeServices = () => {
   return (
     <section className="section-padding" aria-labelledby="home-services-title">
       <div className="container">
-        <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-6 flex items-end justify-between gap-4 md:mb-8">
+        <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-6 flex items-center justify-between gap-4 md:mb-8">
           <div>
-            <p className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-accent md:text-sm"><Briefcase size={14} /> Our Services</p>
-            <h2 id="home-services-title" className="text-2xl font-semibold md:text-4xl">How we can help</h2>
+            <h2 id="home-services-title" className="text-2xl font-bold md:text-3xl">Our Services</h2>
           </div>
-          <Link to="/services" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "hidden sm:inline-flex")}>View all <ArrowRight size={16} /></Link>
+          <Link to="/services" className="text-sm font-medium text-accent hover:underline flex items-center gap-1">See all <ArrowRight size={14} /></Link>
         </motion.div>
 
-        <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service, index) => {
-            const media = service.media_url || fallbackMedia[index % fallbackMedia.length];
             return (
-              <article key={service.id} className="flex w-[84%] shrink-0 snap-center flex-col overflow-hidden rounded-lg border border-border bg-card shadow-card sm:w-auto">
-                <div className="aspect-[16/10] overflow-hidden bg-secondary">
-                  {isVideo(media) ? (
-                    <video src={media} className="h-full w-full object-cover" autoPlay muted loop playsInline preload="metadata" aria-label={`${service.title} video`} />
-                  ) : (
-                    <img src={media} alt={service.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col p-5">
-                  <h3 className="mb-2 text-lg font-semibold">{service.title}</h3>
-                  <p className="mb-5 line-clamp-3 flex-1 text-sm text-muted-foreground">{service.description}</p>
-                  <Link to={`/book?service=${encodeURIComponent(service.title)}&service_id=${service.id}`} className={cn(buttonVariants({ variant: "accent" }), "w-full")}>Book Consultation <ArrowRight size={16} /></Link>
-                </div>
+              <article key={service.id} className="flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md">
+                <h3 className="mb-1 text-lg font-semibold">{service.title}</h3>
+                <p className="mb-4 flex-1 text-sm text-muted-foreground line-clamp-2">{service.description}</p>
+                <Link to={`/book?service=${encodeURIComponent(service.title)}&service_id=${service.id}`} className={cn(buttonVariants({ variant: "accent" }), "w-full justify-between")}>
+                  Start <ArrowRight size={16} />
+                </Link>
               </article>
             );
           })}
         </div>
-        <Link to="/services" className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:hidden")}>View all services <ArrowRight size={16} /></Link>
       </div>
     </section>
   );

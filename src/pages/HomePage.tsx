@@ -6,6 +6,7 @@ import TrendsCarousel from "@/components/sections/TrendsCarousel";
 import ReviewsCarousel from "@/components/sections/ReviewsCarousel";
 import StaffDashboard from "@/components/admin/StaffDashboard";
 import HomeServices from "@/components/sections/HomeServices";
+import { LatestConsultationSection } from "@/components/sections/LatestConsultationSection";
 import { useAuth } from "@/hooks/useAuth";
 
 const HomePage = () => {
@@ -25,6 +26,7 @@ const HomePage = () => {
         ) : (
           <>
             <Hero />
+            <LatestConsultationSection />
             <HomeServices />
             <TrendsCarousel />
             <About />

@@ -1,15 +1,14 @@
-
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useAuth } from "@/hooks/useAuth";
-import { CheckCircle, Clock, ExternalLink, Image as ImageIcon, RefreshCw } from "lucide-react";
+import { CheckCircle, Clock, Image as ImageIcon, RefreshCw, MessageSquare, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -19,7 +18,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PayDialog from "@/components/payments/PayDialog";
 import { formatKES } from "@/lib/staff";
-
 
 const APP_TYPE = import.meta.env.VITE_APP_TYPE || "user";
 
@@ -34,8 +32,11 @@ const AdminConsultationsPage = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
-  // In the User App (GiCOFix), NO ONE sees other people's consultations.
-  // In the Staff App (GiCOFix Staff), admins/technicians see everything.
+  // Rate job dialog
+  const [rateConsultation, setRateConsultation] = useState<any>(null);
+  const [ratingVal, setRatingVal] = useState(5);
+  const [reviewBody, setReviewBody] = useState("");
+
   const isStaffPortal = APP_TYPE === "tech";
   const isStaff = isStaffPortal && (isAdmin || isTechnician);
 
@@ -48,13 +49,11 @@ const AdminConsultationsPage = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      // If we are NOT in the staff portal, OR we are not staff, only show own consultations.
       if (!isStaff || !isStaffPortal) {
         if (user) query = query.eq("customer_id", user.id);
       }
 
       const { data, error } = await query;
-      // ... rest of logic remains same
 
       if (error) {
         console.error("Consultation fetch error:", error);
@@ -68,7 +67,6 @@ const AdminConsultationsPage = () => {
         return;
       }
 
-      // Manually join profiles and services since auto-relationship might be missing
       const customerIds = Array.from(new Set(list.map((c: any) => c.customer_id)));
       const serviceIds = Array.from(new Set(list.filter((c: any) => c.service_id).map((c: any) => c.service_id)));
 
@@ -123,12 +121,7 @@ const AdminConsultationsPage = () => {
 
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else {
-      const label =
-        status === "accepted" ? "Accepted. You are assigned to this consultation." :
-        status === "completed" ? "Marked as completed. 🎉" :
-        status === "rejected" ? "Consultation rejected." :
-        "Updated.";
-      toast({ title: "Consultation updated", description: label });
+      toast({ title: "Consultation updated" });
       fetchConsultations();
     }
   };
@@ -158,216 +151,206 @@ const AdminConsultationsPage = () => {
     setLogForm({ diagnostics: "", parts: "", notes: "", cost: "0" });
   };
 
+  const handleSubmitReview = async () => {
+    if (!user || !rateConsultation || !reviewBody.trim()) return;
+    const { data: profile } = await supabase
+      .from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
+
+    const { error } = await supabase.from("reviews").insert({
+      user_id: user.id,
+      author_name: profile?.display_name || user.email?.split("@")[0] || "Customer",
+      author_role: "Customer",
+      rating: ratingVal,
+      title: rateConsultation.subject,
+      body: reviewBody.trim(),
+    });
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Review submitted", description: "Thank you for your feedback!" });
+      setRateConsultation(null);
+      setReviewBody("");
+    }
+  };
+
   if (loading || !user) return null;
 
   const groups = {
+    all: consultations,
     pending: consultations.filter(c => c.status === 'pending'),
-    active: consultations.filter(c => c.status === 'accepted' || c.status === 'in_progress'),
+    in_progress: consultations.filter(c => c.status === 'accepted' || c.status === 'in_progress'),
     completed: consultations.filter(c => c.status === 'completed' || c.status === 'resolved'),
-    rejected: consultations.filter(c => c.status === 'rejected'),
   };
 
-  const renderCard = (c: any) => (
-    <Card key={c.id}>
-      <CardHeader className="flex flex-col sm:flex-row items-start justify-between gap-2 space-y-0 p-4 sm:p-6">
-        <div className="min-w-0 space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <CardTitle className="break-words">{c.services?.title || c.subject}</CardTitle>
-            <Badge variant={c.status === 'pending' ? 'outline' : c.status === 'rejected' ? 'destructive' : 'default'}>
-              {c.status}
-            </Badge>
-          </div>
-          {c.services?.title && c.subject && c.subject !== c.services.title && (
-            <CardDescription className="font-medium text-foreground/80">
-              {c.subject}
-            </CardDescription>
-          )}
-          <CardDescription>
-            {isStaff ? (
-              <>From: {c.profiles?.display_name || "Unknown"} ({c.profiles?.email})</>
-            ) : (
-              <>Booked on {new Date(c.created_at).toLocaleDateString()}</>
+  const formatBadgeStatus = (status: string) => {
+    if (status === "completed" || status === "resolved") return "Completed";
+    if (status === "accepted" || status === "in_progress") return "In progress";
+    if (status === "pending") return "Pending";
+    if (status === "rejected") return "Rejected";
+    return status;
+  };
+
+  const renderCard = (c: any) => {
+    const isCompleted = c.status === "completed" || c.status === "resolved";
+    const isInProgress = c.status === "accepted" || c.status === "in_progress";
+    const isPending = c.status === "pending";
+
+    return (
+      <Card key={c.id} className="border border-border shadow-sm">
+        <CardHeader className="flex flex-col sm:flex-row items-start justify-between gap-2 p-4 sm:p-5">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <CardTitle className="text-base sm:text-lg font-bold">
+                {c.subject || c.services?.title}
+              </CardTitle>
+              <Badge variant={isCompleted ? "default" : c.status === "rejected" ? "destructive" : "secondary"} className="capitalize">
+                {formatBadgeStatus(c.status)}
+              </Badge>
+            </div>
+            {c.delivery_method && (
+              <p className="text-xs text-muted-foreground capitalize">
+                Delivery: {String(c.delivery_method).replace("_", "-")}
+              </p>
             )}
-          </CardDescription>
-        </div>
-        <div className="shrink-0 text-left sm:text-right text-xs text-muted-foreground">
-          <Clock size={12} className="inline mr-1" />
-          {new Date(c.created_at).toLocaleDateString()}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4 p-4 pt-0 sm:p-6 sm:pt-0">
-        {c.delivery_method && (
-          <span className="inline-block rounded-full bg-accent/15 px-3 py-1 text-xs font-medium capitalize text-accent">
-            Delivery: {String(c.delivery_method).replace("_", "-")}
-          </span>
-        )}
-        <p className="text-sm">{c.description}</p>
-
-        {c.status === 'rejected' && c.rejected_reason && (
-          <div className="bg-destructive/10 p-3 rounded-lg text-sm text-destructive border border-destructive/20">
-            <strong>Rejection Reason:</strong> {c.rejected_reason}
           </div>
-        )}
+        </CardHeader>
 
-        {(c.status === 'completed' || c.status === 'resolved') && c.diagnostics && (
-          <div className="bg-accent/5 p-3 rounded-lg text-sm space-y-1 border border-accent/10">
-            <p><strong>Diagnostics:</strong> {c.diagnostics}</p>
-            {c.job_notes && <p><strong>Notes:</strong> {c.job_notes}</p>}
-            <p><strong>Cost:</strong> KES {c.cost}</p>
-          </div>
-        )}
+        <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0 space-y-3">
+          {c.description && <p className="text-sm text-foreground/90">{c.description}</p>}
 
-        {c.attachment_urls && c.attachment_urls.length > 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {c.attachment_urls.map((url: string, i: number) => (
-              <a key={i} href={url} target="_blank" rel="noreferrer" className="block w-20 h-20 rounded border overflow-hidden bg-secondary hover:opacity-80 transition-opacity">
-                {url.includes('.mp4') ? (
-                  <div className="w-full h-full flex items-center justify-center bg-black/10">
-                    <ImageIcon size={20} className="text-muted-foreground" />
-                  </div>
-                ) : (
-                  <img src={url} alt="Attachment" className="w-full h-full object-cover" />
-                )}
-              </a>
-            ))}
-          </div>
-        )}
-
-        <div className="flex flex-wrap gap-2">
-          {c.status === 'pending' && isStaff && (
-            <>
-              <Button onClick={() => handleAccept(c.id)} variant="accent" className="flex-1 min-w-[150px]">
-                Accept
-              </Button>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="flex-1 min-w-[150px]">Reject</Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader><DialogTitle>Reject Consultation</DialogTitle></DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <Label>Reason for Rejection</Label>
-                    <Textarea value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="Explain why this consultation is being rejected..." />
-                  </div>
-                  <DialogFooter>
-                    <Button variant="destructive" onClick={() => handleReject(c.id)} disabled={!rejectReason}>Confirm Rejection</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </>
-          )}
-
-          {(c.status === 'accepted' || c.status === 'in_progress') && isStaff && (c.technician_id === user?.id || isAdmin) && (
-            <>
-              <Button variant="outline" className="flex-1 min-w-[130px]" onClick={() => nav(`/admin/messages?customer=${c.customer_id}`)}>
-                Chat
-              </Button>
-
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="accent" className="flex-1 min-w-[130px]">Complete</Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader><DialogTitle>Repair Log & Completion</DialogTitle></DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label>Diagnostics</Label>
-                      <Textarea value={logForm.diagnostics} onChange={e => setLogForm({...logForm, diagnostics: e.target.value})} placeholder="What was the issue?" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Job Notes</Label>
-                      <Textarea value={logForm.notes} onChange={e => setLogForm({...logForm, notes: e.target.value})} placeholder="Additional notes..." />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Cost (KES)</Label>
-                      <Input type="number" value={logForm.cost} onChange={e => setLogForm({...logForm, cost: e.target.value})} />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="accent" onClick={() => { setSelectedConsultation(c); handleCompleteJob(); }}>Finish Job</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-
-              {isAdmin && technicians.length > 0 && (
-                <div className="flex-1 min-w-[200px]">
-                  <Select onValueChange={(val) => handleReassign(c.id, val)}>
-                    <SelectTrigger><SelectValue placeholder="Reassign Technician" /></SelectTrigger>
-                    <SelectContent>
-                      {technicians.filter(t => t.user_id !== c.technician_id).map(t => (
-                        <SelectItem key={t.user_id} value={t.user_id}>{t.display_name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </>
-          )}
-
-          {(c.status === 'completed' || c.status === 'resolved') && (
-            <div className="flex-1 flex flex-wrap items-center justify-between gap-3 py-2">
-              <span className="flex items-center text-sm text-muted-foreground gap-2">
-                <CheckCircle size={16} className="text-accent" /> Completed
-                {c.completed_at && ` on ${new Date(c.completed_at).toLocaleDateString()}`}
-              </span>
-
-              {c.payment_status === 'paid' ? (
-                <Badge variant="secondary" className="gap-1">
-                  Paid{c.mpesa_receipt ? ` · ${c.mpesa_receipt}` : ""}
-                </Badge>
-              ) : Number(c.cost) > 0 ? (
-                isStaff ? (
-                  <Badge variant="outline">Awaiting payment · {formatKES(Number(c.cost))}</Badge>
-                ) : (
-                  <PayDialog
-                    consultationId={c.id}
-                    amount={Number(c.cost)}
-                    defaultPhone={c.phone || ""}
-                    onPaid={fetchConsultations}
-                  />
-                )
-              ) : null}
+          {/* Payment Notice for Completed Jobs matching Page 4 PDF */}
+          {isCompleted && c.payment_status !== "paid" && Number(c.cost) > 0 && !isStaff && (
+            <div className="rounded-lg border border-accent/20 bg-accent/10 p-3 text-xs sm:text-sm">
+              <p className="font-semibold text-accent mb-2">Payment due. Pay with M-Pesa.</p>
+              <div className="flex flex-wrap gap-2">
+                <PayDialog
+                  consultationId={c.id}
+                  amount={Number(c.cost)}
+                  defaultPhone={c.phone || ""}
+                  onPaid={fetchConsultations}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setRateConsultation(c)}
+                >
+                  <Star size={14} className="mr-1.5 text-accent" /> Rate this job
+                </Button>
+              </div>
             </div>
           )}
 
-        </div>
-      </CardContent>
-    </Card>
-  );
+          {isCompleted && c.payment_status === "paid" && (
+            <div className="flex items-center justify-between text-xs text-muted-foreground bg-secondary/50 p-2 rounded">
+              <span>Paid with M-Pesa</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 text-xs"
+                onClick={() => setRateConsultation(c)}
+              >
+                <Star size={12} className="mr-1 text-accent" /> Rate this job
+              </Button>
+            </div>
+          )}
+
+          {/* Message about this consultation link matching PDF */}
+          <div className="pt-1">
+            <Link
+              to={`/messages`}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
+            >
+              <MessageSquare size={14} />
+              Message about this consultation
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   const renderList = (items: any[]) => (
-    <div className="grid gap-6">
-      {items.length === 0
-        ? <p className="text-center text-muted-foreground py-12">Nothing here.</p>
-        : items.map(renderCard)}
+    <div className="grid gap-4">
+      {items.length === 0 ? (
+        <p className="text-center text-muted-foreground py-12 text-sm">No consultations found.</p>
+      ) : (
+        items.map(renderCard)
+      )}
     </div>
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20">
       <Header />
-      <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-4xl">
-        <div className="flex items-center justify-between gap-3 mb-5 sm:mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">
-            {isStaff ? "Consultations" : "My Consultations"}
-          </h1>
+      <main className="md:pt-20 pt-4 container max-w-3xl">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <h1 className="text-2xl sm:text-3xl font-bold">Consultations</h1>
           <Button variant="ghost" size="icon" onClick={fetchConsultations} disabled={refreshing}>
-            <RefreshCw size={20} className={refreshing ? "animate-spin" : ""} />
+            <RefreshCw size={18} className={refreshing ? "animate-spin" : ""} />
           </Button>
         </div>
 
-        <Tabs defaultValue="pending" className="w-full">
-          <TabsList className="grid h-auto grid-cols-2 sm:grid-cols-4 w-full mb-6 gap-1 p-1">
-            <TabsTrigger className="min-w-0 px-2" value="pending">Pending ({groups.pending.length})</TabsTrigger>
-            <TabsTrigger className="min-w-0 px-2" value="active">Active ({groups.active.length})</TabsTrigger>
-            <TabsTrigger className="min-w-0 px-2" value="completed">Done ({groups.completed.length})</TabsTrigger>
-            <TabsTrigger className="min-w-0 px-2" value="rejected">Rejected ({groups.rejected.length})</TabsTrigger>
+        {/* Filter Tabs matching Page 4 PDF: All | Pending | In progress | Completed */}
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList className="grid grid-cols-4 w-full mb-6">
+            <TabsTrigger value="all">All ({groups.all.length})</TabsTrigger>
+            <TabsTrigger value="pending">Pending ({groups.pending.length})</TabsTrigger>
+            <TabsTrigger value="in_progress">In progress ({groups.in_progress.length})</TabsTrigger>
+            <TabsTrigger value="completed">Completed ({groups.completed.length})</TabsTrigger>
           </TabsList>
+          <TabsContent value="all">{renderList(groups.all)}</TabsContent>
           <TabsContent value="pending">{renderList(groups.pending)}</TabsContent>
-          <TabsContent value="active">{renderList(groups.active)}</TabsContent>
+          <TabsContent value="in_progress">{renderList(groups.in_progress)}</TabsContent>
           <TabsContent value="completed">{renderList(groups.completed)}</TabsContent>
-          <TabsContent value="rejected">{renderList(groups.rejected)}</TabsContent>
         </Tabs>
+
+        {/* Rating Dialog */}
+        {rateConsultation && (
+          <Dialog open={!!rateConsultation} onOpenChange={() => setRateConsultation(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Rate this job</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <div>
+                  <Label>Rating</Label>
+                  <div className="flex gap-2 mt-2">
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => setRatingVal(num)}
+                        className="p-1"
+                      >
+                        <Star className={`w-8 h-8 ${num <= ratingVal ? "fill-accent text-accent" : "text-muted-foreground"}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Your Feedback</Label>
+                  <Textarea
+                    value={reviewBody}
+                    onChange={(e) => setReviewBody(e.target.value)}
+                    placeholder="How was your experience with GiCOFix?"
+                    rows={4}
+                  />
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setRateConsultation(null)}>
+                  Cancel
+                </Button>
+                <Button variant="accent" onClick={handleSubmitReview} disabled={!reviewBody.trim()}>
+                  Submit Rating
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </main>
     </div>
   );

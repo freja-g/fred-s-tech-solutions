@@ -10,6 +10,7 @@ import {
   ChartBar as BarChart3,
   ArrowRight,
   Briefcase,
+  HelpCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -25,8 +26,7 @@ const DEFAULT_SERVICES = [
     id: "default-1",
     icon_name: "Settings",
     title: "Technical Consulting",
-    description:
-      "Get clear guidance on technology decisions, system architecture, and optimization strategies.",
+    description: "System reviews, tech stack, optimization",
     features: [
       "System and infrastructure reviews",
       "Technology stack recommendations",
@@ -38,8 +38,7 @@ const DEFAULT_SERVICES = [
     id: "default-2",
     icon_name: "Wrench",
     title: "IT Support & Troubleshooting",
-    description:
-      "When things break or slow down, you need solutions fast. We diagnose and resolve hardware and software issues.",
+    description: "Hardware diagnostics and repair guidance",
     features: [
       "Hardware diagnostics and repair guidance",
       "Software troubleshooting",
@@ -51,8 +50,7 @@ const DEFAULT_SERVICES = [
     id: "default-3",
     icon_name: "BarChart3",
     title: "Data & Software Support",
-    description:
-      "Turn your data into useful insights and keep your software running smoothly.",
+    description: "Data analysis, setup, automation basics",
     features: [
       "Data analysis and reporting",
       "Software configuration and setup",
@@ -64,8 +62,7 @@ const DEFAULT_SERVICES = [
     id: "default-4",
     icon_name: "Settings",
     title: "Network Setup & Security",
-    description:
-      "Secure your infrastructure and ensure reliable connectivity, from network design to security hardening.",
+    description: "Network design, audits, backup",
     features: [
       "Network architecture design",
       "Security audits and hardening",
@@ -77,8 +74,7 @@ const DEFAULT_SERVICES = [
     id: "default-5",
     icon_name: "Wrench",
     title: "Cloud Migration & Management",
-    description:
-      "Move your systems to the cloud safely and efficiently. We guide you through the process end-to-end.",
+    description: "Readiness, migration, cost strategy",
     features: [
       "Cloud readiness assessment",
       "Migration planning and execution",
@@ -90,8 +86,7 @@ const DEFAULT_SERVICES = [
     id: "default-6",
     icon_name: "BarChart3",
     title: "Business Process Automation",
-    description:
-      "Eliminate manual work and boost productivity by automating repetitive tasks.",
+    description: "Workflow design and integrations",
     features: [
       "Workflow automation design",
       "Process optimization analysis",
@@ -115,6 +110,7 @@ const ServicesPage = () => {
   const isStaff = isAdmin || isTechnician;
 
   const [services, setServices] = useState<ServiceItem[]>(DEFAULT_SERVICES);
+  const [showHelper, setShowHelper] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -134,86 +130,91 @@ const ServicesPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20">
       <Header />
       <main className="md:pt-20 pt-4">
-        <section className="section-padding bg-secondary/50">
-          <div className="container">
-            <motion.div
-              className="text-center max-w-2xl mx-auto mb-12"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+        {/* Top Sub-Header Tabs matching PDF */}
+        <div className="border-b border-border bg-card">
+          <div className="container flex items-center gap-6">
+            <Link
+              to="/services"
+              className="py-3 text-sm font-bold text-accent border-b-2 border-accent"
             >
-              <h1 className="text-3xl md:text-4xl font-semibold mb-4">
-                Our Services
-              </h1>
-              <p className="text-muted-foreground">
-                Pick a service below to get started.
-              </p>
-              {isStaff && (
-                <div className="mt-5 flex items-center justify-center gap-3 flex-wrap">
-                  <Link
-                    to="/admin/content"
-                    className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-                  >
-                    Manage services
-                  </Link>
+              Services
+            </Link>
+            <Link
+              to="/get-smart"
+              className="py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Get Smart
+            </Link>
+          </div>
+        </div>
+
+        <section className="section-padding py-6">
+          <div className="container max-w-4xl space-y-6">
+            {/* Helper Callout matching PDF */}
+            <div className="rounded-xl border border-accent/20 bg-accent/10 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-3 text-center sm:text-left">
+                <div className="p-2 rounded-full bg-accent text-accent-foreground shrink-0">
+                  <HelpCircle size={20} />
                 </div>
-              )}
-            </motion.div>
+                <div>
+                  <h2 className="font-semibold text-sm sm:text-base text-foreground">
+                    Not sure what you need?
+                  </h2>
+                  <p className="text-xs text-muted-foreground">Ask our helper</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowHelper(!showHelper)}
+                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full sm:w-auto")}
+              >
+                {showHelper ? "Hide Helper" : "Ask Helper"}
+              </button>
+            </div>
 
-            {!isStaff && <ServiceAdvisor services={services} />}
+            {showHelper && !isStaff && <ServiceAdvisor services={services} />}
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {isStaff && (
+              <div className="flex justify-end">
+                <Link
+                  to="/admin/content"
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+                >
+                  Manage services
+                </Link>
+              </div>
+            )}
+
+            <div className="grid gap-4 sm:grid-cols-2">
               {services.map((service, index) => {
-                const Icon = ICONS[service.icon_name || "Briefcase"] || Briefcase;
-
                 return (
                   <motion.div
                     key={service.id}
-                    className="bg-card rounded-xl p-6 shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col group"
-                    initial={{ opacity: 0, y: 20 }}
+                    className="bg-card rounded-xl p-5 border border-border shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.05 * index }}
+                    transition={{ duration: 0.3, delay: 0.04 * index }}
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors">
-                        <Icon className="text-accent" size={22} />
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-base font-semibold">{service.title}</h3>
+                        {service.isCustom && (
+                          <Badge variant="outline" className="text-[10px]">Custom</Badge>
+                        )}
                       </div>
-                      {service.isCustom && (
-                        <Badge variant="outline" className="text-[10px]">Custom</Badge>
-                      )}
+                      <p className="text-muted-foreground text-xs sm:text-sm mb-4">
+                        {service.description}
+                      </p>
                     </div>
-
-                    <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
-                    <p className="text-muted-foreground text-sm mb-4 flex-grow">
-                      {service.description}
-                    </p>
-
-                    {service.features && (
-                      <ul className="space-y-1.5 mb-5">
-                        {service.features.map((f, i) => (
-                          <li key={i} className="text-sm flex items-start gap-2">
-                            <span className="mt-1.5 block w-1 h-1 rounded-full bg-accent flex-shrink-0" />
-                            {f}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
 
                     <Link
                       to={`/book?service=${encodeURIComponent(service.title)}&service_id=${service.id}`}
-                      className={cn(
-                        buttonVariants({ variant: "accent" }),
-                        "w-full group/btn"
-                      )}
+                      className={cn(buttonVariants({ variant: "accent" }), "w-full justify-between mt-2")}
                     >
-                      Let's Get Started!
-                      <ArrowRight
-                        className="ml-2 group-hover/btn:translate-x-1 transition-transform"
-                        size={16}
-                      />
+                      Start
+                      <ArrowRight size={16} />
                     </Link>
                   </motion.div>
                 );

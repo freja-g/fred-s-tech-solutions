@@ -26,17 +26,19 @@ const Header = () => {
           <img src={fullmarkAsset} alt="GiCOFix Solutions" className="h-12 w-auto max-w-[118px] object-contain transition-transform group-hover:scale-105 md:h-16 md:max-w-none" />
         </Link>
 
-        <nav className="flex shrink-0 items-center">
+        <nav className="flex shrink-0 items-center gap-3">
           {user ? (
-            <button
-              onClick={signOut}
-              className="flex h-10 w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground md:h-auto md:w-auto md:text-sm md:font-medium md:gap-1"
-              aria-label="Sign out"
+            <Link
+              to="/profile"
+              className="text-xs font-semibold text-foreground hover:text-accent sm:text-sm transition-colors"
             >
-              <LogOut size={18} /> <span className="hidden md:inline">Sign out</span>
-            </button>
+              My account
+            </Link>
           ) : (
-            <Link to="/auth" className="px-1 text-xs font-medium text-muted-foreground hover:text-foreground sm:text-sm">
+            <Link
+              to="/auth"
+              className="text-xs font-semibold text-foreground hover:text-accent sm:text-sm transition-colors"
+            >
               Sign in
             </Link>
           )}
