@@ -41,13 +41,13 @@ const ReviewsCarousel = () => {
   }, [api, paused]);
 
   return (
-    <section className="section-padding bg-secondary/50">
-      <div className="container">
+    <section className="pb-8 pt-2">
+      <div className="container max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center max-w-2xl mx-auto mb-8 md:mb-10"
+          className="sr-only"
         >
           <p className="text-accent font-medium mb-2 text-xs md:text-sm uppercase tracking-wide">Reviews</p>
           <h2 className="text-2xl md:text-4xl font-semibold mb-3">What Our Customers Say</h2>
@@ -59,8 +59,8 @@ const ReviewsCarousel = () => {
             <CarouselContent className="-ml-4">
               {reviews.map((r) => (
                 <CarouselItem key={r.id} className="pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
-                  <div className="bg-card border border-border rounded-xl p-5 md:p-6 shadow-card h-full flex flex-col">
-                    <Quote className="text-accent/30 mb-3" size={28} />
+                  <div className="flex h-full flex-col rounded-xl border border-border bg-card p-4 shadow-card md:p-5">
+                    <Quote className="mb-2 text-accent/30" size={22} />
                     <div className="flex gap-0.5 mb-3">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star
@@ -85,7 +85,7 @@ const ReviewsCarousel = () => {
           </Carousel>
         </div>
 
-        <div className="text-center mt-8">
+        <div className="mt-4 text-center">
           <Link to="/reviews" className={cn(buttonVariants({ variant: "outline" }))}>
             Read all reviews & share yours
           </Link>

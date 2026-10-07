@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Briefcase, Lightbulb, MessageCircle, User, ClipboardList } from "lucide-react";
+import { Home, Briefcase, MessageCircle, User, ClipboardList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -33,7 +33,7 @@ const BottomNav = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_20px_hsl(var(--foreground)/0.06)] backdrop-blur-md md:hidden"
       aria-label="Primary"
     >
       <ul className="grid grid-cols-5 max-w-screen-md mx-auto">
@@ -48,7 +48,7 @@ const BottomNav = () => {
                   active ? "text-accent" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <span className="relative">
+                <span className={cn("relative flex h-8 min-w-12 items-center justify-center rounded-full transition-colors", active && "bg-accent/15")}>
                   <Icon size={20} strokeWidth={active ? 2.4 : 2} />
                   {badge > 0 && (
                     <span
