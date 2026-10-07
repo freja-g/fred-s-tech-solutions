@@ -1,10 +1,13 @@
-
 import { z } from "zod";
 
 export const consultationSchema = z.object({
   subject: z.string().min(1, "Subject is required").max(100),
   description: z.string().min(10, "Please provide more detail (at least 10 characters)").max(2000),
-  service_id: z.string().uuid().nullable().optional(),
+  service_id: z.string().nullable().optional().transform((val) => {
+    if (!val) return null;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
+    return isUuid ? val : null;
+  }),
   attachment_urls: z.array(z.string()).default([]),
   delivery_method: z.enum(["doorstep", "pick_up", "drop_off", "remote"], {
     errorMap: () => ({ message: "Please choose how you want the service delivered" }),
@@ -30,4 +33,5 @@ export type Consultation = {
   job_notes: string | null;
   cost: number;
   rejected_reason: string | null;
+  delivery_method?: string | null;
 };

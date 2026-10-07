@@ -294,10 +294,10 @@ const AdminConsultationsPage = () => {
         {/* Filter Tabs matching Page 4 PDF: All | Pending | In progress | Completed */}
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid grid-cols-4 w-full mb-6">
-            <TabsTrigger value="all">All ({groups.all.length})</TabsTrigger>
-            <TabsTrigger value="pending">Pending ({groups.pending.length})</TabsTrigger>
-            <TabsTrigger value="in_progress">In progress ({groups.in_progress.length})</TabsTrigger>
-            <TabsTrigger value="completed">Completed ({groups.completed.length})</TabsTrigger>
+            <TabsTrigger value="all" className="text-[10px] sm:text-xs px-1 truncate min-w-0">All ({groups.all.length})</TabsTrigger>
+            <TabsTrigger value="pending" className="text-[10px] sm:text-xs px-1 truncate min-w-0">Pending ({groups.pending.length})</TabsTrigger>
+            <TabsTrigger value="in_progress" className="text-[10px] sm:text-xs px-1 truncate min-w-0">In progress ({groups.in_progress.length})</TabsTrigger>
+            <TabsTrigger value="completed" className="text-[10px] sm:text-xs px-1 truncate min-w-0">Completed ({groups.completed.length})</TabsTrigger>
           </TabsList>
           <TabsContent value="all">{renderList(groups.all)}</TabsContent>
           <TabsContent value="pending">{renderList(groups.pending)}</TabsContent>

@@ -114,18 +114,27 @@ const ServicesPage = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("services")
-        .select("*")
-        .order("created_at", { ascending: false });
-      const custom: ServiceItem[] = (data || []).map((s: any) => ({
-        id: s.id,
-        title: s.title,
-        description: s.description,
-        icon_name: s.icon_name,
-        isCustom: true,
-      }));
-      setServices([...custom, ...DEFAULT_SERVICES]);
+      try {
+        const { data } = await supabase
+          .from("services")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (data && data.length > 0) {
+          const custom: ServiceItem[] = data.map((s: any) => ({
+            id: s.id,
+            title: s.title,
+            description: s.description,
+            icon_name: s.icon_name,
+            isCustom: true,
+          }));
+          const customTitles = new Set(custom.map(c => c.title.toLowerCase()));
+          const filteredDefaults = DEFAULT_SERVICES.filter(d => !customTitles.has(d.title.toLowerCase()));
+          setServices([...custom, ...filteredDefaults]);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch public.services, using local defaults", err);
+      }
     })();
   }, []);
 

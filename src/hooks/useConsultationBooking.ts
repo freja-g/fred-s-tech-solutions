@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -30,13 +29,28 @@ export const useConsultationBooking = () => {
 
     setBusy(true);
     try {
-      const { error } = await (supabase as unknown as {
-        from: (t: string) => { insert: (row: Record<string, unknown>) => Promise<{ error: { message: string } | null }> };
-      }).from("consultations").insert({
+      const sanitized = result.data;
+      const payload: Record<string, any> = {
         customer_id: user.id,
-        ...values,
+        subject: sanitized.subject,
+        description: sanitized.description,
+        service_id: sanitized.service_id,
+        attachment_urls: sanitized.attachment_urls,
+        delivery_method: sanitized.delivery_method,
         status: "pending",
-      });
+      };
+
+      let { error } = await (supabase as any).from("consultations").insert(payload);
+
+      // Gracefully handle database instances where 'delivery_method' column is missing or schema cache is outdated
+      if (error && (error.message?.toLowerCase().includes("delivery_method") || error.message?.toLowerCase().includes("schema cache") || error.code === "PGRST204")) {
+        console.warn("delivery_method column issue encountered, appending to description as fallback");
+        const deliveryText = sanitized.delivery_method ? `\n\n[Delivery Method: ${sanitized.delivery_method.replace("_", " ")}]` : "";
+        delete payload.delivery_method;
+        payload.description = `${sanitized.description}${deliveryText}`;
+        const retry = await (supabase as any).from("consultations").insert(payload);
+        error = retry.error;
+      }
 
       if (error) {
         toast({ title: "Booking failed", description: error.message, variant: "destructive" });
@@ -44,7 +58,6 @@ export const useConsultationBooking = () => {
       }
 
       toast({ title: "Success!", description: "Consultation booked. A technician will review it shortly." });
-      nav("/messages");
       return true;
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });

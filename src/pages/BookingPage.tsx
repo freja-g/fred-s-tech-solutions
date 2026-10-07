@@ -165,12 +165,12 @@ const BookingPage = () => {
         <h1 className="text-2xl sm:text-3xl font-bold mb-2">Book a Consultation</h1>
 
         {/* Stepper matching PDF */}
-        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-6 bg-card border border-border p-3 rounded-lg">
-          <span className="text-accent font-bold">1 Describe</span>
-          <span>→</span>
-          <span className="text-accent font-bold">2 Delivery</span>
-          <span>→</span>
-          <span className="text-accent font-bold">3 Submit</span>
+        <div className="flex items-center justify-between gap-1 text-xs font-semibold text-muted-foreground mb-6 bg-card border border-border p-3 rounded-lg flex-wrap min-w-0">
+          <span className="text-accent font-bold truncate">1 Describe</span>
+          <span className="shrink-0">→</span>
+          <span className="text-accent font-bold truncate">2 Delivery</span>
+          <span className="shrink-0">→</span>
+          <span className="text-accent font-bold truncate">3 Submit</span>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-card border border-border p-4 sm:p-6 rounded-xl shadow-sm">
