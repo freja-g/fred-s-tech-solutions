@@ -23,7 +23,7 @@ import ProfilePage from "./pages/ProfilePage";
 import LegalPage from "./pages/LegalPage";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/layout/BottomNav";
-import backgroundAsset from "./assets/gicofix-3d-background.jpg.asset.json";
+import logoWatermark from "./assets/gicofix-fullmark-transparent.png";
 
 const queryClient = new QueryClient();
 
@@ -39,18 +39,17 @@ const App = () => {
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <div className="relative min-h-[100dvh] overflow-x-hidden pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
-            <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
+          <div className="relative min-h-[100dvh] overflow-x-hidden bg-background pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+            <div className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center overflow-hidden" aria-hidden="true">
               <img
-                src={backgroundAsset.url}
+                src={logoWatermark}
                 alt=""
-                width={1920}
-                height={1080}
-                className="h-full w-full object-cover"
+                width={1209}
+                height={639}
+                className="w-[min(92vw,64rem)] max-w-none object-contain opacity-[0.035] dark:opacity-[0.055]"
               />
-              <div className="absolute inset-0 bg-background/95 dark:bg-background/90" />
             </div>
-            <div className="relative z-10 [&_section]:!bg-transparent">
+            <div className="relative z-10">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/services" element={<ServicesPage />} />
