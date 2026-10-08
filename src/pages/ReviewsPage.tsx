@@ -90,7 +90,7 @@ const ReviewsPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-24 md:pb-12">
+      <main className="pt-24 sm:pt-28 md:pt-32 px-4 py-6">
         <section className="container max-w-4xl">
           <div className="text-center mb-8 sm:mb-12">
             <p className="text-accent font-medium text-sm uppercase tracking-wide mb-3">Reviews</p>

@@ -8,7 +8,7 @@ const LegalPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 md:pt-24 pt-4 pb-12 container max-w-4xl">
+      <main className="flex-1 pt-24 sm:pt-28 md:pt-32 px-4 container max-w-4xl py-6">
         <h1 className="text-3xl font-bold mb-8 text-center">Legal Agreements</h1>
 
         <Tabs defaultValue="tos" className="w-full">

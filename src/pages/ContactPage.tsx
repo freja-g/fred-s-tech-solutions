@@ -64,7 +64,7 @@ const ContactPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-20 pt-4">
+      <main className="pt-24 sm:pt-28 md:pt-32">
         <section className="section-padding bg-background relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-1/3 h-full opacity-5">

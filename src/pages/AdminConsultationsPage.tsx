@@ -40,9 +40,18 @@ const AdminConsultationsPage = () => {
   const isStaffPortal = APP_TYPE === "tech";
   const isStaff = isStaffPortal && (isAdmin || isTechnician);
 
+  const cacheKey = `cached_consultations_${user?.id || "guest"}`;
+
   const fetchConsultations = async () => {
     if (loading) return;
     setRefreshing(true);
+
+    // Load cached consultations first for instant offline access
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try { setConsultations(JSON.parse(cached)); } catch {}
+    }
+
     try {
       let query = supabase
         .from("consultations")
@@ -51,19 +60,22 @@ const AdminConsultationsPage = () => {
 
       if (!isStaff || !isStaffPortal) {
         if (user) query = query.eq("customer_id", user.id);
+        else { setRefreshing(false); return; }
       }
 
       const { data, error } = await query;
 
       if (error) {
-        console.error("Consultation fetch error:", error);
-        toast({ title: "Fetch failed", description: error.message, variant: "destructive" });
+        console.warn("Consultation fetch offline/error:", error);
+        setRefreshing(false);
         return;
       }
 
       const list = data || [];
       if (list.length === 0) {
         setConsultations([]);
+        try { localStorage.setItem(cacheKey, JSON.stringify([])); } catch {}
+        setRefreshing(false);
         return;
       }
 
@@ -80,11 +92,14 @@ const AdminConsultationsPage = () => {
       const profileMap = new Map((profiles || []).map((p: any) => [p.user_id, p]));
       const serviceMap = new Map((services || []).map((s: any) => [s.id, s]));
 
-      setConsultations(list.map((c: any) => ({
+      const fullList = list.map((c: any) => ({
         ...c,
         profiles: profileMap.get(c.customer_id),
         services: c.service_id ? serviceMap.get(c.service_id) : null
-      })));
+      }));
+
+      setConsultations(fullList);
+      try { localStorage.setItem(cacheKey, JSON.stringify(fullList)); } catch {}
     } finally {
       setRefreshing(false);
     }
@@ -281,9 +296,9 @@ const AdminConsultationsPage = () => {
   );
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen">
       <Header />
-      <main className="md:pt-20 pt-4 container max-w-3xl">
+      <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-3xl py-6">
         <div className="flex items-center justify-between gap-3 mb-4">
           <h1 className="text-2xl sm:text-3xl font-bold">Consultations</h1>
           <Button variant="ghost" size="icon" onClick={fetchConsultations} disabled={refreshing}>

@@ -10,6 +10,9 @@ const supabase: any = _sb;
 import tipRestart from "@/assets/tip-restart.jpg";
 import tipWifi from "@/assets/tip-wifi.jpg";
 import tipSlow from "@/assets/tip-slow.jpg";
+import tipPrinter from "@/assets/tip-printer.jpg";
+
+const isVideo = (url?: string | null) => url ? /\.(mp4|webm|mov|m4v)(?:\?|#|$)/i.test(url) : false;
 
 const STATIC_GUIDES = [
   {
@@ -23,6 +26,12 @@ const STATIC_GUIDES = [
     title: "WiFi is slow or keeps dropping",
     summary: "A 2-minute reset to try before calling your provider.",
     body: "1. Unplug your router from the wall socket.\n2. Wait a full 60 seconds (this clears router memory).\n3. Plug it back in and wait 2–3 minutes for all lights to settle.\n4. Reconnect your device. Still slow? Move closer to the router or restart your device.",
+  },
+  {
+    image: tipPrinter,
+    title: "Printer non-responsive or stuck in queue",
+    summary: "Quick steps to clear print queues and reconnect.",
+    body: "1. Check physical cable or WiFi connection to printer.\n2. Open Settings > Devices > Printers & Scanners.\n3. Clear stuck print jobs in the queue.\n4. Power cycle the printer or restart your computer.",
   },
 ];
 
@@ -44,12 +53,12 @@ const GetSmartPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen">
       <Header />
-      <main className="md:pt-20 pt-4">
+      <main className="pt-24 sm:pt-28 md:pt-32">
         {/* Sub-header Tabs matching PDF */}
         <div className="border-b border-border bg-card">
-          <div className="container flex items-center gap-6">
+          <div className="container px-4 flex items-center gap-6">
             <Link
               to="/services"
               className="py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -101,9 +110,20 @@ const GetSmartPage = () => {
                         onClick={() => setOpen(isOpen ? null : i)}
                         className="w-full text-left p-4 flex items-center justify-between gap-3"
                       >
-                        <div>
-                          <h3 className="font-semibold text-base leading-snug">{g.title}</h3>
-                          <p className="text-xs text-muted-foreground mt-1">{g.summary}</p>
+                        <div className="flex items-center gap-3 min-w-0">
+                          {g.image && (
+                            <div className="w-16 h-12 rounded-md overflow-hidden bg-secondary shrink-0">
+                              {isVideo(g.image) ? (
+                                <video src={g.image} muted className="w-full h-full object-cover" />
+                              ) : (
+                                <img src={g.image} alt="" className="w-full h-full object-cover" />
+                              )}
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <h3 className="font-semibold text-base leading-snug">{g.title}</h3>
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{g.summary}</p>
+                          </div>
                         </div>
                         <ChevronDown
                           size={18}
@@ -111,8 +131,17 @@ const GetSmartPage = () => {
                         />
                       </button>
                       {isOpen && (
-                        <div className="px-4 pb-4 pt-1 border-t border-border text-xs sm:text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">
-                          {g.body}
+                        <div className="px-4 pb-4 pt-1 border-t border-border text-xs sm:text-sm text-foreground/90 leading-relaxed space-y-3">
+                          {g.image && (
+                            <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg bg-secondary my-2">
+                              {isVideo(g.image) ? (
+                                <video src={g.image} controls autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                              ) : (
+                                <img src={g.image} alt={g.title} className="w-full h-full object-cover" />
+                              )}
+                            </div>
+                          )}
+                          <div className="whitespace-pre-wrap">{g.body}</div>
                         </div>
                       )}
                     </motion.article>

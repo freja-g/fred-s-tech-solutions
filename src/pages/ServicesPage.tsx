@@ -19,7 +19,16 @@ const supabase = supabaseClient as any;
 import { useAuth } from "@/hooks/useAuth";
 import ServiceAdvisor from "@/components/sections/ServiceAdvisor";
 
+import consultingImage from "@/assets/project-consulting.jpg";
+import supportImage from "@/assets/project-itsupport.jpg";
+import posImage from "@/assets/project-pos.jpg";
+import networkImage from "@/assets/project-network.jpg";
+import cloudImage from "@/assets/project-cloud.jpg";
+import automationImage from "@/assets/project-automation.jpg";
+
 const ICONS: Record<string, any> = { Settings, Wrench, BarChart3, Briefcase };
+
+const isVideo = (url?: string | null) => url ? /\.(mp4|webm|mov|m4v)(?:\?|#|$)/i.test(url) : false;
 
 const DEFAULT_SERVICES = [
   {
@@ -27,6 +36,7 @@ const DEFAULT_SERVICES = [
     icon_name: "Settings",
     title: "Technical Consulting",
     description: "System reviews, tech stack, optimization",
+    media_url: consultingImage,
     features: [
       "System and infrastructure reviews",
       "Technology stack recommendations",
@@ -39,6 +49,7 @@ const DEFAULT_SERVICES = [
     icon_name: "Wrench",
     title: "IT Support & Troubleshooting",
     description: "Hardware diagnostics and repair guidance",
+    media_url: supportImage,
     features: [
       "Hardware diagnostics and repair guidance",
       "Software troubleshooting",
@@ -51,6 +62,7 @@ const DEFAULT_SERVICES = [
     icon_name: "BarChart3",
     title: "Data & Software Support",
     description: "Data analysis, setup, automation basics",
+    media_url: posImage,
     features: [
       "Data analysis and reporting",
       "Software configuration and setup",
@@ -63,6 +75,7 @@ const DEFAULT_SERVICES = [
     icon_name: "Settings",
     title: "Network Setup & Security",
     description: "Network design, audits, backup",
+    media_url: networkImage,
     features: [
       "Network architecture design",
       "Security audits and hardening",
@@ -75,6 +88,7 @@ const DEFAULT_SERVICES = [
     icon_name: "Wrench",
     title: "Cloud Migration & Management",
     description: "Readiness, migration, cost strategy",
+    media_url: cloudImage,
     features: [
       "Cloud readiness assessment",
       "Migration planning and execution",
@@ -87,6 +101,7 @@ const DEFAULT_SERVICES = [
     icon_name: "BarChart3",
     title: "Business Process Automation",
     description: "Workflow design and integrations",
+    media_url: automationImage,
     features: [
       "Workflow automation design",
       "Process optimization analysis",
@@ -101,6 +116,7 @@ type ServiceItem = {
   title: string;
   description: string;
   icon_name?: string | null;
+  media_url?: string | null;
   features?: string[];
   isCustom?: boolean;
 };
@@ -126,6 +142,7 @@ const ServicesPage = () => {
             title: s.title,
             description: s.description,
             icon_name: s.icon_name,
+            media_url: s.media_url,
             isCustom: true,
           }));
           const customTitles = new Set(custom.map(c => c.title.toLowerCase()));
@@ -139,12 +156,12 @@ const ServicesPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen">
       <Header />
-      <main className="md:pt-20 pt-4">
+      <main className="pt-24 sm:pt-28 md:pt-32">
         {/* Top Sub-Header Tabs matching PDF */}
         <div className="border-b border-border bg-card">
-          <div className="container flex items-center gap-6">
+          <div className="container px-4 flex items-center gap-6">
             <Link
               to="/services"
               className="py-3 text-sm font-bold text-accent border-b-2 border-accent"
@@ -198,15 +215,37 @@ const ServicesPage = () => {
 
             <div className="grid gap-4 sm:grid-cols-2">
               {services.map((service, index) => {
+                const mediaUrl = service.media_url;
                 return (
                   <motion.div
                     key={service.id}
-                    className="bg-card rounded-xl p-5 border border-border shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                    className="bg-card rounded-xl p-4 sm:p-5 border border-border shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden"
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.04 * index }}
                   >
                     <div>
+                      {mediaUrl && (
+                        <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg bg-secondary mb-3">
+                          {isVideo(mediaUrl) ? (
+                            <video
+                              src={mediaUrl}
+                              className="w-full h-full object-cover"
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                            />
+                          ) : (
+                            <img
+                              src={mediaUrl}
+                              alt={service.title}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          )}
+                        </div>
+                      )}
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="text-base font-semibold">{service.title}</h3>
                         {service.isCustom && (

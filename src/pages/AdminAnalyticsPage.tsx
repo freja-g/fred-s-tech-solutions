@@ -137,7 +137,7 @@ const AdminAnalyticsPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-5xl">
+      <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-5xl py-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">Technician Analytics</h1>

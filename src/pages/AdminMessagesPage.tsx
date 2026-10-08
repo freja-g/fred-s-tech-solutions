@@ -119,14 +119,22 @@ const AdminMessagesPage = () => {
 
   useEffect(() => {
     if (!activeId) return;
+    const cacheKey = `cached_admin_msgs_${activeId}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try { setMessages(JSON.parse(cached)); } catch {}
+    }
     supabase
       .from("messages")
       .select("*")
       .eq("customer_id", activeId)
       .order("created_at", { ascending: true })
-      .then(({ data }) => {
-        setMessages((data as Msg[]) ?? []);
-        markThreadRead(activeId);
+      .then(({ data, error }) => {
+        if (data && !error) {
+          setMessages(data as Msg[]);
+          try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch {}
+          markThreadRead(activeId);
+        }
       });
   }, [activeId]);
 
@@ -149,11 +157,11 @@ const AdminMessagesPage = () => {
   const activeConversation = conversations.find((c) => c.customer_id === activeId);
 
   return (
-    <div className="h-[calc(100dvh-5rem-env(safe-area-inset-bottom,0px))] md:h-[100dvh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-20 flex flex-col bg-background/30 overflow-hidden pb-[calc(4rem+env(safe-area-inset-bottom,0px))] md:pb-0 pt-[env(safe-area-inset-top,0px)]">
       <Header />
-      <main className="flex-1 min-h-0 flex flex-col md:pt-24 pt-3 pb-2 md:pb-6 container max-w-6xl w-full">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 shrink-0">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
-        <div className="grid md:grid-cols-3 gap-4 flex-1 min-h-0">
+      <main className="flex-1 min-h-0 flex flex-col w-full h-full bg-transparent p-2 sm:p-4 pt-20 sm:pt-24">
+        <h1 className="text-lg sm:text-xl font-bold mb-2 shrink-0 px-2">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
+        <div className="grid md:grid-cols-3 gap-2 sm:gap-4 flex-1 min-h-0 w-full">
           <div className={`bg-card border border-border rounded-xl overflow-y-auto flex flex-col min-h-0 ${activeId ? "hidden md:flex" : "flex"}`}>
             <p className="text-xs uppercase font-medium text-muted-foreground p-3 border-b border-border sticky top-0 bg-card z-10">
               Conversations ({conversations.length})
@@ -198,7 +206,7 @@ const AdminMessagesPage = () => {
                     <p className="text-xs text-muted-foreground truncate">{activeConversation?.email}</p>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 min-h-0 overscroll-contain">
+                <div className="flex-1 overflow-y-auto touch-pan-y p-3 sm:p-4 space-y-3 min-h-0 overscroll-contain">
                   {messages.map((m) => (
                     <div key={m.id} className={`flex ${m.sender_role !== "customer" ? "justify-end" : "justify-start"}`}>
                       <div className={`max-w-[88%] sm:max-w-[75%] break-words rounded-lg px-3 sm:px-4 py-2 text-sm ${

@@ -153,9 +153,9 @@ const AuthPage = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-md">
+      <main className="flex-1 flex items-center justify-center pt-24 sm:pt-28 md:pt-32 px-4 container max-w-md py-6">
         <div className="bg-card border border-border rounded-xl p-5 sm:p-8">
           <h1 className="text-2xl font-semibold mb-2">
             {APP_TYPE === "tech" ? "Staff Login" : mode === "signin" ? "Sign in" : "Create your account"}

@@ -51,7 +51,7 @@ const AdminReviewsPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-24 md:pb-12 container max-w-4xl">
+      <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-4xl py-6">
         <h1 className="text-2xl font-semibold mb-6">Review Moderation</h1>
         <div className="flex flex-wrap gap-2 mb-6">
           {(["pending", "approved", "rejected"] as const).map((f) => (

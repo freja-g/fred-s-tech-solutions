@@ -150,9 +150,9 @@ const BookingPage = () => {
   }
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen">
       <Header />
-      <main className="md:pt-20 pt-4 container max-w-2xl">
+      <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-2xl py-6">
         <button
           type="button"
           onClick={() => navigate("/services")}

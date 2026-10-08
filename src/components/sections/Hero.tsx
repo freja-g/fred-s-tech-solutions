@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden bg-primary">
+    <section className="relative overflow-hidden bg-primary/88 backdrop-blur-md">
       <div className="pointer-events-none absolute -right-10 top-6 h-44 w-44 rounded-full border-[24px] border-accent/20" aria-hidden="true" />
       <div className="container relative z-10 py-10 sm:py-14 md:py-20">
         <div className="max-w-2xl">

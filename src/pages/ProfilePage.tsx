@@ -9,6 +9,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 import {
   LogOut,
   Shield,
@@ -25,7 +27,10 @@ import {
   Info,
   PhoneCall,
   FileCheck,
-  Edit2
+  Edit2,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
 import { Switch } from "@/components/ui/switch";
@@ -44,6 +49,7 @@ const ProfilePage = () => {
   const { user, loading, isAdmin, isTechnician, signOut } = useAuth();
   const nav = useNavigate();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   const [newName, setNewName] = useState("");
@@ -124,9 +130,9 @@ const ProfilePage = () => {
   if (loading || !user) return null;
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen">
       <Header />
-      <main className="md:pt-20 pt-4 container max-w-2xl space-y-6">
+      <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-2xl space-y-6">
         {/* Profile Card matching Page 7 PDF */}
         <section className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4">
           <div className="flex items-center gap-4">
@@ -160,6 +166,72 @@ const ProfilePage = () => {
                 <Edit2 size={12} /> Edit name and picture
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* Appearance Theme Switcher Card */}
+        <section className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-accent/10 text-accent">
+                {theme === "dark" ? (
+                  <Moon size={20} />
+                ) : theme === "light" ? (
+                  <Sun size={20} />
+                ) : (
+                  <Monitor size={20} />
+                )}
+              </div>
+              <div>
+                <h2 className="font-semibold text-sm sm:text-base text-foreground">
+                  Appearance
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Choose Light, Dark, or System mode
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={theme === "dark"}
+              onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+              aria-label="Toggle dark mode"
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 pt-2">
+            <button
+              onClick={() => setTheme("light")}
+              className={cn(
+                "flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border text-xs font-bold transition-all",
+                theme === "light"
+                  ? "border-accent bg-accent/15 text-accent shadow-sm"
+                  : "border-border bg-secondary/50 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Sun size={15} /> Light
+            </button>
+            <button
+              onClick={() => setTheme("dark")}
+              className={cn(
+                "flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border text-xs font-bold transition-all",
+                theme === "dark"
+                  ? "border-accent bg-accent/15 text-accent shadow-sm"
+                  : "border-border bg-secondary/50 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Moon size={15} /> Dark
+            </button>
+            <button
+              onClick={() => setTheme("system")}
+              className={cn(
+                "flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border text-xs font-bold transition-all",
+                theme === "system"
+                  ? "border-accent bg-accent/15 text-accent shadow-sm"
+                  : "border-border bg-secondary/50 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Monitor size={15} /> System
+            </button>
           </div>
         </section>
 

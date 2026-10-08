@@ -85,7 +85,7 @@ const AdminContentPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="md:pt-24 pt-4 pb-12 container max-w-5xl">
+      <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-5xl py-6">
         <h1 className="text-3xl font-bold mb-8">Content Management</h1>
 
         <Tabs defaultValue="services">
