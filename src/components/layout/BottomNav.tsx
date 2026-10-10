@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Briefcase, MessageCircle, User, ClipboardList } from "lucide-react";
+import { Home, Briefcase, MessageCircle, User, ClipboardList, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
@@ -11,25 +11,57 @@ const BottomNav = () => {
 
   const isStaff = isAdmin || isTechnician;
 
-  const items = [
-    { to: "/", label: "Home", icon: Home, match: (p: string) => p === "/", badge: 0 },
-    { to: "/services", label: "Services", icon: Briefcase, match: (p: string) => p.startsWith("/services"), badge: 0 },
-    {
-      to: isStaff ? "/admin/messages" : "/messages",
-      label: "Chat",
-      icon: MessageCircle,
-      match: (p: string) => p.startsWith("/messages") || p.startsWith("/admin/messages"),
-      badge: unread,
-    },
-    {
-      to: isStaff ? "/admin/consultations" : "/consultations",
-      label: "Consultations",
-      icon: ClipboardList,
-      match: (p: string) => p.startsWith("/consultations") || p.startsWith("/admin/consultations"),
-      badge: 0
-    },
-    { to: "/profile", label: "Account", icon: User, match: (p: string) => (p.startsWith("/profile") || p.startsWith("/auth")) && !p.startsWith("/admin"), badge: 0 },
-  ];
+  const items = isStaff
+    ? [
+        { to: "/", label: "Home", icon: Home, match: (p: string) => p === "/", badge: 0 },
+        {
+          to: "/admin/consultations",
+          label: "Consultations",
+          icon: ClipboardList,
+          match: (p: string) => p.startsWith("/admin/consultations") || p === "/consultations",
+          badge: 0,
+        },
+        {
+          to: "/admin/messages",
+          label: "Chat",
+          icon: MessageCircle,
+          match: (p: string) => p.startsWith("/admin/messages") || p === "/messages",
+          badge: unread,
+        },
+        {
+          to: "/admin/content",
+          label: "Management",
+          icon: Settings,
+          match: (p: string) => p.startsWith("/admin/content"),
+          badge: 0,
+        },
+        {
+          to: "/profile",
+          label: "Profile",
+          icon: User,
+          match: (p: string) => (p.startsWith("/profile") || p.startsWith("/auth")) && !p.startsWith("/admin"),
+          badge: 0,
+        },
+      ]
+    : [
+        { to: "/", label: "Home", icon: Home, match: (p: string) => p === "/", badge: 0 },
+        { to: "/services", label: "Services", icon: Briefcase, match: (p: string) => p.startsWith("/services"), badge: 0 },
+        {
+          to: "/messages",
+          label: "Chat",
+          icon: MessageCircle,
+          match: (p: string) => p.startsWith("/messages"),
+          badge: unread,
+        },
+        {
+          to: "/consultations",
+          label: "Consultations",
+          icon: ClipboardList,
+          match: (p: string) => p.startsWith("/consultations"),
+          badge: 0,
+        },
+        { to: "/profile", label: "Account", icon: User, match: (p: string) => (p.startsWith("/profile") || p.startsWith("/auth")) && !p.startsWith("/admin"), badge: 0 },
+      ];
 
   return (
     <nav
