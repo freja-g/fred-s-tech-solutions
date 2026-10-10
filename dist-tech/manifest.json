@@ -1,0 +1,16 @@
+{
+  "short_name": "GiCOFix",
+  "name": "GiCOFix Solutions",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#06131d",
+  "theme_color": "#06131d",
+  "display": "standalone",
+  "orientation": "portrait"
+}
