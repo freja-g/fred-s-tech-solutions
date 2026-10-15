@@ -133,7 +133,7 @@ const ProfilePage = () => {
     <div className="min-h-screen">
       <Header />
       <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-2xl space-y-6">
-        {/* Profile Card matching Page 7 PDF */}
+        {/* Profile Header matching Page 7 PDF */}
         <section className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4">
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -141,7 +141,7 @@ const ProfilePage = () => {
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  (profile?.display_name || user.email || "U").charAt(0).toUpperCase()
+                  (profile?.display_name || user.email || "S").charAt(0).toUpperCase()
                 )}
               </div>
               <button
@@ -154,19 +154,84 @@ const ProfilePage = () => {
             </div>
 
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold truncate">
-                {profile?.display_name || user.email?.split("@")[0] || "Display name"}
+              <h1 className="text-xl font-extrabold truncate">
+                {profile?.display_name || user.email?.split("@")[0] || "Staff name"}
               </h1>
-              <p className="text-xs text-muted-foreground truncate">{profile?.email || user.email}</p>
+              <p className="text-xs font-semibold text-accent uppercase tracking-wider">Technician</p>
 
               <button
                 onClick={() => setEditOpen(true)}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline mt-1"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground hover:underline mt-1"
               >
-                <Edit2 size={12} /> Edit name and picture
+                <Edit2 size={12} /> Account settings
               </button>
             </div>
           </div>
+        </section>
+
+        {/* Staff Portal Links matching PDF Page 7 */}
+        <section className="bg-card border border-border rounded-xl divide-y divide-border shadow-sm overflow-hidden text-sm">
+          <Link
+            to="/admin/analytics"
+            className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
+          >
+            <div>
+              <h2 className="font-bold text-foreground">Analytics</h2>
+              <p className="text-xs text-muted-foreground">Revenue, performance, charts</p>
+            </div>
+            <ChevronRight size={18} className="text-muted-foreground" />
+          </Link>
+
+          <Link
+            to="/admin/availability"
+            className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
+          >
+            <div>
+              <h2 className="font-bold text-foreground">Availability</h2>
+              <p className="text-xs text-muted-foreground">Working hours and shifts</p>
+            </div>
+            <ChevronRight size={18} className="text-muted-foreground" />
+          </Link>
+
+          <button
+            onClick={() => setEditOpen(true)}
+            className="w-full p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors text-left"
+          >
+            <div>
+              <h2 className="font-bold text-foreground">Account settings</h2>
+              <p className="text-xs text-muted-foreground">Name, picture, password</p>
+            </div>
+            <ChevronRight size={18} className="text-muted-foreground" />
+          </button>
+        </section>
+
+        {/* Working Hours Section matching Page 7 PDF */}
+        <section className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-bold text-sm sm:text-base text-foreground">Working hours</h2>
+              <p className="text-xs text-muted-foreground">Mon – Fri · 08:00 – 17:00</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-accent">Available</span>
+              <Switch
+                checked={isOnline}
+                onCheckedChange={(checked) => {
+                  setIsOnline(checked);
+                  handleUpdateAvailability();
+                }}
+              />
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full font-bold text-xs mt-2"
+            onClick={() => nav("/admin/availability")}
+          >
+            Edit shifts
+          </Button>
         </section>
 
         {/* Appearance Theme Switcher Card */}

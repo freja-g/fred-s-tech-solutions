@@ -160,7 +160,9 @@ const AdminMessagesPage = () => {
     <div className="fixed inset-0 z-20 flex flex-col bg-background/30 overflow-hidden pb-[calc(4rem+env(safe-area-inset-bottom,0px))] md:pb-0 pt-[env(safe-area-inset-top,0px)]">
       <Header />
       <main className="flex-1 min-h-0 flex flex-col w-full h-full bg-transparent p-2 sm:p-4 pt-20 sm:pt-24">
-        <h1 className="text-lg sm:text-xl font-bold mb-2 shrink-0 px-2">{isAdmin ? "Admin" : "Technician"} Inbox</h1>
+        <div className="flex items-center justify-between mb-2 shrink-0 px-2">
+          <h1 className="text-lg sm:text-xl font-bold">Messages</h1>
+        </div>
         <div className="grid md:grid-cols-3 gap-2 sm:gap-4 flex-1 min-h-0 w-full">
           <div className={`bg-card border border-border rounded-xl overflow-y-auto flex flex-col min-h-0 ${activeId ? "hidden md:flex" : "flex"}`}>
             <p className="text-xs uppercase font-medium text-muted-foreground p-3 border-b border-border sticky top-0 bg-card z-10">
@@ -184,6 +186,9 @@ const AdminMessagesPage = () => {
                 </button>
               ))}
             </div>
+            <p className="text-[11px] text-muted-foreground p-3 border-t border-border bg-card/50 text-center">
+              Tap a conversation to open it. Replies show “Seen” once read.
+            </p>
           </div>
           <div className={`md:col-span-2 bg-card border border-border rounded-xl flex-col min-h-0 ${activeId ? "flex" : "hidden md:flex"}`}>
             {!activeId ? (

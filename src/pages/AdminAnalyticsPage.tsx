@@ -3,7 +3,8 @@ import Header from "@/components/layout/Header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase as _sb } from "@/integrations/supabase/client";
-import { DollarSign, Briefcase, Star, Clock, TrendingUp, Wallet } from "lucide-react";
+import { DollarSign, Briefcase, Star, Clock, TrendingUp, Wallet, ArrowLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { formatKES, avg, humanDuration } from "@/lib/staff";
 import {
@@ -138,10 +139,16 @@ const AdminAnalyticsPage = () => {
     <div className="min-h-screen">
       <Header />
       <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-5xl py-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <Link
+          to="/profile"
+          className="inline-flex items-center text-xs font-bold text-accent hover:underline gap-1 mb-3"
+        >
+          <ArrowLeft size={14} /> Profile
+        </Link>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Technician Analytics</h1>
-            <p className="text-muted-foreground">Earnings, job history, ratings and response times.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">Analytics</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Sample numbers shown</p>
           </div>
           <Badge variant="outline" className="w-fit py-1.5 px-3">
             <TrendingUp size={14} className="mr-2" /> Live data

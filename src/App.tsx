@@ -17,7 +17,9 @@ import ReviewsPage from "./pages/ReviewsPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
 import AdminContentPage from "./pages/AdminContentPage";
 import AdminConsultationsPage from "./pages/AdminConsultationsPage";
+import ConsultationDetailPage from "./pages/ConsultationDetailPage";
 import AdminAnalyticsPage from "./pages/AdminAnalyticsPage";
+import AdminAvailabilityPage from "./pages/AdminAvailabilityPage";
 import GetSmartPage from "./pages/GetSmartPage";
 import ProfilePage from "./pages/ProfilePage";
 import LegalPage from "./pages/LegalPage";
@@ -25,8 +27,62 @@ import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "next-themes";
 import BottomNav from "./components/layout/BottomNav";
 import logoWatermark from "./assets/gicofix-fullmark-transparent.png";
+import { useAuth } from "@/hooks/useAuth";
 
 const queryClient = new QueryClient();
+const APP_TYPE = import.meta.env.VITE_APP_TYPE || "user";
+
+const AppContent = () => {
+  const { user, isAdmin, isTechnician, loading } = useAuth();
+  const isStaff = isAdmin || isTechnician;
+  const isTechApp = APP_TYPE === "tech";
+
+  if (isTechApp) {
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="text-center space-y-3">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent mx-auto"></div>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">GiCOFix Staff</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!user || !isStaff) {
+      return <AuthPage />;
+    }
+  }
+
+  return (
+    <>
+      <div className="relative z-10">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/book" element={<BookingPage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/reviews" element={<ReviewsPage />} />
+          <Route path="/admin/messages" element={<AdminMessagesPage />} />
+          <Route path="/admin/reviews" element={<AdminReviewsPage />} />
+          <Route path="/admin/content" element={<AdminContentPage />} />
+          <Route path="/admin/consultations" element={<AdminConsultationsPage />} />
+          <Route path="/admin/consultations/:id" element={<ConsultationDetailPage />} />
+          <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+          <Route path="/admin/availability" element={<AdminAvailabilityPage />} />
+          <Route path="/get-smart" element={<GetSmartPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/legal" element={<LegalPage />} />
+          <Route path="/consultations" element={<AdminConsultationsPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+      <BottomNav />
+    </>
+  );
+};
 
 const App = () => {
   useEffect(() => {
@@ -56,33 +112,12 @@ const App = () => {
                     />
                   </div>
                 </div>
-                <div className="relative z-10">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/services" element={<ServicesPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/book" element={<BookingPage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/messages" element={<MessagesPage />} />
-                <Route path="/reviews" element={<ReviewsPage />} />
-                <Route path="/admin/messages" element={<AdminMessagesPage />} />
-                <Route path="/admin/reviews" element={<AdminReviewsPage />} />
-                <Route path="/admin/content" element={<AdminContentPage />} />
-                <Route path="/admin/consultations" element={<AdminConsultationsPage />} />
-                <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
-                <Route path="/get-smart" element={<GetSmartPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/legal" element={<LegalPage />} />
-                <Route path="/consultations" element={<AdminConsultationsPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-          </div>
-          <BottomNav />
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-    </QueryClientProvider>
+                <AppContent />
+              </div>
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 };

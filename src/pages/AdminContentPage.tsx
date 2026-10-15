@@ -85,26 +85,44 @@ const AdminContentPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-5xl py-6">
-        <h1 className="text-3xl font-bold mb-8">Content Management</h1>
+      <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-4xl py-6">
+        <h1 className="text-2xl sm:text-3xl font-extrabold mb-6 text-foreground">Content Management</h1>
 
         <Tabs defaultValue="services">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="services">Services</TabsTrigger>
-            <TabsTrigger value="tips">Get Smart Tips</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="services" className="text-xs font-bold">Services</TabsTrigger>
+            <TabsTrigger value="tips" className="text-xs font-bold">Get Smart</TabsTrigger>
+            <TabsTrigger value="reviews" className="text-xs font-bold">Reviews Management</TabsTrigger>
           </TabsList>
 
           <TabsContent value="services" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Add New Service</CardTitle>
-                <CardDescription>Create a technical service offer for customers.</CardDescription>
+            <Card className="border border-border shadow-sm">
+              <CardHeader className="p-4 sm:p-5 pb-2">
+                <CardTitle className="text-lg font-bold">Add a service</CardTitle>
+                <CardDescription className="text-xs">Create a service offer for customers.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <Input placeholder="Title" value={newService.title} onChange={e => setNewService({...newService, title: e.target.value})} />
-                <Textarea placeholder="Description" value={newService.description} onChange={e => setNewService({...newService, description: e.target.value})} />
+              <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">Service name</label>
+                  <Input
+                    placeholder="e.g. Network Setup & Security"
+                    value={newService.title}
+                    onChange={e => setNewService({...newService, title: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">Description</label>
+                  <Textarea
+                    placeholder="What the service includes…"
+                    rows={3}
+                    value={newService.description}
+                    onChange={e => setNewService({...newService, description: e.target.value})}
+                  />
+                </div>
+
                 <div className="space-y-2">
-                  <p className="text-sm font-medium">Service photo or video</p>
+                  <p className="text-xs font-semibold text-muted-foreground">Service photo or video</p>
                   {newService.media_url ? (
                     <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-secondary">
                       {/\.(mp4|webm|mov|m4v)(?:\?|#|$)/i.test(newService.media_url) ? (
@@ -116,30 +134,50 @@ const AdminContentPage = () => {
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 gap-3">
-                      <Button type="button" variant="outline" onClick={() => handleUploadServiceMedia('image')}><Camera size={16} /> Add Photo</Button>
-                      <Button type="button" variant="outline" onClick={() => handleUploadServiceMedia('video')}><Video size={16} /> Add Video</Button>
+                      <Button type="button" variant="outline" className="font-bold text-xs" onClick={() => handleUploadServiceMedia('image')}>
+                        <Camera size={14} className="mr-1.5" /> Add Photo
+                      </Button>
+                      <Button type="button" variant="outline" className="font-bold text-xs" onClick={() => handleUploadServiceMedia('video')}>
+                        <Video size={14} className="mr-1.5" /> Add Video
+                      </Button>
                     </div>
                   )}
                 </div>
-                <Button onClick={handleAddService} disabled={busy} className="w-full"><Plus className="mr-2" size={16} /> Add Service</Button>
+
+                <Button onClick={handleAddService} disabled={busy || !newService.title.trim()} variant="accent" className="w-full font-bold">
+                  Publish service
+                </Button>
               </CardContent>
             </Card>
 
-            <div className="grid gap-4">
-              {services.map(s => (
-                <div key={s.id} className="flex items-center justify-between gap-3 p-3 sm:p-4 bg-card border rounded-lg">
-                  <div className="flex min-w-0 items-center gap-3">
-                    {s.media_url && <div className="h-16 w-20 shrink-0 overflow-hidden rounded border bg-secondary">{/\.(mp4|webm|mov|m4v)(?:\?|#|$)/i.test(s.media_url) ? <video src={s.media_url} muted className="h-full w-full object-cover" /> : <img src={s.media_url} alt="" className="h-full w-full object-cover" />}</div>}
-                    <div className="min-w-0">
-                    <h3 className="font-semibold">{s.title}</h3>
-                    <p className="line-clamp-2 text-sm text-muted-foreground">{s.description}</p>
+            <div className="space-y-3">
+              <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Published services</h2>
+              <div className="grid gap-3">
+                {services.map(s => (
+                  <div key={s.id} className="flex items-center justify-between gap-3 p-4 bg-card border border-border rounded-xl shadow-sm">
+                    <div className="flex min-w-0 items-center gap-3">
+                      {s.media_url && (
+                        <div className="h-12 w-16 shrink-0 overflow-hidden rounded-lg border bg-secondary">
+                          {/\.(mp4|webm|mov|m4v)(?:\?|#|$)/i.test(s.media_url) ? (
+                            <video src={s.media_url} muted className="h-full w-full object-cover" />
+                          ) : (
+                            <img src={s.media_url} alt="" className="h-full w-full object-cover" />
+                          )}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-sm text-foreground">{s.title}</h3>
+                        <p className="line-clamp-1 text-xs text-muted-foreground">{s.description}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <Button variant="outline" size="sm" className="h-8 text-xs font-bold" onClick={() => handleDelete("services", s.id)}>
+                        Delete
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete("services", s.id)}><Trash2 size={16} className="text-destructive" /></Button>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </TabsContent>
 

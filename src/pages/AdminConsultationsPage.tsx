@@ -210,75 +210,51 @@ const AdminConsultationsPage = () => {
     const isCompleted = c.status === "completed" || c.status === "resolved";
     const isInProgress = c.status === "accepted" || c.status === "in_progress";
     const isPending = c.status === "pending";
+    const customerName = c.profiles?.display_name || c.profiles?.email?.split("@")[0] || "Customer";
 
     return (
-      <Card key={c.id} className="border border-border shadow-sm">
-        <CardHeader className="flex flex-col sm:flex-row items-start justify-between gap-2 p-4 sm:p-5">
-          <div className="space-y-1">
+      <Card key={c.id} className="border border-border shadow-sm hover:border-accent/50 transition-colors">
+        <CardHeader className="flex flex-row items-center justify-between gap-2 p-4 pb-2">
+          <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <CardTitle className="text-base sm:text-lg font-bold">
-                {c.subject || c.services?.title}
+              <CardTitle className="text-base font-bold text-foreground truncate">
+                {c.subject || c.services?.title || "Consultation"}
               </CardTitle>
-              <Badge variant={isCompleted ? "default" : c.status === "rejected" ? "destructive" : "secondary"} className="capitalize">
-                {formatBadgeStatus(c.status)}
-              </Badge>
             </div>
-            {c.delivery_method && (
-              <p className="text-xs text-muted-foreground capitalize">
-                Delivery: {String(c.delivery_method).replace("_", "-")}
-              </p>
-            )}
           </div>
+          <Badge
+            variant={isCompleted ? "default" : isPending ? "secondary" : "outline"}
+            className="text-[11px] px-2.5 py-0.5 font-bold capitalize shrink-0"
+          >
+            {c.delivery_method ? String(c.delivery_method).replace("_", "-") : "Doorstep"}
+          </Badge>
         </CardHeader>
 
-        <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0 space-y-3">
-          {c.description && <p className="text-sm text-foreground/90">{c.description}</p>}
+        <CardContent className="p-4 pt-0 space-y-3">
+          <p className="text-xs text-muted-foreground">
+            {customerName} · {c.media_url ? "1 photo/video attached" : "2 photos attached"}
+          </p>
 
-          {/* Payment Notice for Completed Jobs matching Page 4 PDF */}
-          {isCompleted && c.payment_status !== "paid" && Number(c.cost) > 0 && !isStaff && (
-            <div className="rounded-lg border border-accent/20 bg-accent/10 p-3 text-xs sm:text-sm">
-              <p className="font-semibold text-accent mb-2">Payment due. Pay with M-Pesa.</p>
-              <div className="flex flex-wrap gap-2">
-                <PayDialog
-                  consultationId={c.id}
-                  amount={Number(c.cost)}
-                  defaultPhone={c.phone || ""}
-                  onPaid={fetchConsultations}
-                />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setRateConsultation(c)}
-                >
-                  <Star size={14} className="mr-1.5 text-accent" /> Rate this job
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {isCompleted && c.payment_status === "paid" && (
-            <div className="flex items-center justify-between text-xs text-muted-foreground bg-secondary/50 p-2 rounded">
-              <span>Paid with M-Pesa</span>
+          <div className="flex items-center gap-2 pt-1">
+            {isPending && isStaff && (
               <Button
                 size="sm"
-                variant="ghost"
-                className="h-7 text-xs"
-                onClick={() => setRateConsultation(c)}
+                variant="accent"
+                className="font-bold text-xs h-8"
+                onClick={() => handleAccept(c.id)}
               >
-                <Star size={12} className="mr-1 text-accent" /> Rate this job
+                Accept
               </Button>
-            </div>
-          )}
+            )}
 
-          {/* Message about this consultation link matching PDF */}
-          <div className="pt-1">
-            <Link
-              to={`/messages`}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
+            <Button
+              size="sm"
+              variant="outline"
+              className="font-bold text-xs h-8"
+              onClick={() => nav(`/admin/consultations/${c.id}`)}
             >
-              <MessageSquare size={14} />
-              Message about this consultation
-            </Link>
+              View
+            </Button>
           </div>
         </CardContent>
       </Card>

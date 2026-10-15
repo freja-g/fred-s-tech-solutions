@@ -4,12 +4,18 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
+const APP_TYPE = import.meta.env.VITE_APP_TYPE || "user";
+
 const BottomNav = () => {
   const location = useLocation();
-  const { isAdmin, isTechnician } = useAuth();
+  const { user, isAdmin, isTechnician } = useAuth();
   const unread = useUnreadMessages();
 
   const isStaff = isAdmin || isTechnician;
+
+  if (APP_TYPE === "tech" && (!user || !isStaff)) {
+    return null;
+  }
 
   const items = isStaff
     ? [

@@ -6,11 +6,15 @@ import fullmarkAsset from "@/assets/gicofix-fullmark-transparent.png";
 
 const supabase: any = _sb;
 
+const APP_TYPE = import.meta.env.VITE_APP_TYPE || "user";
+
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user } = useAuth();
+  const { user, isAdmin, isTechnician } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
+
+  const isStaff = (isAdmin || isTechnician) || APP_TYPE === "tech";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -44,8 +48,13 @@ const Header = () => {
       }`}
     >
       <div className="container flex items-center justify-between gap-2 h-16 md:h-20 px-4">
-        <Link to="/" className="flex min-w-0 items-center group" aria-label="GiCOFix Solutions home">
-          <img src={fullmarkAsset} alt="GiCOFix Solutions" className="h-11 w-auto max-w-[106px] object-contain transition-transform group-hover:scale-105 md:h-14 md:max-w-[140px]" />
+        <Link to="/" className="flex items-center gap-2 group" aria-label="GiCOFix Solutions home">
+          <img src={fullmarkAsset} alt="GiCOFix Solutions" className="h-10 w-auto max-w-[100px] object-contain transition-transform group-hover:scale-105 md:h-12 md:max-w-[130px]" />
+          {isStaff && (
+            <span className="text-xs font-black uppercase tracking-wider px-2 py-0.5 bg-accent/15 text-accent rounded-md border border-accent/20">
+              Staff
+            </span>
+          )}
         </Link>
 
         <nav className="flex shrink-0 items-center gap-3">
