@@ -29,24 +29,80 @@ const BookingPage = () => {
 
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [deviceName, setDeviceName] = useState("");
+  const [deviceModel, setDeviceModel] = useState("");
+  const [issueStartedWhen, setIssueStartedWhen] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [preferredTime, setPreferredTime] = useState("");
+  const [selectedServiceName, setSelectedServiceName] = useState("");
   const [media, setMedia] = useState<string[]>([]);
   const [serviceId, setServiceId] = useState<string | null>(null);
   const [delivery, setDelivery] = useState<Delivery | null>("doorstep");
 
   const [bookedDetails, setBookedDetails] = useState<{ subject: string; delivery: string } | null>(null);
 
+  // Auto-fill account details when user is signed in
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("display_name, phone, coverage_zones")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }: any) => {
+        if (data) {
+          if (data.display_name && !clientName) setClientName(data.display_name);
+          if (data.phone && !phone) setPhone(data.phone);
+          if (data.coverage_zones && data.coverage_zones.length > 0 && !address) {
+            setAddress(data.coverage_zones[0]);
+          }
+        }
+      });
+  }, [user]);
+
+  // Restore saved form state from sessionStorage if returning from sign-in
+  useEffect(() => {
+    const saved = sessionStorage.getItem("saved_booking_draft");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.subject) setSubject(parsed.subject);
+        if (parsed.description) setDescription(parsed.description);
+        if (parsed.address) setAddress(parsed.address);
+        if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.preferredTime) setPreferredTime(parsed.preferredTime);
+        if (parsed.delivery) setDelivery(parsed.delivery);
+        if (parsed.selectedServiceName) setSelectedServiceName(parsed.selectedServiceName);
+      } catch {}
+      sessionStorage.removeItem("saved_booking_draft");
+    }
+  }, []);
+
   useEffect(() => {
     const s = searchParams.get("service");
     const id = searchParams.get("service_id");
     const d = searchParams.get("details");
-    if (s) setSubject(s);
+    if (s) {
+      setSubject(s);
+      setSelectedServiceName(s);
+    }
     if (id && id.length === 36) setServiceId(id);
     if (d) setDescription(d);
   }, [searchParams]);
 
+  const saveDraftToSession = () => {
+    sessionStorage.setItem("saved_booking_draft", JSON.stringify({
+      subject, description, address, phone, preferredTime, delivery, selectedServiceName
+    }));
+  };
+
   const handleUploadMedia = async (type: 'image' | 'video') => {
     if (!user) {
-      toast({ title: "Please sign in", description: "You need an account to upload photos or videos." });
+      saveDraftToSession();
+      toast({ title: "Sign in to continue", description: "We'll bring you back to your booking, and what you typed will be saved." });
+      navigate("/auth?redirect=/book");
       return;
     }
     const url = await uploadMedia("attachments", `consultations/${user.id}`, type);
@@ -59,9 +115,31 @@ const BookingPage = () => {
       toast({ title: "Choose a delivery option", description: "Tell us how you'd like your service delivered.", variant: "destructive" });
       return;
     }
-    const success = await bookConsultation({
-      subject,
+
+    if (!user) {
+      saveDraftToSession();
+      toast({ title: "Sign in to continue", description: "We'll bring you back to your booking, and what you typed will be saved." });
+      navigate("/auth?redirect=/book");
+      return;
+    }
+
+    const generatedSubject = deviceName
+      ? `${selectedServiceName || 'Consultation'} - ${deviceName} ${deviceModel}`
+      : (selectedServiceName || subject || "Technical Consultation");
+
+    const fullDescription = [
       description,
+      `\n[Device: ${deviceName || 'N/A'} | Model: ${deviceModel || 'N/A'}]`,
+      issueStartedWhen ? `[Issue Started: ${issueStartedWhen}]` : "",
+      clientName ? `[Client Name: ${clientName}]` : "",
+      address ? `[Address: ${address}]` : "",
+      phone ? `[Phone: ${phone}]` : "",
+      delivery === "remote" && preferredTime ? `[Preferred Time: ${preferredTime}]` : "",
+    ].filter(Boolean).join("\n");
+
+    const success = await bookConsultation({
+      subject: generatedSubject,
+      description: fullDescription,
       service_id: serviceId,
       attachment_urls: media,
       delivery_method: delivery,
@@ -70,7 +148,7 @@ const BookingPage = () => {
     if (success) {
       const deliveryLabel = DELIVERY_OPTIONS.find(o => o.value === delivery)?.label || delivery;
       setBookedDetails({
-        subject: subject || "Technical Consultation",
+        subject: generatedSubject,
         delivery: deliveryLabel,
       });
     }
@@ -164,6 +242,23 @@ const BookingPage = () => {
 
         <h1 className="text-2xl sm:text-3xl font-bold mb-2">Book a Consultation</h1>
 
+        {/* Selected Service Shown at Top matching Customer Redesign 1.1 Page 3 */}
+        {selectedServiceName && (
+          <div className="bg-card border border-border rounded-xl p-3.5 mb-4 flex items-center justify-between gap-3 shadow-sm">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">SERVICE</p>
+              <p className="font-bold text-sm sm:text-base text-foreground">{selectedServiceName}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate("/services")}
+              className="text-xs font-bold text-accent hover:underline shrink-0"
+            >
+              Change
+            </button>
+          </div>
+        )}
+
         {/* Stepper matching PDF */}
         <div className="flex items-center justify-between gap-1 text-xs font-semibold text-muted-foreground mb-6 bg-card border border-border p-3 rounded-lg flex-wrap min-w-0">
           <span className="text-accent font-bold truncate">1 Describe</span>
@@ -175,13 +270,30 @@ const BookingPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-card border border-border p-4 sm:p-6 rounded-xl shadow-sm">
           <div className="space-y-2">
-            <Label htmlFor="subject" className="font-bold">Subject</Label>
-            <Input id="subject" placeholder="e.g. Broken Laptop Screen" value={subject} onChange={e => setSubject(e.target.value)} required />
+            <Label htmlFor="client_name" className="font-bold">Your name</Label>
+            <Input id="client_name" placeholder="John Doe" value={clientName} onChange={e => setClientName(e.target.value)} required />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="device_name" className="font-bold">Device name</Label>
+              <Input id="device_name" placeholder="e.g. HP Laptop or iPhone" value={deviceName} onChange={e => setDeviceName(e.target.value)} required />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="device_model" className="font-bold">Device model</Label>
+              <Input id="device_model" placeholder="e.g. ProBook 450 G8" value={deviceModel} onChange={e => setDeviceModel(e.target.value)} />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="issue_started" className="font-bold">When did the issue start?</Label>
+            <Input id="issue_started" placeholder="e.g. Yesterday, 2 days ago, or After update" value={issueStartedWhen} onChange={e => setIssueStartedWhen(e.target.value)} required />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="desc" className="font-bold">Problem Description</Label>
-            <Textarea id="desc" placeholder="Please provide details about what's happening…" rows={5} value={description} onChange={e => setDescription(e.target.value)} required />
+            <Textarea id="desc" placeholder="Please provide details about what's happening…" rows={4} value={description} onChange={e => setDescription(e.target.value)} required />
           </div>
 
           <div className="space-y-3">
@@ -201,6 +313,25 @@ const BookingPage = () => {
                 </button>
               ))}
             </div>
+          </div>
+
+          {(delivery === "doorstep" || delivery === "pick_up") && (
+            <div className="space-y-2">
+              <Label htmlFor="address" className="font-bold">Your address</Label>
+              <Input id="address" placeholder="Street, estate or building, town" value={address} onChange={e => setAddress(e.target.value)} required />
+            </div>
+          )}
+
+          {delivery === "remote" && (
+            <div className="space-y-2">
+              <Label htmlFor="pref_time" className="font-bold">Preferred time</Label>
+              <Input id="pref_time" placeholder="e.g. Today 2:00 PM or Tomorrow morning" value={preferredTime} onChange={e => setPreferredTime(e.target.value)} required />
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="font-bold">Phone number</Label>
+            <Input id="phone" type="tel" placeholder="+254 …" value={phone} onChange={e => setPhone(e.target.value)} required />
           </div>
 
           <div className="space-y-3">

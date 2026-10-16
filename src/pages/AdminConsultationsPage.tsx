@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useAuth } from "@/hooks/useAuth";
-import { CheckCircle, Clock, Image as ImageIcon, RefreshCw, MessageSquare, Star } from "lucide-react";
+import { CheckCircle, Clock, Image as ImageIcon, RefreshCw, MessageSquare, Star, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -36,9 +36,25 @@ const AdminConsultationsPage = () => {
   const [rateConsultation, setRateConsultation] = useState<any>(null);
   const [ratingVal, setRatingVal] = useState(5);
   const [reviewBody, setReviewBody] = useState("");
+  const [isStaffPending, setIsStaffPending] = useState(false);
 
   const isStaffPortal = APP_TYPE === "tech";
   const isStaff = isStaffPortal && (isAdmin || isTechnician);
+
+  useEffect(() => {
+    if (user && isStaff) {
+      supabase
+        .from("technician_profiles")
+        .select("approval_status")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }: any) => {
+          if (data?.approval_status === "pending") {
+            setIsStaffPending(true);
+          }
+        });
+    }
+  }, [user, isStaff]);
 
   const cacheKey = `cached_consultations_${user?.id || "guest"}`;
 
@@ -191,6 +207,28 @@ const AdminConsultationsPage = () => {
 
   if (loading || !user) return null;
 
+  if (isStaff && isStaffPending) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-xl py-6">
+          <div className="p-6 bg-card border border-border rounded-xl text-center space-y-4 shadow-sm">
+            <div className="p-3 bg-amber-500/10 text-amber-500 rounded-full w-fit mx-auto">
+              <Lock size={32} />
+            </div>
+            <h1 className="text-xl font-bold text-foreground">Consultations Locked</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Your technician account registration is pending administrator approval. Customer consultations, addresses, and client contact details are locked until approved.
+            </p>
+            <Button variant="outline" onClick={() => nav("/admin/availability")}>
+              Set Availability & Profile
+            </Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   const groups = {
     all: consultations,
     pending: consultations.filter(c => c.status === 'pending'),
@@ -210,6 +248,8 @@ const AdminConsultationsPage = () => {
     const isCompleted = c.status === "completed" || c.status === "resolved";
     const isInProgress = c.status === "accepted" || c.status === "in_progress";
     const isPending = c.status === "pending";
+    const isPaid = c.payment_status === "paid";
+    const isPaymentDue = isCompleted && !isPaid;
     const customerName = c.profiles?.display_name || c.profiles?.email?.split("@")[0] || "Customer";
 
     return (
@@ -217,26 +257,74 @@ const AdminConsultationsPage = () => {
         <CardHeader className="flex flex-row items-center justify-between gap-2 p-4 pb-2">
           <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
+              {isPaymentDue && <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0" title="Payment due" />}
               <CardTitle className="text-base font-bold text-foreground truncate">
                 {c.subject || c.services?.title || "Consultation"}
               </CardTitle>
             </div>
+            {c.delivery_method && (
+              <p className="text-xs text-muted-foreground capitalize">
+                Delivery: {String(c.delivery_method).replace("_", "-")}
+              </p>
+            )}
           </div>
           <Badge
             variant={isCompleted ? "default" : isPending ? "secondary" : "outline"}
             className="text-[11px] px-2.5 py-0.5 font-bold capitalize shrink-0"
           >
-            {c.delivery_method ? String(c.delivery_method).replace("_", "-") : "Doorstep"}
+            {isPaymentDue ? "Payment due" : isPaid ? "Paid" : formatBadgeStatus(c.status)}
           </Badge>
         </CardHeader>
 
         <CardContent className="p-4 pt-0 space-y-3">
           <p className="text-xs text-muted-foreground">
-            {customerName} · {c.media_url ? "1 photo/video attached" : "2 photos attached"}
+            {isStaff ? `${customerName} · ` : ""}{c.attachment_urls?.length ? `${c.attachment_urls.length} media attached` : "No media attached"}
           </p>
 
-          <div className="flex items-center gap-2 pt-1">
-            {isPending && isStaff && (
+          {isPaymentDue && (
+            <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-600 dark:text-amber-400">
+              Amount due: {formatKES(c.price || 1500)}
+            </div>
+          )}
+
+          {isPaid && c.receipt_no && (
+            <p className="text-xs font-semibold text-muted-foreground">
+              M-Pesa receipt: {c.receipt_no}
+            </p>
+          )}
+
+          <div className="flex items-center gap-2 pt-1 flex-wrap">
+            {!isStaff && isPaymentDue && (
+              <PayDialog
+                consultationId={c.id}
+                amount={c.price || 1500}
+                onSuccess={() => fetchConsultations()}
+              />
+            )}
+
+            {!isStaff && isPaid && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="font-bold text-xs h-8"
+                onClick={() => setRateConsultation(c)}
+              >
+                Rate this job
+              </Button>
+            )}
+
+            {!isStaff && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="font-bold text-xs h-8"
+                onClick={() => nav("/messages")}
+              >
+                Message the team
+              </Button>
+            )}
+
+            {isStaff && isPending && (
               <Button
                 size="sm"
                 variant="accent"
@@ -247,14 +335,16 @@ const AdminConsultationsPage = () => {
               </Button>
             )}
 
-            <Button
-              size="sm"
-              variant="outline"
-              className="font-bold text-xs h-8"
-              onClick={() => nav(`/admin/consultations/${c.id}`)}
-            >
-              View
-            </Button>
+            {isStaff && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="font-bold text-xs h-8"
+                onClick={() => nav(`/admin/consultations/${c.id}`)}
+              >
+                View
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -264,7 +354,15 @@ const AdminConsultationsPage = () => {
   const renderList = (items: any[]) => (
     <div className="grid gap-4">
       {items.length === 0 ? (
-        <p className="text-center text-muted-foreground py-12 text-sm">No consultations found.</p>
+        <div className="text-center py-12 bg-card border border-border rounded-xl p-6 space-y-3 shadow-sm">
+          <h3 className="text-base font-bold text-foreground">No consultations yet</h3>
+          <p className="text-xs text-muted-foreground max-w-xs mx-auto">Book your first one and follow its progress here.</p>
+          {!isStaff && (
+            <Button variant="accent" size="sm" onClick={() => nav("/services")} className="font-bold text-xs mt-1">
+              View Services
+            </Button>
+          )}
+        </div>
       ) : (
         items.map(renderCard)
       )}

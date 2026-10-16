@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useToast } from "@/hooks/use-toast";
-import { Send } from "lucide-react";
+import { Send, Lock } from "lucide-react";
 
 type Msg = {
   id: string;
@@ -38,8 +38,24 @@ const AdminMessagesPage = () => {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [text, setText] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
+  const [isStaffPending, setIsStaffPending] = useState(false);
 
   const hasAccess = isAdmin || isTechnician;
+
+  useEffect(() => {
+    if (user && hasAccess) {
+      supabase
+        .from("technician_profiles")
+        .select("approval_status")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }: any) => {
+          if (data?.approval_status === "pending") {
+            setIsStaffPending(true);
+          }
+        });
+    }
+  }, [user, hasAccess]);
 
   useEffect(() => {
     const customerId = searchParams.get("customer");
@@ -154,6 +170,28 @@ const AdminMessagesPage = () => {
 
   if (loading) return null;
 
+  if (hasAccess && isStaffPending) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-xl py-6">
+          <div className="p-6 bg-card border border-border rounded-xl text-center space-y-4 shadow-sm">
+            <div className="p-3 bg-amber-500/10 text-amber-500 rounded-full w-fit mx-auto">
+              <Lock size={32} />
+            </div>
+            <h1 className="text-xl font-bold text-foreground">Chat Locked</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Your technician registration is pending administrator approval. Customer chat and messages are locked until approved.
+            </p>
+            <Button variant="outline" onClick={() => nav("/admin/availability")}>
+              Set Availability & Profile
+            </Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   const activeConversation = conversations.find((c) => c.customer_id === activeId);
 
   return (
@@ -240,7 +278,25 @@ const AdminMessagesPage = () => {
                   ))}
                   <div ref={endRef} />
                 </div>
-                <div className="border-t border-border p-2 sm:p-3 flex gap-2 shrink-0 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
+                {/* Quick Response Chips matching Staff App Design 1.1 */}
+                <div className="px-3 pt-2 flex items-center gap-2 overflow-x-auto shrink-0 border-t border-border/50">
+                  <button
+                    type="button"
+                    onClick={() => setText("We're on our way")}
+                    className="px-3 py-1 rounded-full bg-accent/15 border border-accent/30 text-accent font-semibold text-xs shrink-0 hover:bg-accent hover:text-accent-foreground transition-colors"
+                  >
+                    We're on our way
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setText("Please send a photo")}
+                    className="px-3 py-1 rounded-full bg-accent/15 border border-accent/30 text-accent font-semibold text-xs shrink-0 hover:bg-accent hover:text-accent-foreground transition-colors"
+                  >
+                    Please send a photo
+                  </button>
+                </div>
+
+                <div className="p-2 sm:p-3 flex gap-2 shrink-0 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
                   <Input
                     value={text}
                     onChange={(e) => setText(e.target.value)}

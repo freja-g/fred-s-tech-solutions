@@ -110,47 +110,47 @@
 
   /* Universal Transparent Glassmorphism Surface Overrides */
   .bg-card {
-    background-color: hsl(var(--card) / 0.52) !important;
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: hsl(var(--card) / 0.1) !important;
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
     border-color: hsl(var(--border) / 0.5);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.12);
   }
 
   .dark .bg-card {
-    background-color: hsl(var(--card) / 0.42) !important;
+    background-color: hsl(var(--card) / 0.1) !important;
     border-color: hsl(var(--border) / 0.4);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
   }
 
   .bg-popover {
-    background-color: hsl(var(--popover) / 0.65) !important;
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background-color: hsl(var(--popover) / 0.2) !important;
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
   }
 
   .bg-secondary {
-    background-color: hsl(var(--secondary) / 0.45) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background-color: hsl(var(--secondary) / 0.1) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
   .bg-muted {
-    background-color: hsl(var(--muted) / 0.40) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background-color: hsl(var(--muted) / 0.1) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   /* Glass Form Inputs & Controls */
   input, textarea, select {
-    background-color: hsl(var(--background) / 0.40) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background-color: hsl(var(--background) / 0.15) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-color: hsl(var(--border) / 0.7);
   }
 
   input:focus, textarea:focus, select:focus {
-    background-color: hsl(var(--background) / 0.65) !important;
+    background-color: hsl(var(--background) / 0.25) !important;
     border-color: hsl(var(--accent));
   }
 

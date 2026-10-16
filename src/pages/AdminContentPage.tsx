@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, Trash2, Camera, Video, X } from "lucide-react";
+import { Plus, Trash2, Camera, Video, X, Star, Check, Ban } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
 
 const AdminContentPage = () => {
@@ -19,6 +19,8 @@ const AdminContentPage = () => {
   const { toast } = useToast();
   const [services, setServices] = useState<any[]>([]);
   const [tips, setTips] = useState<any[]>([]);
+  const [pendingReviews, setPendingReviews] = useState<any[]>([]);
+  const [pendingTechs, setPendingTechs] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
 
   const [newService, setNewService] = useState({ title: "", description: "", icon_name: "Briefcase", media_url: "" });
@@ -27,15 +29,59 @@ const AdminContentPage = () => {
   const isStaff = isAdmin || isTechnician;
 
   const fetchContent = async () => {
-    const { data: s } = await supabase.from("services").select("*").order("created_at", { ascending: false });
-    const { data: t } = await supabase.from("get_smart_content").select("*").order("created_at", { ascending: false });
+    const [{ data: s }, { data: t }, { data: r }, { data: tp }] = await Promise.all([
+      supabase.from("services").select("*").order("created_at", { ascending: false }),
+      supabase.from("get_smart_content").select("*").order("created_at", { ascending: false }),
+      supabase.from("reviews").select("*").eq("status", "pending").order("created_at", { ascending: false }),
+      supabase.from("technician_profiles").select("*, profiles!inner(display_name, email)").eq("approval_status", "pending"),
+    ]);
     setServices(s || []);
     setTips(t || []);
+    setPendingReviews(r || []);
+    setPendingTechs(tp || []);
   };
 
   useEffect(() => {
     if (isStaff) fetchContent();
   }, [isStaff]);
+
+  const handleApproveTechnician = async (userId: string) => {
+    const { error } = await supabase
+      .from("technician_profiles")
+      .update({ approval_status: "approved", is_online: true, accepting_jobs: true })
+      .eq("user_id", userId);
+
+    if (error) {
+      toast({ title: "Approval failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Technician Approved!", description: "Account is now unlocked." });
+      fetchContent();
+    }
+  };
+
+  const handleRejectTechnician = async (userId: string, reason: string) => {
+    const { error } = await supabase
+      .from("technician_profiles")
+      .update({ approval_status: "rejected", rejection_reason: reason || "Registration declined" })
+      .eq("user_id", userId);
+
+    if (error) {
+      toast({ title: "Action failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Registration Declined" });
+      fetchContent();
+    }
+  };
+
+  const handleModerateReview = async (id: string, status: 'approved' | 'rejected') => {
+    const { error } = await supabase.from("reviews").update({ status }).eq("id", id);
+    if (error) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: `Review ${status}` });
+      fetchContent();
+    }
+  };
 
   const handleAddService = async () => {
     setBusy(true);
@@ -89,10 +135,13 @@ const AdminContentPage = () => {
         <h1 className="text-2xl sm:text-3xl font-extrabold mb-6 text-foreground">Content Management</h1>
 
         <Tabs defaultValue="services">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="services" className="text-xs font-bold">Services</TabsTrigger>
-            <TabsTrigger value="tips" className="text-xs font-bold">Get Smart</TabsTrigger>
-            <TabsTrigger value="reviews" className="text-xs font-bold">Reviews Management</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsTrigger value="services" className="text-xs font-bold truncate">Services</TabsTrigger>
+            <TabsTrigger value="tips" className="text-xs font-bold truncate">Get Smart</TabsTrigger>
+            <TabsTrigger value="reviews" className="text-xs font-bold truncate">Reviews</TabsTrigger>
+            <TabsTrigger value="approvals" className="text-xs font-bold truncate">
+              Approvals {pendingTechs.length > 0 ? `(${pendingTechs.length})` : ''}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="services" className="space-y-6">
@@ -236,6 +285,117 @@ const AdminContentPage = () => {
                   </div>
                   <div className="flex gap-2">
                     <Button variant="ghost" size="icon" onClick={() => handleDelete("get_smart_content", t.id)}><Trash2 size={16} className="text-destructive" /></Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Reviews Management Tab matching Staff App Design 1.1 Page 10 */}
+          <TabsContent value="reviews" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">
+                {pendingReviews.length} waiting for approval
+              </h2>
+            </div>
+
+            {pendingReviews.length === 0 && (
+              <p className="text-center text-sm text-muted-foreground py-12 bg-card border border-border rounded-xl">
+                No reviews waiting for approval.
+              </p>
+            )}
+
+            <div className="grid gap-3">
+              {pendingReviews.map((r) => (
+                <div key={r.id} className="bg-card border border-border rounded-xl p-4 sm:p-5 shadow-sm space-y-3">
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        size={16}
+                        className={i < r.rating ? "fill-accent text-accent" : "text-muted-foreground/30"}
+                      />
+                    ))}
+                  </div>
+                  {r.title && <h3 className="font-bold text-sm text-foreground">{r.title}</h3>}
+                  <p className="text-sm text-foreground/90 leading-relaxed">{r.body}</p>
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <p className="text-xs font-semibold text-muted-foreground">{r.author_name}</p>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="accent"
+                        className="font-bold text-xs h-8 px-3"
+                        onClick={() => handleModerateReview(r.id, "approved")}
+                      >
+                        <Check size={14} className="mr-1" /> Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="font-bold text-xs h-8 px-3 text-destructive border-destructive/30 hover:bg-destructive/10"
+                        onClick={() => handleModerateReview(r.id, "rejected")}
+                      >
+                        <Ban size={14} className="mr-1" /> Reject
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Technician Approvals Tab matching Specification Part 2.2 */}
+          <TabsContent value="approvals" className="space-y-4">
+            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">
+              Technician Registrations ({pendingTechs.length} pending)
+            </h2>
+
+            {pendingTechs.length === 0 && (
+              <p className="text-center text-sm text-muted-foreground py-12 bg-card border border-border rounded-xl">
+                No pending technician registrations awaiting review.
+              </p>
+            )}
+
+            <div className="grid gap-3">
+              {pendingTechs.map((tech) => (
+                <div key={tech.user_id} className="bg-card border border-border rounded-xl p-4 sm:p-5 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <h3 className="font-bold text-base text-foreground">{tech.profiles?.display_name || "Technician"}</h3>
+                      <p className="text-xs text-muted-foreground">{tech.profiles?.email} · {tech.phone}</p>
+                    </div>
+                    <Badge variant="outline" className="text-xs font-bold text-amber-500 border-amber-500/30">
+                      Pending Approval
+                    </Badge>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-2 text-xs text-foreground/90 border-t border-border pt-2">
+                    <div><span className="font-bold text-muted-foreground">National ID:</span> {tech.national_id || 'N/A'} (Admin Only)</div>
+                    <div><span className="font-bold text-muted-foreground">Base Location:</span> {tech.zones?.join(", ") || 'N/A'}</div>
+                    <div className="sm:col-span-2"><span className="font-bold text-muted-foreground">Specialities:</span> {tech.specialties?.join(", ") || 'N/A'}</div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                    <Button
+                      size="sm"
+                      variant="accent"
+                      className="font-bold text-xs h-8 px-4"
+                      onClick={() => handleApproveTechnician(tech.user_id)}
+                    >
+                      Approve Technician
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="font-bold text-xs h-8 px-4 text-destructive border-destructive/30 hover:bg-destructive/10"
+                      onClick={() => {
+                        const reason = prompt("Enter rejection reason for this technician:");
+                        if (reason !== null) handleRejectTechnician(tech.user_id, reason);
+                      }}
+                    >
+                      Reject
+                    </Button>
                   </div>
                 </div>
               ))}

@@ -36,6 +36,8 @@ import { uploadMedia } from "@/lib/storage";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+
 type Profile = {
   display_name: string | null;
   email: string | null;
@@ -47,6 +49,7 @@ type Profile = {
 
 const ProfilePage = () => {
   const { user, loading, isAdmin, isTechnician, signOut } = useAuth();
+  const unread = useUnreadMessages();
   const nav = useNavigate();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
@@ -54,6 +57,8 @@ const ProfilePage = () => {
 
   const [newName, setNewName] = useState("");
   const [editOpen, setEditOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [aboutSlide, setAboutSlide] = useState(0);
   const [updating, setUpdating] = useState(false);
 
   const [isOnline, setIsOnline] = useState(false);
@@ -127,13 +132,21 @@ const ProfilePage = () => {
       });
   }, [user]);
 
+  useEffect(() => {
+    if (!aboutOpen) return;
+    const timer = setInterval(() => {
+      setAboutSlide((prev) => (prev + 1) % 2);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [aboutOpen]);
+
   if (loading || !user) return null;
 
   return (
     <div className="min-h-screen">
       <Header />
       <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-2xl space-y-6">
-        {/* Profile Header matching Page 7 PDF */}
+        {/* Profile Header */}
         <section className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4">
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -141,7 +154,7 @@ const ProfilePage = () => {
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  (profile?.display_name || user.email || "S").charAt(0).toUpperCase()
+                  (profile?.display_name || user.email || "U").charAt(0).toUpperCase()
                 )}
               </div>
               <button
@@ -155,19 +168,85 @@ const ProfilePage = () => {
 
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-extrabold truncate">
-                {profile?.display_name || user.email?.split("@")[0] || "Staff name"}
+                {profile?.display_name || user.email?.split("@")[0] || "Client name"}
               </h1>
-              <p className="text-xs font-semibold text-accent uppercase tracking-wider">Technician</p>
+              <p className="text-xs font-semibold text-muted-foreground truncate">{profile?.email || user.email}</p>
 
               <button
                 onClick={() => setEditOpen(true)}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground hover:underline mt-1"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline mt-1"
               >
-                <Edit2 size={12} /> Account settings
+                <Edit2 size={12} /> Edit name and picture
               </button>
             </div>
           </div>
         </section>
+
+        {/* Customer Account Links matching Specification 1.7 */}
+        {!isStaff && (
+          <section className="bg-card border border-border rounded-xl divide-y divide-border shadow-sm overflow-hidden text-sm">
+            <Link
+              to="/messages"
+              className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="relative p-2 rounded-xl bg-accent/10 text-accent">
+                  <MessageCircle size={18} />
+                  {unread > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-accent text-accent-foreground text-[9px] font-bold flex items-center justify-center leading-none">
+                      {unread > 9 ? "9+" : unread}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <h2 className="font-bold text-foreground flex items-center gap-2">
+                    Chat (Messages)
+                    {unread > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-accent/20 text-accent text-[10px] font-extrabold">
+                        {unread} unread
+                      </span>
+                    )}
+                  </h2>
+                  <p className="text-xs text-muted-foreground">Real-time conversation with GiCOFix team</p>
+                </div>
+              </div>
+              <ChevronRight size={18} className="text-muted-foreground" />
+            </Link>
+
+            <Link
+              to="/contact"
+              className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
+            >
+              <div>
+                <h2 className="font-bold text-foreground">Contact support</h2>
+                <p className="text-xs text-muted-foreground">WhatsApp, email and non-booking message form</p>
+              </div>
+              <ChevronRight size={18} className="text-muted-foreground" />
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => { setAboutSlide(0); setAboutOpen(true); }}
+              className="w-full p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors text-left"
+            >
+              <div>
+                <h2 className="font-bold text-foreground">About GiCOFix</h2>
+                <p className="text-xs text-muted-foreground">Who We Are, Our Mission, Our Vision, Core Values</p>
+              </div>
+              <ChevronRight size={18} className="text-muted-foreground" />
+            </button>
+
+            <Link
+              to="/legal"
+              className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
+            >
+              <div>
+                <h2 className="font-bold text-foreground">Terms & Privacy</h2>
+              </div>
+              <ChevronRight size={18} className="text-muted-foreground" />
+            </Link>
+          </section>
+        )}
 
         {/* Staff Portal Links matching PDF Page 7 */}
         <section className="bg-card border border-border rounded-xl divide-y divide-border shadow-sm overflow-hidden text-sm">
@@ -300,49 +379,6 @@ const ProfilePage = () => {
           </div>
         </section>
 
-        {/* Links List matching Page 7 PDF */}
-        <section className="bg-card border border-border rounded-xl divide-y divide-border shadow-sm overflow-hidden text-sm">
-          <Link
-            to="/contact"
-            className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
-          >
-            <div>
-              <h2 className="font-semibold text-foreground">Contact</h2>
-              <p className="text-xs text-muted-foreground">WhatsApp, email and message form</p>
-            </div>
-            <ChevronRight size={18} className="text-muted-foreground" />
-          </Link>
-
-          <Link
-            to="/contact#about"
-            className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
-          >
-            <div>
-              <h2 className="font-semibold text-foreground">About GiCOFix</h2>
-              <p className="text-xs text-muted-foreground">Who We Are, Our Mission, Our Vision, Core Values</p>
-            </div>
-            <ChevronRight size={18} className="text-muted-foreground" />
-          </Link>
-
-          <Link
-            to="/legal"
-            className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
-          >
-            <div>
-              <h2 className="font-semibold text-foreground">Terms & Privacy</h2>
-            </div>
-            <ChevronRight size={18} className="text-muted-foreground" />
-          </Link>
-        </section>
-
-        {/* WHO WE ARE callout matching Page 7 PDF */}
-        <section className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-1">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-accent">WHO WE ARE</h2>
-          <p className="text-sm text-foreground/90 leading-relaxed">
-            Practical help with hardware, software, and data. No jargon, just clear solutions.
-          </p>
-        </section>
-
         {/* Staff Portal Links matching PDF Page 7 */}
         {isStaff && (
           <section className="bg-card border border-border rounded-xl divide-y divide-border shadow-sm overflow-hidden text-sm">
@@ -351,7 +387,7 @@ const ProfilePage = () => {
               className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
             >
               <div>
-                <h2 className="font-semibold text-foreground">Analytics</h2>
+                <h2 className="font-bold text-foreground">Analytics</h2>
                 <p className="text-xs text-muted-foreground">Revenue, performance, charts</p>
               </div>
               <ChevronRight size={18} className="text-muted-foreground" />
@@ -362,7 +398,7 @@ const ProfilePage = () => {
               className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
             >
               <div>
-                <h2 className="font-semibold text-foreground">Availability</h2>
+                <h2 className="font-bold text-foreground">Availability</h2>
                 <p className="text-xs text-muted-foreground">Working hours and shifts</p>
               </div>
               <ChevronRight size={18} className="text-muted-foreground" />
@@ -373,8 +409,8 @@ const ProfilePage = () => {
               className="w-full p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors text-left"
             >
               <div>
-                <h2 className="font-semibold text-foreground">Account Settings</h2>
-                <p className="text-xs text-muted-foreground">Name, picture, profile details</p>
+                <h2 className="font-bold text-foreground">Account settings</h2>
+                <p className="text-xs text-muted-foreground">Name, picture, password</p>
               </div>
               <ChevronRight size={18} className="text-muted-foreground" />
             </button>
@@ -420,6 +456,73 @@ const ProfilePage = () => {
                 Save Changes
               </Button>
             </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* About GiCOFix 2-Slide Auto-Scrolling Modal matching Specification 1.7.2 */}
+        <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                <Info size={20} className="text-accent" /> About GiCOFix
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="py-4 space-y-4 min-h-[220px] flex flex-col justify-between">
+              {aboutSlide === 0 ? (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-accent">WHO WE ARE</h3>
+                    <p className="text-sm text-foreground/90 leading-relaxed">
+                      Practical help with hardware, software, and data. No jargon, just clear solutions.
+                    </p>
+                  </div>
+                  <div className="space-y-1 pt-2 border-t border-border">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-accent">OUR MISSION</h3>
+                    <p className="text-sm text-foreground/90 leading-relaxed">
+                      To deliver reliable, transparent technical consulting and repair services for small businesses, startups, and individuals across Kenya.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-accent">OUR VISION</h3>
+                    <p className="text-sm text-foreground/90 leading-relaxed">
+                      To be the most trusted, accessible, and fast-response technical service partner across East Africa.
+                    </p>
+                  </div>
+                  <div className="space-y-1 pt-2 border-t border-border">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-accent">CORE VALUES</h3>
+                    <ul className="text-xs sm:text-sm text-foreground/90 space-y-1 list-disc pl-4">
+                      <li>Integrity & No Jargon</li>
+                      <li>Clear Communication</li>
+                      <li>Speed & Turnaround Excellence</li>
+                      <li>Data Security & Privacy</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Slide Indicators */}
+              <div className="flex items-center justify-between pt-4 border-t border-border">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setAboutSlide(0)}
+                    className={cn("h-2 rounded-full transition-all", aboutSlide === 0 ? "w-6 bg-accent" : "w-2 bg-muted-foreground/30")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setAboutSlide(1)}
+                    className={cn("h-2 rounded-full transition-all", aboutSlide === 1 ? "w-6 bg-accent" : "w-2 bg-muted-foreground/30")}
+                  />
+                </div>
+                <Button size="sm" variant="accent" onClick={() => setAboutOpen(false)} className="font-bold text-xs">
+                  Done
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       </main>

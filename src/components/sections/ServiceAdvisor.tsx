@@ -61,23 +61,30 @@ const ServiceAdvisor = ({ services }: { services: Svc[] }) => {
       </Button>
       {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
       {result && (
-        <div className="mt-4 space-y-3 rounded-lg bg-secondary/60 p-4">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Recommended service</p>
-          <p className="text-base font-semibold">{result.service.title}</p>
-          {result.reason && <p className="text-sm">{result.reason}</p>}
-          {result.checklist.length > 0 && (
-            <div>
-              <p className="mb-2 text-sm font-medium">Before we start, please prepare:</p>
-              <ul className="space-y-1.5">
-                {result.checklist.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
-                    <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-accent" /> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          <Link to={bookUrl} className={cn(buttonVariants({ variant: "accent" }), "w-full")}>Book this service</Link>
+        <div className="mt-4 space-y-3 rounded-xl bg-accent/10 border border-accent/20 p-4 sm:p-5">
+          <p className="text-[10px] uppercase font-bold tracking-wider text-accent">WE RECOMMEND</p>
+          <p className="text-base sm:text-lg font-extrabold text-foreground">{result.service.title}</p>
+          {result.reason && <p className="text-xs sm:text-sm text-muted-foreground">{result.reason}</p>}
+
+          <div className="pt-2 border-t border-border/60">
+            <p className="mb-2 text-xs font-bold text-foreground">Before you book</p>
+            <ul className="space-y-1.5 text-xs text-foreground/90">
+              {(result.checklist.length > 0 ? result.checklist : [
+                "Save your open work",
+                "Note when the problem started",
+                "Have your charger ready"
+              ]).map((item, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-accent" /> {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <Link to={bookUrl} className={cn(buttonVariants({ variant: "accent" }), "w-full font-bold gap-1 mt-2")}>
+            Let's Get Started! →
+          </Link>
+          <p className="text-[10px] text-muted-foreground italic text-center">A suggestion to help you choose, not a diagnosis.</p>
         </div>
       )}
     </div>

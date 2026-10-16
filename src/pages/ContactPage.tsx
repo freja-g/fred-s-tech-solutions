@@ -1,250 +1,107 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Mail, MessageCircle, Send } from "lucide-react";
+import { Mail, MessageCircle, Send, ArrowLeft, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
 import { useContact } from "@/hooks/useContact";
-import { contactSchema } from "@/types/contact";
-
-const SERVICES = [
-  "Technical Consulting",
-  "IT Support & Troubleshooting",
-  "Data & Software Support",
-  "Network Setup & Security",
-  "Cloud Migration & Management",
-  "Business Process Automation",
-];
 
 const ContactPage = () => {
   const { toast } = useToast();
-  const { handleExternalSubmit, handleInAppSubmit } = useContact();
+  const navigate = useNavigate();
+  const { handleExternalSubmit } = useContact();
+  const [method, setMethod] = useState<"whatsapp" | "email">("whatsapp");
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    service: "",
-    details: "",
+    name: "John Doe",
+    email: "your@email.com",
+    message: "",
   });
-  const [showInAppForm, setShowInAppForm] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState<"whatsapp" | "email" | "in_app" | null>(null);
 
-  const handleMethodSelect = (method: "whatsapp" | "email" | "in_app") => {
-    const result = contactSchema.safeParse(formData);
-    if (!result.success) {
-      toast({
-        title: "Please fill in all fields correctly",
-        description: result.error.issues[0].message,
-        variant: "destructive",
-      });
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      toast({ title: "Fields required", description: "Please enter your name, email, and message.", variant: "destructive" });
       return;
     }
-
-    if (method === "in_app") {
-      setShowInAppForm(true);
-      setSelectedMethod(method);
-    } else {
-      setSelectedMethod(method);
-      handleExternalSubmit(formData, method);
-    }
+    handleExternalSubmit({
+      name: formData.name,
+      email: formData.email,
+      phone: "",
+      service: "General Inquiry",
+      details: formData.message,
+    }, method);
   };
-
-  const onInAppSubmit = () => {
-    handleInAppSubmit(formData);
-  };
-
 
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-24 sm:pt-28 md:pt-32">
-        <section className="section-padding bg-background relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-1/3 h-full opacity-5">
-            <svg viewBox="0 0 200 600" fill="none" className="w-full h-full">
-              <circle cx="100" cy="100" r="80" stroke="hsl(var(--accent))" strokeWidth="0.5" />
-              <circle cx="100" cy="100" r="120" stroke="hsl(var(--accent))" strokeWidth="0.5" />
-              <circle cx="100" cy="100" r="160" stroke="hsl(var(--accent))" strokeWidth="0.5" />
-              <circle cx="100" cy="300" r="60" stroke="hsl(var(--accent))" strokeWidth="0.5" />
-              <circle cx="100" cy="300" r="100" stroke="hsl(var(--accent))" strokeWidth="0.5" />
-              <circle cx="100" cy="500" r="70" stroke="hsl(var(--accent))" strokeWidth="0.5" />
-            </svg>
+      <main className="pt-24 sm:pt-28 md:pt-32 px-4 container max-w-xl py-6 space-y-6">
+        <button
+          type="button"
+          onClick={() => navigate("/profile")}
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft size={16} />
+          Account
+        </button>
+
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">Contact us</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Reach out via WhatsApp or email directly</p>
+        </div>
+
+        {/* WhatsApp | Email Toggle Tabs matching Page 12 PDF */}
+        <div className="grid grid-cols-2 gap-2 bg-card border border-border p-1.5 rounded-xl">
+          <button
+            type="button"
+            onClick={() => setMethod("whatsapp")}
+            className={`py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${method === "whatsapp" ? "bg-accent text-accent-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <MessageCircle size={16} /> WhatsApp
+          </button>
+          <button
+            type="button"
+            onClick={() => setMethod("email")}
+            className={`py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${method === "email" ? "bg-accent text-accent-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <Mail size={16} /> Email
+          </button>
+        </div>
+
+        <form onSubmit={onSubmit} className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="name" className="font-bold text-xs">Your name</Label>
+            <Input id="name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
           </div>
 
-          <div className="container relative z-10">
-            <motion.div
-              className="max-w-2xl mx-auto"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="text-center mb-12">
-                <p className="text-accent font-medium mb-3 text-sm uppercase tracking-wide">
-                  Get Started
-                </p>
-                <h1 className="text-3xl md:text-4xl font-semibold mb-4">
-                  Book a Consultation
-                </h1>
-                <p className="text-muted-foreground">
-                  Share your details and let us know which service you need help with.
-                  We'll get back to you as quickly as possible.
-                </p>
-              </div>
-
-              <motion.div
-                className="bg-card border border-border rounded-xl p-6 md:p-8"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Your Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      maxLength={100}
-                      className="transition-all duration-200 focus:ring-accent focus:border-accent"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your@email.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      maxLength={255}
-                      className="transition-all duration-200 focus:ring-accent focus:border-accent"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+254 123 456 789"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      maxLength={20}
-                      className="transition-all duration-200 focus:ring-accent focus:border-accent"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="service">Service You Need</Label>
-                    <Select value={formData.service} onValueChange={(value) => setFormData({ ...formData, service: value })}>
-                      <SelectTrigger id="service" className="transition-all duration-200 focus:ring-accent focus:border-accent">
-                        <SelectValue placeholder="Select a service" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {SERVICES.map((svc) => (
-                          <SelectItem key={svc} value={svc}>
-                            {svc}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="details">Tell us what you need</Label>
-                    <Textarea
-                      id="details"
-                      placeholder="Describe the issue, goal, or context. The more detail, the better we can help."
-                      value={formData.details}
-                      onChange={(e) => setFormData({ ...formData, details: e.target.value })}
-                      maxLength={2000}
-                      rows={5}
-                      className="transition-all duration-200 focus:ring-accent focus:border-accent resize-none"
-                    />
-                  </div>
-
-                  {!showInAppForm && (
-                    <>
-                      <p className="text-xs text-muted-foreground text-center pt-4">
-                        Choose how you'd like to connect with us:
-                      </p>
-
-                      <div className="grid sm:grid-cols-3 gap-3">
-                        <button
-                          onClick={() => handleMethodSelect("whatsapp")}
-                          className={cn(
-                            buttonVariants({ variant: "outline", size: "lg" }),
-                            "w-full flex flex-col items-center"
-                          )}
-                        >
-                          <MessageCircle className="mb-2" size={20} />
-                          <span className="text-sm">WhatsApp</span>
-                        </button>
-                        <button
-                          onClick={() => handleMethodSelect("email")}
-                          className={cn(
-                            buttonVariants({ variant: "outline", size: "lg" }),
-                            "w-full flex flex-col items-center"
-                          )}
-                        >
-                          <Mail className="mb-2" size={20} />
-                          <span className="text-sm">Email</span>
-                        </button>
-                        <button
-                          onClick={() => handleMethodSelect("in_app")}
-                          className={cn(
-                            buttonVariants({ variant: "accent", size: "lg" }),
-                            "w-full flex flex-col items-center"
-                          )}
-                        >
-                          <Send className="mb-2" size={20} />
-                          <span className="text-sm">Chat Here</span>
-                        </button>
-                      </div>
-                    </>
-                  )}
-
-                  {showInAppForm && (
-                    <motion.div
-                      className="space-y-4 pt-4 border-t border-border"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <p className="text-sm text-muted-foreground">
-                        We'll respond to you via our in-app messaging system.
-                        Our technician will review your request and get back to you shortly.
-                      </p>
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => setShowInAppForm(false)}
-                          className={cn(buttonVariants({ variant: "outline" }), "flex-1")}
-                        >
-                          Back
-                        </button>
-                        <button
-                          onClick={onInAppSubmit}
-                          className={cn(buttonVariants({ variant: "accent" }), "flex-1")}
-                        >
-                          Submit Request
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            </motion.div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="font-bold text-xs">Email address</Label>
+            <Input id="email" type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
           </div>
-        </section>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="message" className="font-bold text-xs">Message</Label>
+            <Textarea id="message" placeholder="How can we help?" rows={5} value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} required />
+          </div>
+
+          <Button type="submit" variant="accent" className="w-full font-bold">
+            Send message
+          </Button>
+        </form>
+
+        {/* Footer Helper Callout matching Page 12 PDF */}
+        <div className="bg-card border border-border rounded-xl p-4 shadow-sm flex items-center justify-between gap-3 text-xs sm:text-sm">
+          <p className="text-muted-foreground">
+            Need a repair or advice? Go to <Link to="/services" className="font-bold text-accent hover:underline">Services</Link> to book a consultation.
+          </p>
+          <Link to="/services" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 font-bold text-xs")}>
+            Services <ArrowRight size={14} className="ml-1" />
+          </Link>
+        </div>
       </main>
     </div>
   );

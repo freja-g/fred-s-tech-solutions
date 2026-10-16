@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield, MessageSquare, Star, Plus, BarChart2, Clock, ArrowRight } from "lucide-react";
+import { Shield, MessageSquare, Star, Plus, BarChart2, Clock, ArrowRight, AlertTriangle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { supabase as _sb } from "@/integrations/supabase/client";
 const supabase: any = _sb;
 
 const StaffDashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [approvalStatus, setApprovalStatus] = useState<string>("approved");
+  const [rejectionReason, setRejectionReason] = useState<string>("");
   const [counts, setCounts] = useState({
     pending: 0,
     inProgress: 0,
@@ -17,6 +21,19 @@ const StaffDashboard = () => {
   });
 
   const loadData = async () => {
+    if (user) {
+      const { data: techProf } = await supabase
+        .from("technician_profiles")
+        .select("approval_status, rejection_reason")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (techProf?.approval_status) {
+        setApprovalStatus(techProf.approval_status);
+        if (techProf.rejection_reason) setRejectionReason(techProf.rejection_reason);
+      }
+    }
+
     const [p, ip, c, cust, msgs, revs] = await Promise.all([
       supabase.from("consultations").select("id", { count: "exact", head: true }).eq("status", "pending"),
       supabase.from("consultations").select("id", { count: "exact", head: true }).in("status", ["accepted", "in_progress"]),
@@ -56,6 +73,33 @@ const StaffDashboard = () => {
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Overview of active customer requests</p>
         </div>
       </div>
+
+      {/* Pending Approval Notice Banner matching Specification Part 2.2 */}
+      {approvalStatus === "pending" && (
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 space-y-2">
+          <div className="flex items-center gap-2 font-bold text-sm">
+            <AlertTriangle size={18} /> Account Pending Approval
+          </div>
+          <p className="text-xs leading-relaxed">
+            Your technician account registration was submitted and is pending administrator review. Client data, consultations, chat, and content management are locked until approved. You can still set your working hours in Availability and edit your Profile details.
+          </p>
+        </div>
+      )}
+
+      {/* Rejection Notice Banner matching Specification Part 2.3 */}
+      {approvalStatus === "rejected" && (
+        <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive space-y-2">
+          <div className="flex items-center gap-2 font-bold text-sm">
+            <AlertTriangle size={18} /> Registration Not Approved
+          </div>
+          <p className="text-xs leading-relaxed">
+            Reason from administrator: {rejectionReason || "Please review your registration details and resubmit."}
+          </p>
+          <Button size="sm" variant="outline" onClick={() => navigate("/admin/availability")}>
+            Update Details & Resubmit
+          </Button>
+        </div>
+      )}
 
       {/* Summary Metrics Cards matching Page 1 PDF */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

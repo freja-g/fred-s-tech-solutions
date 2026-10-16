@@ -259,9 +259,9 @@ const ServicesPage = () => {
 
                     <Link
                       to={`/book?service=${encodeURIComponent(service.title)}&service_id=${service.id}`}
-                      className={cn(buttonVariants({ variant: "accent" }), "w-full justify-between mt-2")}
+                      className={cn(buttonVariants({ variant: "accent" }), "w-full justify-between mt-2 font-bold")}
                     >
-                      Start
+                      Let's Get Started!
                       <ArrowRight size={16} />
                     </Link>
                   </motion.div>
