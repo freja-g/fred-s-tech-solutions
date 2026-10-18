@@ -18,6 +18,9 @@ const ConsultationDetailPage = () => {
 
   const [item, setItem] = useState<any>(null);
   const [customerName, setCustomerName] = useState<string>("Customer");
+  const [customerPhone, setCustomerPhone] = useState<string>("");
+  const [customerAddress, setCustomerAddress] = useState<string>("");
+  const [priceInput, setPriceInput] = useState<string>("");
   const [fetching, setFetching] = useState(true);
   const [updating, setUpdating] = useState(false);
 
@@ -37,16 +40,25 @@ const ConsultationDetailPage = () => {
     }
 
     setItem(data);
+    if (data.price) setPriceInput(String(data.price));
+
+    const pPhone = data.phone || data.description?.match(/\[Phone:\s*(.*?)\]/)?.[1] || "";
+    const pAddr = data.address || data.description?.match(/\[Address:\s*(.*?)\]/)?.[1] || "";
+    if (pPhone) setCustomerPhone(pPhone);
+    if (pAddr) setCustomerAddress(pAddr);
 
     if (data.customer_id) {
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, email")
+        .select("display_name, email, phone, coverage_zones")
         .eq("user_id", data.customer_id)
         .maybeSingle();
 
       if (prof?.display_name) setCustomerName(prof.display_name);
       else if (prof?.email) setCustomerName(prof.email.split("@")[0]);
+
+      if (!pPhone && prof?.phone) setCustomerPhone(prof.phone);
+      if (!pAddr && prof?.coverage_zones?.length) setCustomerAddress(prof.coverage_zones[0]);
     }
 
     setFetching(false);
@@ -55,6 +67,47 @@ const ConsultationDetailPage = () => {
   useEffect(() => {
     if (!loading) fetchDetail();
   }, [id, loading]);
+
+  const handleAcceptConsultation = async () => {
+    if (!item || !user) return;
+    setUpdating(true);
+    const { error } = await supabase
+      .from("consultations")
+      .update({
+        status: "in_progress",
+        technician_id: user.id,
+      })
+      .eq("id", item.id);
+
+    setUpdating(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Job Accepted!", description: "Customer has been notified that you are working on it." });
+      fetchDetail();
+    }
+  };
+
+  const handleSendInvoice = async () => {
+    if (!item || !priceInput.trim()) return;
+    setUpdating(true);
+    const priceNum = Number(priceInput.trim());
+    const { error } = await supabase
+      .from("consultations")
+      .update({
+        price: priceNum,
+        payment_status: "due",
+      })
+      .eq("id", item.id);
+
+    setUpdating(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Invoice Sent!", description: `Customer prompted to pay KES ${priceNum}.` });
+      fetchDetail();
+    }
+  };
 
   const handleMarkResolved = async () => {
     if (!item) return;
@@ -71,7 +124,7 @@ const ConsultationDetailPage = () => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Resolved", description: "Consultation marked as resolved" });
+      toast({ title: "Resolved", description: "Job marked as completed. Customer notified." });
       fetchDetail();
     }
   };
@@ -138,7 +191,23 @@ const ConsultationDetailPage = () => {
           <p className="text-base font-bold text-foreground">{customerName}</p>
         </div>
 
-        {/* Section 2: DELIVERY METHOD */}
+        {/* Section 2: PHONE */}
+        <div className="bg-card border border-border rounded-xl p-4 shadow-sm flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">PHONE</p>
+            <p className="text-sm font-bold text-foreground">{customerPhone || "Not provided"}</p>
+          </div>
+          {customerPhone && (
+            <a
+              href={`tel:${customerPhone}`}
+              className="px-3 py-1.5 rounded-lg bg-accent text-accent-foreground font-bold text-xs hover:bg-accent/90 transition-colors"
+            >
+              Call
+            </a>
+          )}
+        </div>
+
+        {/* Section 3: DELIVERY METHOD */}
         <div className="bg-card border border-border rounded-xl p-4 shadow-sm space-y-1">
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">DELIVERY METHOD</p>
           <p className="text-sm font-semibold text-foreground capitalize">
@@ -146,7 +215,25 @@ const ConsultationDetailPage = () => {
           </p>
         </div>
 
-        {/* Section 3: PROBLEM DESCRIPTION */}
+        {/* Section 4: ADDRESS */}
+        <div className="bg-card border border-border rounded-xl p-4 shadow-sm flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">ADDRESS</p>
+            <p className="text-sm font-medium text-foreground">{customerAddress || "Not provided"}</p>
+          </div>
+          {customerAddress && (
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(customerAddress)}`}
+              target="_blank"
+              rel="noreferrer"
+              className="px-3 py-1.5 rounded-lg border border-accent text-accent font-bold text-xs hover:bg-accent/10 transition-colors shrink-0"
+            >
+              Open map
+            </a>
+          )}
+        </div>
+
+        {/* Section 5: PROBLEM DESCRIPTION */}
         <div className="bg-card border border-border rounded-xl p-4 shadow-sm space-y-1">
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">PROBLEM DESCRIPTION</p>
           <p className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">
@@ -154,23 +241,54 @@ const ConsultationDetailPage = () => {
           </p>
         </div>
 
-        {/* Section 4: ATTACHMENTS */}
+        {/* Section 6: ATTACHMENTS */}
         <div className="bg-card border border-border rounded-xl p-4 shadow-sm space-y-2">
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">ATTACHMENTS</p>
-          {item.media_url ? (
-            <div className="aspect-video w-full max-w-md rounded-lg overflow-hidden border bg-secondary">
-              {/\.(mp4|webm|mov)(?:\?|#|$)/i.test(item.media_url) ? (
-                <video src={item.media_url} controls className="w-full h-full object-cover" />
-              ) : (
-                <img src={item.media_url} alt="Attachment" className="w-full h-full object-cover" />
-              )}
+          {item.media_url || item.attachment_urls?.length ? (
+            <div className="grid grid-cols-2 gap-2">
+              {(item.attachment_urls?.length ? item.attachment_urls : [item.media_url]).map((url: string, i: number) => (
+                <div key={i} className="aspect-video w-full rounded-lg overflow-hidden border bg-secondary">
+                  {/\.(mp4|webm|mov)(?:\?|#|$)/i.test(url) ? (
+                    <video src={url} controls className="w-full h-full object-cover" />
+                  ) : (
+                    <img src={url} alt="Attachment" className="w-full h-full object-cover" />
+                  )}
+                </div>
+              ))}
             </div>
           ) : (
             <p className="text-xs text-muted-foreground italic">No media attachments uploaded.</p>
           )}
         </div>
 
-        {/* Section 5: PAYMENT */}
+        {/* Section 7: PRICE & INVOICE */}
+        <div className="bg-card border border-border rounded-xl p-4 shadow-sm space-y-2">
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">PRICE</p>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <span className="absolute left-3 top-2.5 text-xs font-bold text-muted-foreground">KES</span>
+              <input
+                type="number"
+                min={0}
+                placeholder="0"
+                value={priceInput}
+                onChange={(e) => setPriceInput(e.target.value)}
+                className="w-full pl-12 pr-3 py-2 text-sm rounded-lg border border-border bg-background font-bold text-foreground focus:outline-none focus:border-accent"
+              />
+            </div>
+            <Button
+              size="sm"
+              variant="accent"
+              className="font-bold text-xs h-10 px-4"
+              onClick={handleSendInvoice}
+              disabled={updating || !priceInput.trim()}
+            >
+              Send invoice
+            </Button>
+          </div>
+        </div>
+
+        {/* Section 8: PAYMENT */}
         <div className="bg-card border border-border rounded-xl p-4 shadow-sm space-y-1">
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">PAYMENT</p>
           {isPaid ? (
@@ -184,8 +302,19 @@ const ConsultationDetailPage = () => {
           )}
         </div>
 
-        {/* Actions matching Page 3 PDF: Message customer | Mark resolved */}
+        {/* Actions matching Staff App Design 1.1 Page 3 & Page 8 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          {item.status === "pending" && (
+            <Button
+              variant="accent"
+              className="w-full font-bold"
+              onClick={handleAcceptConsultation}
+              disabled={updating}
+            >
+              Accept consultation
+            </Button>
+          )}
+
           <Button
             variant="outline"
             className="w-full font-bold"
