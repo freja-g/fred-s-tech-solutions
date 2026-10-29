@@ -159,24 +159,6 @@ const ServicesPage = () => {
     <div className="min-h-screen">
       <Header />
       <main className="pt-24 sm:pt-28 md:pt-32">
-        {/* Top Sub-Header Tabs matching PDF */}
-        <div className="border-b border-border bg-card">
-          <div className="container px-4 flex items-center gap-6">
-            <Link
-              to="/services"
-              className="py-3 text-sm font-bold text-accent border-b-2 border-accent"
-            >
-              Services
-            </Link>
-            <Link
-              to="/get-smart"
-              className="py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Get Smart
-            </Link>
-          </div>
-        </div>
-
         <section className="section-padding py-6">
           <div className="container max-w-4xl space-y-6">
             {/* Helper Callout matching PDF */}

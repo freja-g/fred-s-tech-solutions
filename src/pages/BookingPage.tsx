@@ -11,6 +11,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft, Camera, X, Video, Home, Truck, Store, Monitor, CheckCircle2 } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
 import { useConsultationBooking } from "@/hooks/useConsultationBooking";
+import { supabase as _sb } from "@/integrations/supabase/client";
+
+const supabase: any = _sb;
 
 type Delivery = "doorstep" | "pick_up" | "drop_off" | "remote";
 const DELIVERY_OPTIONS: { value: Delivery; label: string; hint: string; Icon: typeof Home }[] = [
@@ -46,50 +49,66 @@ const BookingPage = () => {
   // Auto-fill account details when user is signed in
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("profiles")
-      .select("display_name, phone, coverage_zones")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }: any) => {
-        if (data) {
-          if (data.display_name && !clientName) setClientName(data.display_name);
-          if (data.phone && !phone) setPhone(data.phone);
-          if (data.coverage_zones && data.coverage_zones.length > 0 && !address) {
-            setAddress(data.coverage_zones[0]);
+    try {
+      supabase
+        .from("profiles")
+        .select("display_name, phone, coverage_zones")
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .then(({ data }: any) => {
+          if (data) {
+            if (data.display_name && !clientName) setClientName(data.display_name);
+            if (data.phone && !phone) setPhone(data.phone);
+            if (data.coverage_zones && data.coverage_zones.length > 0 && !address) {
+              setAddress(data.coverage_zones[0]);
+            }
           }
-        }
-      });
+        })
+        .catch((err: any) => console.warn("Profile fetch error:", err));
+    } catch (err) {
+      console.warn("Profile auto-fill effect exception:", err);
+    }
   }, [user]);
 
   // Restore saved form state from sessionStorage if returning from sign-in
   useEffect(() => {
-    const saved = sessionStorage.getItem("saved_booking_draft");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed.subject) setSubject(parsed.subject);
-        if (parsed.description) setDescription(parsed.description);
-        if (parsed.address) setAddress(parsed.address);
-        if (parsed.phone) setPhone(parsed.phone);
-        if (parsed.preferredTime) setPreferredTime(parsed.preferredTime);
-        if (parsed.delivery) setDelivery(parsed.delivery);
-        if (parsed.selectedServiceName) setSelectedServiceName(parsed.selectedServiceName);
-      } catch {}
-      sessionStorage.removeItem("saved_booking_draft");
+    try {
+      const saved = sessionStorage.getItem("saved_booking_draft");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed.subject) setSubject(parsed.subject);
+          if (parsed.description) setDescription(parsed.description);
+          if (parsed.address) setAddress(parsed.address);
+          if (parsed.phone) setPhone(parsed.phone);
+          if (parsed.preferredTime) setPreferredTime(parsed.preferredTime);
+          if (parsed.delivery) setDelivery(parsed.delivery);
+          if (parsed.selectedServiceName) setSelectedServiceName(parsed.selectedServiceName);
+        } catch {}
+        sessionStorage.removeItem("saved_booking_draft");
+      }
+    } catch (err) {
+      console.warn("Draft restore exception:", err);
     }
   }, []);
 
   useEffect(() => {
-    const s = searchParams.get("service");
-    const id = searchParams.get("service_id");
-    const d = searchParams.get("details");
-    if (s) {
-      setSubject(s);
-      setSelectedServiceName(s);
+    try {
+      const s = searchParams.get("service");
+      const id = searchParams.get("service_id");
+      const d = searchParams.get("details");
+      if (s) {
+        setSubject(s);
+        setSelectedServiceName(s);
+      }
+      if (id) {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        if (isUuid) setServiceId(id);
+      }
+      if (d) setDescription(d);
+    } catch (err) {
+      console.warn("Search params parsing exception:", err);
     }
-    if (id && id.length === 36) setServiceId(id);
-    if (d) setDescription(d);
   }, [searchParams]);
 
   const saveDraftToSession = () => {
