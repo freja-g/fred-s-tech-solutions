@@ -277,6 +277,7 @@ const ProfilePage = () => {
             Edit shifts
           </Button>
         </section>
+        )}
 
         {/* Appearance Theme Switcher Card */}
         <section className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-3">
