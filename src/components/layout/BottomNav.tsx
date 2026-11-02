@@ -102,7 +102,7 @@ const BottomNav = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-white dark:bg-card pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
       aria-label="Primary"
     >
       <ul className="grid grid-cols-5 max-w-screen-md mx-auto">

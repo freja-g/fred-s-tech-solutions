@@ -248,43 +248,8 @@ const ProfilePage = () => {
           </section>
         )}
 
-        {/* Staff Portal Links matching PDF Page 7 */}
-        <section className="bg-card border border-border rounded-xl divide-y divide-border shadow-sm overflow-hidden text-sm">
-          <Link
-            to="/admin/analytics"
-            className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
-          >
-            <div>
-              <h2 className="font-bold text-foreground">Analytics</h2>
-              <p className="text-xs text-muted-foreground">Revenue, performance, charts</p>
-            </div>
-            <ChevronRight size={18} className="text-muted-foreground" />
-          </Link>
-
-          <Link
-            to="/admin/availability"
-            className="p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors"
-          >
-            <div>
-              <h2 className="font-bold text-foreground">Availability</h2>
-              <p className="text-xs text-muted-foreground">Working hours and shifts</p>
-            </div>
-            <ChevronRight size={18} className="text-muted-foreground" />
-          </Link>
-
-          <button
-            onClick={() => setEditOpen(true)}
-            className="w-full p-4 flex items-center justify-between hover:bg-secondary/40 transition-colors text-left"
-          >
-            <div>
-              <h2 className="font-bold text-foreground">Account settings</h2>
-              <p className="text-xs text-muted-foreground">Name, picture, password</p>
-            </div>
-            <ChevronRight size={18} className="text-muted-foreground" />
-          </button>
-        </section>
-
-        {/* Working Hours Section matching Page 7 PDF */}
+        {/* Working Hours Section matching Page 7 PDF (staff only) */}
+        {isStaff && (
         <section className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <div>
@@ -312,6 +277,7 @@ const ProfilePage = () => {
             Edit shifts
           </Button>
         </section>
+        )}
 
         {/* Appearance Theme Switcher Card */}
         <section className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-3">
