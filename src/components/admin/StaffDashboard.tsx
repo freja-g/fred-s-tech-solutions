@@ -104,19 +104,19 @@ const StaffDashboard = () => {
       {/* Summary Metrics Cards matching Page 1 PDF */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-4 bg-card border border-border rounded-xl shadow-sm space-y-1">
-          <p className="text-2xl sm:text-3xl font-extrabold text-accent">{counts.pending}</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-foreground">{counts.pending}</p>
           <p className="text-xs font-semibold text-muted-foreground">Pending</p>
         </div>
         <div className="p-4 bg-card border border-border rounded-xl shadow-sm space-y-1">
-          <p className="text-2xl sm:text-3xl font-extrabold text-accent">{counts.inProgress}</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-foreground">{counts.inProgress}</p>
           <p className="text-xs font-semibold text-muted-foreground">In Progress</p>
         </div>
         <div className="p-4 bg-card border border-border rounded-xl shadow-sm space-y-1">
-          <p className="text-2xl sm:text-3xl font-extrabold text-accent">{counts.completed}</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-foreground">{counts.completed}</p>
           <p className="text-xs font-semibold text-muted-foreground">Completed</p>
         </div>
         <div className="p-4 bg-card border border-border rounded-xl shadow-sm space-y-1">
-          <p className="text-2xl sm:text-3xl font-extrabold text-accent">{counts.customers}</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-foreground">{counts.customers}</p>
           <p className="text-xs font-semibold text-muted-foreground">Customers</p>
         </div>
       </div>
