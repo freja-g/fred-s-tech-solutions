@@ -52,51 +52,56 @@ export const useUnreadMessages = () => {
 
     // Unique per hook instance: the hook is mounted in several components at
     // once (BottomNav, ProfilePage). Reusing one channel name returns the
-    // already-subscribed channel and throws when adding callbacks.
+    // already-subscribed channel and throws when adding callbacks, so guard
+    // the subscription — a realtime failure must never blank the screen.
     const channelName = `messages-notify-${user.id}-${Math.random().toString(36).slice(2)}`;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
     try {
-      const channel = supabase
+      channel = supabase
         .channel(channelName)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        (payload) => {
-          const m = payload.new as MessageRow;
-          const relevant = isStaff
-            ? m.sender_role === "customer"
-            : m.customer_id === user.id && m.sender_role !== "customer";
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "messages" },
+          (payload) => {
+            const m = payload.new as MessageRow;
+            const relevant = isStaff
+              ? m.sender_role === "customer"
+              : m.customer_id === user.id && m.sender_role !== "customer";
 
-          if (!relevant) return;
+            if (!relevant) return;
 
-          fetchCount();
+            fetchCount();
 
-          if (!onChatRoute(locationRef.current)) {
-            const who = isStaff
-              ? "New customer message"
-              : m.sender_role === "admin"
-              ? "New message from support"
-              : "New message from technician";
-            toast(who, {
-              description: m.body.length > 80 ? m.body.slice(0, 80) + "…" : m.body,
-              action: {
-                label: "Open",
-                onClick: () => {
-                  window.location.href = isStaff ? "/admin/messages" : "/messages";
+            if (!onChatRoute(locationRef.current)) {
+              const who = isStaff
+                ? "New customer message"
+                : m.sender_role === "admin"
+                ? "New message from support"
+                : "New message from technician";
+              toast(who, {
+                description: m.body.length > 80 ? m.body.slice(0, 80) + "…" : m.body,
+                action: {
+                  label: "Open",
+                  onClick: () => {
+                    window.location.href = isStaff ? "/admin/messages" : "/messages";
+                  },
                 },
-              },
-            });
+              });
+            }
           }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "messages" },
-        () => fetchCount()
-      )
-      .subscribe();
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "messages" },
+          () => fetchCount()
+        )
+        .subscribe();
+    } catch (err) {
+      console.warn("Realtime subscription for unread messages failed:", err);
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [user, isStaff]);
 
