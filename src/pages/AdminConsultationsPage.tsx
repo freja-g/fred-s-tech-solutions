@@ -298,7 +298,7 @@ const AdminConsultationsPage = () => {
               <PayDialog
                 consultationId={c.id}
                 amount={c.price || 1500}
-                onSuccess={() => fetchConsultations()}
+                onPaid={() => fetchConsultations()}
               />
             )}
 

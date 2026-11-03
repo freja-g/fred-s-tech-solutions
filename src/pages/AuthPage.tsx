@@ -168,13 +168,13 @@ const AuthPage = () => {
           const uid = authData.user?.id;
           if (uid) {
             // 2. Insert technician role
-            await supabase.from("user_roles").upsert(
+            await (supabase as any).from("user_roles").upsert(
               { user_id: uid, role: "technician" },
               { onConflict: "user_id,role" }
             );
 
             // 3. Upsert into public.profiles
-            await supabase.from("profiles").upsert(
+            await (supabase as any).from("profiles").upsert(
               {
                 user_id: uid,
                 display_name: displayName.trim(),
@@ -188,7 +188,7 @@ const AuthPage = () => {
             );
 
             // 4. Upsert into public.technician_profiles with approval_status: "pending"
-            await supabase.from("technician_profiles").upsert(
+            await (supabase as any).from("technician_profiles").upsert(
               {
                 user_id: uid,
                 phone: phone.trim(),
@@ -228,7 +228,7 @@ const AuthPage = () => {
 
           const uid = authData.user?.id;
           if (uid) {
-            await supabase.from("profiles").upsert({
+            await (supabase as any).from("profiles").upsert({
               user_id: uid,
               display_name: displayName.trim(),
               email: email.trim(),

@@ -18,7 +18,8 @@ export const LatestConsultationSection = () => {
 
   useEffect(() => {
     if (!user) return;
-    supabase
+    // consultations is not in the generated types yet; cast to bypass TS
+    (supabase as any)
       .from("consultations")
       .select("id, subject, status, created_at")
       .eq("customer_id", user.id)

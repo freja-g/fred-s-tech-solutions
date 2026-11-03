@@ -46,7 +46,8 @@ const MessagesPage = () => {
     }
 
     // Fetch latest consultation subject for chat header context matching PDF Page 6
-    supabase
+    // consultations is not in the generated types yet; cast to bypass TS
+    (supabase as any)
       .from("consultations")
       .select("subject")
       .eq("customer_id", user.id)
