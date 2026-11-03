@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS public.technician_profiles (
   phone text,
   national_id text,
   approval_status text NOT NULL DEFAULT 'pending',
+  rejection_reason text,
   specialties text[] NOT NULL DEFAULT '{}',
   zones text[] NOT NULL DEFAULT '{}',
   hourly_rate numeric(12,2),

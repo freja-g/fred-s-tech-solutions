@@ -34,12 +34,21 @@ const AdminContentPage = () => {
       supabase.from("services").select("*").order("created_at", { ascending: false }),
       supabase.from("get_smart_content").select("*").order("created_at", { ascending: false }),
       supabase.from("reviews").select("*").eq("status", "pending").order("created_at", { ascending: false }),
-      supabase.from("technician_profiles").select("*, profiles!inner(display_name, email)").eq("approval_status", "pending"),
+      supabase.from("technician_profiles").select("*").eq("approval_status", "pending"),
     ]);
+    // Attach customer names/emails without relying on an FK embed
+    let techsWithProfiles: any[] = tp || [];
+    if (tp && tp.length) {
+      const ids = tp.map((x: any) => x.user_id);
+      const { data: profs } = await supabase
+        .from("profiles").select("user_id, display_name, email").in("user_id", ids);
+      const byId = new Map((profs || []).map((p: any) => [p.user_id, p]));
+      techsWithProfiles = tp.map((x: any) => ({ ...x, profiles: byId.get(x.user_id) || null }));
+    }
     setServices(s || []);
     setTips(t || []);
     setPendingReviews(r || []);
-    setPendingTechs(tp || []);
+    setPendingTechs(techsWithProfiles);
   };
 
   useEffect(() => {
