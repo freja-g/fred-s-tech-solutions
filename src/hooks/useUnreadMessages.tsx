@@ -53,8 +53,10 @@ export const useUnreadMessages = () => {
     // Unique per hook instance: the hook is mounted in several components at
     // once (BottomNav, ProfilePage). Reusing one channel name returns the
     // already-subscribed channel and throws when adding callbacks.
-    const channel = supabase
-      .channel(`messages-notify-${user.id}-${Math.random().toString(36).slice(2)}`)
+    const channelName = `messages-notify-${user.id}-${Math.random().toString(36).slice(2)}`;
+    try {
+      const channel = supabase
+        .channel(channelName)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "messages" },
