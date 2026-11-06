@@ -4,4 +4,6 @@
 - [ ] Use the GiCOFix logo as the app background where specified by the reference.
 - [ ] Verify the redesigned customer screens on desktop and phone sizes.
 - [ ] Sync the connected database schema: run docs/sql/sync-schema.sql (Part 1, then Part 2) in the Supabase SQL editor — adds missing consultations columns, payments and technician_profiles tables, and profile/review fields. Waiting on the user.
+- [x] Add a shared in-app notification inbox for customer and staff messages, consultation changes, and payment updates.
+- [ ] Enable phone push notifications after the Firebase messaging connection is approved and configured.
 

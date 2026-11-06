@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase as _sb } from "@/integrations/supabase/client";
 import fullmarkAsset from "@/assets/gicofix-fullmark-transparent.png";
+import NotificationCenter from "@/components/layout/NotificationCenter";
 
 const supabase: any = _sb;
 
@@ -57,21 +58,24 @@ const Header = () => {
           )}
         </Link>
 
-        <nav className="flex shrink-0 items-center gap-3">
+        <nav className="flex shrink-0 items-center gap-1 sm:gap-3">
           {user ? (
-            <Link
-              to="/profile"
-              className="flex items-center gap-2 group p-1 rounded-full hover:bg-secondary/60 transition-colors"
-              aria-label="Profile account"
-            >
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-accent/20 text-accent font-bold flex items-center justify-center border-2 border-accent/40 overflow-hidden shrink-0 shadow-sm transition-transform group-hover:scale-105">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  (displayName || user.email || "U").charAt(0).toUpperCase()
-                )}
-              </div>
-            </Link>
+            <>
+              <NotificationCenter />
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 group p-1 rounded-full hover:bg-secondary/60 transition-colors"
+                aria-label="Profile account"
+              >
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-accent/20 text-accent font-bold flex items-center justify-center border-2 border-accent/40 overflow-hidden shrink-0 shadow-sm transition-transform group-hover:scale-105">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    (displayName || user.email || "U").charAt(0).toUpperCase()
+                  )}
+                </div>
+              </Link>
+            </>
           ) : (
             <Link
               to="/auth"
