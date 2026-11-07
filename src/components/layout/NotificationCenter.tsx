@@ -75,7 +75,18 @@ const NotificationCenter = () => {
             </ul>
           )}
         </div>
-        <p className="border-t border-border px-4 py-2 text-[11px] text-muted-foreground">Phone alerts are not connected yet.</p>
+        <div className="border-t border-border px-4 py-2.5 flex items-center justify-between text-[11px] text-muted-foreground bg-card">
+          <span>In-App & Device Alerts active</span>
+          {"Notification" in window && Notification.permission !== "granted" && (
+            <button
+              type="button"
+              onClick={() => Notification.requestPermission()}
+              className="text-accent font-bold hover:underline"
+            >
+              Enable Device Alerts
+            </button>
+          )}
+        </div>
       </PopoverContent>
     </Popover>
   );

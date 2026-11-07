@@ -70,6 +70,13 @@ export const useAppNotifications = () => {
       { ...notification, read: false },
       ...current.filter((item) => item.id !== notification.id),
     ]);
+
+    // 1. Device Vibration alert feedback
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      try { navigator.vibrate([100, 50, 150]); } catch {}
+    }
+
+    // 2. In-App Sonner Toast Banner
     if (!pathRef.current.startsWith(notification.link)) {
       toast(notification.title, {
         description: notification.body,
@@ -78,6 +85,16 @@ export const useAppNotifications = () => {
           onClick: () => { window.location.href = notification.link; },
         },
       });
+    }
+
+    // 3. Browser / Device Native System Alert
+    if ("Notification" in window && Notification.permission === "granted") {
+      try {
+        new Notification(notification.title, {
+          body: notification.body,
+          icon: "/favicon.png",
+        });
+      } catch {}
     }
   }, [saveItems, user]);
 
